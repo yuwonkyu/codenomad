@@ -149,3 +149,9 @@ body {
   --color-brand-blue: #3399ff;
   --color-red: #eb5757;
 }
+
+/* 커스텀 그림자(쉐도우) */
+.shadow-custom-5 {
+  /* 값: x:0, y:4, blur:16, spread:0, 색상:#112211, 투명도:5% */
+  box-shadow: 0px 4px 16px 0px rgba(17, 34, 17, 0.05);
+}
