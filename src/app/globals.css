@@ -42,116 +42,94 @@ body {
 .text-11-m {
   font-size: 11px;
   font-weight: 500;
-  font-family: 'Pretendard', sans-serif;
 }
 .text-11-b {
   font-size: 11px;
   font-weight: 700;
-  font-family: 'Pretendard', sans-serif;
 }
 .text-12-m {
   font-size: 12px;
   font-weight: 500;
-  font-family: 'Pretendard', sans-serif;
 }
 .text-12-b {
   font-size: 12px;
   font-weight: 700;
-  font-family: 'Pretendard', sans-serif;
 }
 .text-13-m {
   font-size: 13px;
   font-weight: 500;
-  font-family: 'Pretendard', sans-serif;
 }
 .text-13-b {
   font-size: 13px;
   font-weight: 700;
-  font-family: 'Pretendard', sans-serif;
 }
 .text-14-m {
   font-size: 14px;
   font-weight: 500;
-  font-family: 'Pretendard', sans-serif;
 }
 .text-14-b {
   font-size: 14px;
   font-weight: 700;
-  font-family: 'Pretendard', sans-serif;
 }
 .text-16-m {
   font-size: 16px;
   font-weight: 500;
-  font-family: 'Pretendard', sans-serif;
 }
 .text-16-b {
   font-size: 16px;
   font-weight: 700;
-  font-family: 'Pretendard', sans-serif;
 }
 .text-18-m {
   font-size: 18px;
   font-weight: 500;
-  font-family: 'Pretendard', sans-serif;
 }
 .text-18-b {
   font-size: 18px;
   font-weight: 700;
-  font-family: 'Pretendard', sans-serif;
 }
 .text-20-m {
   font-size: 20px;
   font-weight: 500;
-  font-family: 'Pretendard', sans-serif;
 }
 .text-20-b {
   font-size: 20px;
   font-weight: 700;
-  font-family: 'Pretendard', sans-serif;
 }
 .text-24-m {
   font-size: 24px;
   font-weight: 500;
-  font-family: 'Pretendard', sans-serif;
 }
 .text-24-b {
   font-size: 24px;
   font-weight: 700;
-  font-family: 'Pretendard', sans-serif;
 }
 .text-32-m {
   font-size: 32px;
   font-weight: 500;
-  font-family: 'Pretendard', sans-serif;
 }
 .text-32-b {
   font-size: 32px;
   font-weight: 700;
-  font-family: 'Pretendard', sans-serif;
 }
 
 /* body용 커스텀 클래스 */
 .text-14-body-m {
   font-size: 14px;
   font-weight: 500;
-  font-family: 'Pretendard', sans-serif;
   line-height: 1.625;
 }
 .text-16-body-m {
   font-size: 16px;
   font-weight: 500;
-  font-family: 'Pretendard', sans-serif;
   line-height: 1.625;
 }
 .text-18-body-b {
   font-size: 18px;
   font-weight: 700;
-  font-family: 'Pretendard', sans-serif;
   line-height: 1.625;
 }
 .text-20-body-b {
   font-size: 20px;
   font-weight: 700;
-  font-family: 'Pretendard', sans-serif;
   line-height: 1.625;
 }
