@@ -3,57 +3,57 @@
 import React, { useState, InputHTMLAttributes, forwardRef } from 'react';
 import Image from 'next/image';
 
-// Input 컴포넌트의 props 타입 정의
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string; // 인풋 상단 라벨
-  error?: string; // 에러 메시지
-  className?: string; // 추가 클래스
+  label?: string;
+  error?: string;
+  className?: string;
 }
 
-// Input 컴포넌트 정의 (forwardRef로 ref 전달)
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label = 'title', className = '', type = 'text', ...props }, ref) => {
-    // 비밀번호 표시/숨김 토글 상태
+  ({ label = 'title', error, className = '', type = 'text', ...props }, ref) => {
     const [show, setShow] = useState(false);
-
-    // type이 password면 눈 아이콘 표시
     const isPassword = type === 'password';
-    // 눈 아이콘 클릭 시 type 변경
     const inputType = isPassword ? (show ? 'text' : 'password') : type;
 
+    // 에러 상태일 때 테두리 클래스
+    const baseOutline = 'outline outline-1 outline-offset-[-1px] transition-all duration-150';
+    const outlineColor = error
+      ? 'outline-red' // 에러 빨강
+      : 'focus-within:outline-brand-blue focus-within:outline-[1.5px] outline-gray-200'; // 포커스 or 기본 회색
+
     return (
-      <div className='flex flex-col justify-start items-start '>
-        {/* 라벨 */}
-        <div className='text-gray-950 pb-2.5 text-16-m'>{label}</div>
-        {/* 인풋+아이콘 영역 */}
-        <div className='w-full px-5 py-4 bg-white rounded-[16px] shadow-custom-5 outline-1 outline-offset-[-1px] outline-gray-100 flex justify-between items-center'>
-          {/* 실제 입력창 */}
+      <div className='flex flex-col items-start w-full'>
+        <label className='text-gray-950 pb-2.5 text-16-m'>{label}</label>
+
+        <div
+          className={`w-full px-5 py-4 bg-white rounded-[16px] shadow-custom-5 flex justify-between items-center ${baseOutline} ${outlineColor}`}
+        >
           <input
             ref={ref}
             type={inputType}
-            className='flex-1 border-none outline-none text-gray-950 text-16-m placeholder:text-gray-400'
+            className='flex-1 border-none outline-none text-gray-950 text-16-m placeholder:text-gray-400 bg-transparent'
             placeholder={props.placeholder}
             {...props}
           />
-          {/* 오른쪽 아이콘 영역: 비밀번호 인풋일 때만 표시 */}
           {isPassword && (
-            <div className='flex items-center justify-center '>
+            <div className='ml-2 flex items-center justify-center'>
               <Image
                 src={show ? '/icons/icon_eye_on.svg' : '/icons/icon_eye_off.svg'}
                 alt='비밀번호 표시'
                 width={24}
                 height={24}
                 onClick={() => setShow((v) => !v)}
-                className='cursor-pointer '
+                className='cursor-pointer'
               />
             </div>
           )}
         </div>
+
+        {/* 에러 메시지 */}
+        {error && <p className='mt-[6px] ml-[8px] text-[12px] text-red'>{error}</p>}
       </div>
     );
   },
 );
-
-Input.displayName = 'Input';
 
 export default Input;
