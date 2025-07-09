@@ -1,6 +1,12 @@
 'use client';
 
-import { useState, InputHTMLAttributes, TextareaHTMLAttributes, SelectHTMLAttributes, ReactNode } from 'react';
+import {
+  useState,
+  InputHTMLAttributes,
+  TextareaHTMLAttributes,
+  SelectHTMLAttributes,
+  ReactNode,
+} from 'react';
 import Image from 'next/image';
 
 type InputTypes = InputHTMLAttributes<HTMLInputElement> &
@@ -11,14 +17,16 @@ interface InputProps extends InputTypes {
   label?: string;
   error?: string;
   className?: string;
+  labelClassName?: string; // 추가
   as?: 'input' | 'textarea' | 'select';
-  options?: { value: string; label: ReactNode }[]; // select용 옵션
+  options?: { value: string; label: ReactNode }[];
 }
 
 const Input = ({
   label = '',
   error,
   className = '',
+  labelClassName = '', // 추가
   type = 'text',
   as = 'input',
   options = [],
@@ -36,7 +44,7 @@ const Input = ({
 
   return (
     <div className={`flex flex-col items-start w-full ${className}`}>
-      {label && <label className='text-gray-950 pb-10 text-16-m'>{label}</label>}
+      {label && <label className={`pb-10 ${labelClassName}`}>{label}</label>}
 
       <div
         className={`w-full px-20 py-16 bg-white rounded-[16px] shadow-custom-5 flex justify-between items-center ${baseOutline} ${outlineColor}`}
@@ -47,16 +55,28 @@ const Input = ({
             {...(props as TextareaHTMLAttributes<HTMLTextAreaElement>)}
           />
         ) : as === 'select' ? (
-          <select
-            className='flex-1 border-none outline-none text-gray-950 text-16-m bg-transparent'
-            {...(props as SelectHTMLAttributes<HTMLSelectElement>)}
-          >
-            {options.map(opt => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+          <div className='relative w-full'>
+            <select
+              className={`appearance-none w-full flex-1 border-none outline-none bg-transparent text-16-m
+                ${props.value === '' ? 'text-gray-400' : 'text-gray-950'}`}
+              {...(props as SelectHTMLAttributes<HTMLSelectElement>)}
+            >
+              {options.map((opt) => (
+                <option
+                  key={opt.value}
+                  value={opt.value}
+                  className={opt.value === '' ? 'text-gray-400' : 'text-gray-900'}
+                  disabled={opt.value === ''}
+                  hidden={opt.value === ''}
+                >
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            <span className='pointer-events-none absolute right-16 top-1/2 -translate-y-1/2'>
+              <Image src='/icons/icon_alt arrow_down.svg' alt='드롭다운' width={24} height={24} />
+            </span>
+          </div>
         ) : (
           <>
             <input
