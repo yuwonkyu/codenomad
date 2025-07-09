@@ -17,19 +17,21 @@ interface InputProps extends InputTypes {
   label?: string;
   error?: string;
   className?: string;
-  labelClassName?: string; // 추가
+  labelClassName?: string;
   as?: 'input' | 'textarea' | 'select';
   options?: { value: string; label: ReactNode }[];
+  dateIcon?: boolean; // 추가
 }
 
 const Input = ({
   label = '',
   error,
   className = '',
-  labelClassName = '', // 추가
+  labelClassName = '',
   type = 'text',
   as = 'input',
   options = [],
+  dateIcon = false, // 추가
   ...props
 }: InputProps) => {
   const [show, setShow] = useState(false);
@@ -85,6 +87,12 @@ const Input = ({
               placeholder={props.placeholder}
               {...(props as InputHTMLAttributes<HTMLInputElement>)}
             />
+            {/* dateIcon 옵션이 true이고 type이 date일 때만 아이콘 노출 */}
+            {dateIcon && type === 'date' && (
+              <span className='ml-8'>
+                <Image src='/icons/icon_calendar.svg' alt='달력' width={24} height={24} />
+              </span>
+            )}
             {isPassword && (
               <div className='ml-8 flex items-center justify-center'>
                 <Image
