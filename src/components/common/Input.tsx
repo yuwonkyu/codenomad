@@ -40,7 +40,7 @@ const Input = ({
   const baseOutline = 'outline outline-1 outline-offset-[-1px] transition-all duration-150';
   const outlineColor = error
     ? 'outline-red'
-    : 'focus-within:outline-brand-blue focus-within:outline-1.5 outline-gray-200';
+    : 'focus-within:outline-brand-blue focus-within:outline-[1.5px] outline-gray-200';
 
   return (
     <div className={`flex flex-col items-start w-full ${className}`}>
@@ -73,7 +73,7 @@ const Input = ({
                 </option>
               ))}
             </select>
-            <span className='pointer-events-none absolute right-16 top-1/2 -translate-y-1/2'>
+            <span className='pointer-events-none absolute right-0 top-1/2 -translate-y-1/2'>
               <Image src='/icons/icon_alt arrow_down.svg' alt='드롭다운' width={24} height={24} />
             </span>
           </div>
