@@ -51,7 +51,7 @@ const Input = ({
       >
         {as === 'textarea' ? (
           <textarea
-            className='flex-1 border-none outline-none text-gray-950 text-16-m placeholder:text-gray-400 bg-transparent resize-none'
+            className={`flex-1 border-none outline-none text-gray-950 text-16-m placeholder:text-gray-400 bg-transparent resize-none ${className}`}
             {...(props as TextareaHTMLAttributes<HTMLTextAreaElement>)}
           />
         ) : as === 'select' ? (
