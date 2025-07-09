@@ -9,7 +9,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   className?: string;
 }
 
-function Input({ label = '', error, className = '', type = 'text', ...props }: InputProps) {
+const Input = ({ label = '', error, className = '', type = 'text', ...props }: InputProps) => {
   const [show, setShow] = useState(false);
   const isPassword = type === 'password';
   const inputType = isPassword ? (show ? 'text' : 'password') : type;
@@ -51,6 +51,6 @@ function Input({ label = '', error, className = '', type = 'text', ...props }: I
       {error && <p className='mt-6 ml-8 text-12-m text-red'>{error}</p>}
     </div>
   );
-}
+};
 
 export default Input;
