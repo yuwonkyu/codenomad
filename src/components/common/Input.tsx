@@ -1,15 +1,29 @@
 'use client';
 
-import { useState, InputHTMLAttributes } from 'react';
+import { useState, InputHTMLAttributes, TextareaHTMLAttributes, SelectHTMLAttributes, ReactNode } from 'react';
 import Image from 'next/image';
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+type InputTypes = InputHTMLAttributes<HTMLInputElement> &
+  TextareaHTMLAttributes<HTMLTextAreaElement> &
+  SelectHTMLAttributes<HTMLSelectElement>;
+
+interface InputProps extends InputTypes {
   label?: string;
   error?: string;
   className?: string;
+  as?: 'input' | 'textarea' | 'select';
+  options?: { value: string; label: ReactNode }[]; // select용 옵션
 }
 
-const Input = ({ label = '', error, className = '', type = 'text', ...props }: InputProps) => {
+const Input = ({
+  label = '',
+  error,
+  className = '',
+  type = 'text',
+  as = 'input',
+  options = [],
+  ...props
+}: InputProps) => {
   const [show, setShow] = useState(false);
   const isPassword = type === 'password';
   const inputType = isPassword ? (show ? 'text' : 'password') : type;
@@ -22,28 +36,48 @@ const Input = ({ label = '', error, className = '', type = 'text', ...props }: I
 
   return (
     <div className={`flex flex-col items-start w-full ${className}`}>
-      <label className='text-gray-950 pb-10 text-16-m'>{label}</label>
+      {label && <label className='text-gray-950 pb-10 text-16-m'>{label}</label>}
 
       <div
         className={`w-full px-20 py-16 bg-white rounded-[16px] shadow-custom-5 flex justify-between items-center ${baseOutline} ${outlineColor}`}
       >
-        <input
-          type={inputType}
-          className='flex-1 border-none outline-none text-gray-950 text-16-m placeholder:text-gray-400 bg-transparent'
-          placeholder={props.placeholder}
-          {...props}
-        />
-        {isPassword && (
-          <div className='ml-8 flex items-center justify-center'>
-            <Image
-              src={show ? '/icons/icon_gray_eye_on.svg' : '/icons/icon_gray_eye_off.svg'}
-              alt='비밀번호 표시'
-              width={24}
-              height={24}
-              onClick={() => setShow((v) => !v)}
-              className='cursor-pointer'
+        {as === 'textarea' ? (
+          <textarea
+            className='flex-1 border-none outline-none text-gray-950 text-16-m placeholder:text-gray-400 bg-transparent resize-none'
+            {...(props as TextareaHTMLAttributes<HTMLTextAreaElement>)}
+          />
+        ) : as === 'select' ? (
+          <select
+            className='flex-1 border-none outline-none text-gray-950 text-16-m bg-transparent'
+            {...(props as SelectHTMLAttributes<HTMLSelectElement>)}
+          >
+            {options.map(opt => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <>
+            <input
+              type={inputType}
+              className='flex-1 border-none outline-none text-gray-950 text-16-m placeholder:text-gray-400 bg-transparent'
+              placeholder={props.placeholder}
+              {...(props as InputHTMLAttributes<HTMLInputElement>)}
             />
-          </div>
+            {isPassword && (
+              <div className='ml-8 flex items-center justify-center'>
+                <Image
+                  src={show ? '/icons/icon_gray_eye_on.svg' : '/icons/icon_gray_eye_off.svg'}
+                  alt='비밀번호 표시'
+                  width={24}
+                  height={24}
+                  onClick={() => setShow((v) => !v)}
+                  className='cursor-pointer'
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
 
