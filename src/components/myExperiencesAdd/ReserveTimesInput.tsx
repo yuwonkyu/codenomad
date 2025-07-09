@@ -30,10 +30,11 @@ export default function ReserveTimesInput({
         <div key={idx} className='mb-18'>
           {/* 날짜 인풋 */}
           <Input
-            placeholder='yy/mm/dd'
-            className='w-full mb-10 rounded-[12px] text-20-m text-gray-400'
+            placeholder='yyyy-mm-dd'
+            className='mb-10'
             type='date'
             value={rt.date}
+            max='9999-12-31'
             onChange={(e) => onChange(idx, 'date', e.target.value)}
             dateIcon
           />
@@ -71,12 +72,12 @@ export default function ReserveTimesInput({
             />
             {idx === 0 ? (
               <button type='button' className='ml-14 flex-shrink-0' onClick={onAdd}>
-                <Image src='/icons/icon_blue_plus.svg' alt='추가' width={28} height={28} />
+                <Image src='/icons/icon_blue_plus.svg' alt='추가' width={42} height={42} />
               </button>
             ) : (
               <button
                 type='button'
-                className='ml-8 w-44 h-44 flex items-center justify-center rounded-full bg-gray-100 flex-shrink-0'
+                className='ml-14 size-42  flex items-center justify-center rounded-full bg-gray-50 flex-shrink-0'
                 onClick={() => onRemove(idx)}
               >
                 <Image src='/icons/icon_minus.svg' alt='제거' width={24} height={24} />
@@ -84,11 +85,11 @@ export default function ReserveTimesInput({
             )}
           </div>
           {/* 구분선 */}
-          {idx < reserveTimes.length - 1 && <hr className='my-24 border-gray-200' />}
+          {idx < reserveTimes.length - 1 && <hr className='my-20 border-gray-100' />}
         </div>
       ))}
       {isDuplicateTime() && (
-        <div className='text-red-500 text-14-m ml-8'>
+        <div className='ml-8 text-12-m text-red'>
           같은 시간대에는 1개의 체험만 생성할 수 있습니다.
         </div>
       )}
