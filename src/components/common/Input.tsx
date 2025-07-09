@@ -9,6 +9,7 @@ import {
 } from 'react';
 import Image from 'next/image';
 
+// Input 컴포넌트 Props 타입 정의
 type InputTypes = InputHTMLAttributes<HTMLInputElement> &
   TextareaHTMLAttributes<HTMLTextAreaElement> &
   SelectHTMLAttributes<HTMLSelectElement>;
@@ -20,7 +21,7 @@ interface InputProps extends InputTypes {
   labelClassName?: string;
   as?: 'input' | 'textarea' | 'select';
   options?: { value: string; label: ReactNode }[];
-  dateIcon?: boolean; // 추가
+  dateIcon?: boolean;
 }
 
 const Input = ({
@@ -31,14 +32,14 @@ const Input = ({
   type = 'text',
   as = 'input',
   options = [],
-  dateIcon = false, // 추가
+  dateIcon = false,
   ...props
 }: InputProps) => {
   const [show, setShow] = useState(false);
   const isPassword = type === 'password';
   const inputType = isPassword ? (show ? 'text' : 'password') : type;
 
-  // 에러 상태일 때 테두리 클래스
+  // outline 스타일 클래스
   const baseOutline = 'outline outline-1 outline-offset-[-1px] transition-all duration-150';
   const outlineColor = error
     ? 'outline-red'
@@ -46,17 +47,20 @@ const Input = ({
 
   return (
     <div className={`flex flex-col items-start w-full ${className}`}>
+      {/* 라벨 */}
       {label && <label className={`pb-10 ${labelClassName}`}>{label}</label>}
 
       <div
         className={`w-full px-20 py-16 bg-white rounded-[16px] shadow-custom-5 flex justify-between items-center ${baseOutline} ${outlineColor}`}
       >
+        {/* textarea 타입 */}
         {as === 'textarea' ? (
           <textarea
             className={`flex-1 border-none outline-none text-gray-950 text-16-m placeholder:text-gray-400 bg-transparent resize-none ${className}`}
             {...(props as TextareaHTMLAttributes<HTMLTextAreaElement>)}
           />
         ) : as === 'select' ? (
+          // select 타입
           <div className='relative w-full'>
             <select
               className={`appearance-none w-full flex-1 border-none outline-none bg-transparent text-16-m
@@ -75,11 +79,13 @@ const Input = ({
                 </option>
               ))}
             </select>
+            {/* 드롭다운 아이콘 */}
             <span className='pointer-events-none absolute right-0 top-1/2 -translate-y-1/2'>
               <Image src='/icons/icon_alt arrow_down.svg' alt='드롭다운' width={24} height={24} />
             </span>
           </div>
         ) : (
+          // 기본 input 타입
           <>
             <input
               type={inputType}
@@ -87,12 +93,13 @@ const Input = ({
               placeholder={props.placeholder}
               {...(props as InputHTMLAttributes<HTMLInputElement>)}
             />
-            {/* dateIcon 옵션이 true이고 type이 date일 때만 아이콘 노출 */}
+            {/* 날짜 아이콘 (dateIcon 옵션이 true이고 type이 date일 때) */}
             {dateIcon && type === 'date' && (
               <span className='ml-8'>
                 <Image src='/icons/icon_calendar.svg' alt='달력' width={24} height={24} />
               </span>
             )}
+            {/* 비밀번호 보기/숨기기 토글 */}
             {isPassword && (
               <div className='ml-8 flex items-center justify-center'>
                 <Image
