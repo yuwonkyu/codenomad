@@ -10,7 +10,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label = 'title', error, className = '', type = 'text', ...props }, ref) => {
+  ({ label = '', error, className = '', type = 'text', ...props }, ref) => {
     const [show, setShow] = useState(false);
     const isPassword = type === 'password';
     const inputType = isPassword ? (show ? 'text' : 'password') : type;
@@ -18,11 +18,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     // 에러 상태일 때 테두리 클래스
     const baseOutline = 'outline outline-1 outline-offset-[-1px] transition-all duration-150';
     const outlineColor = error
-      ? 'outline-red' // 에러 빨강
-      : 'focus-within:outline-brand-blue focus-within:outline-[1.5px] outline-gray-200'; // 포커스 or 기본 회색
+      ? 'outline-red'
+      : 'focus-within:outline-brand-blue focus-within:outline-[1.5px] outline-gray-200';
 
     return (
-      <div className='flex flex-col items-start w-full'>
+      <div className={`flex flex-col items-start w-full ${className}`}>
         <label className='text-gray-950 pb-2.5 text-16-m'>{label}</label>
 
         <div
