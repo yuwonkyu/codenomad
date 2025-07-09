@@ -30,6 +30,8 @@ body {
   --color-gray-900: #1a1a1a;
   --color-brand-blue: #3399ff;
   --color-red: #eb5757;
+
+  --spacing: 0.0625rem;
 }
 
 /* 커스텀 그림자(쉐도우) */
