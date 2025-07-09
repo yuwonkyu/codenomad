@@ -18,14 +18,14 @@ function Input({ label = '', error, className = '', type = 'text', ...props }: I
   const baseOutline = 'outline outline-1 outline-offset-[-1px] transition-all duration-150';
   const outlineColor = error
     ? 'outline-red'
-    : 'focus-within:outline-brand-blue focus-within:outline-[1.5px] outline-gray-200';
+    : 'focus-within:outline-brand-blue focus-within:outline-1.5 outline-gray-200';
 
   return (
     <div className={`flex flex-col items-start w-full ${className}`}>
-      <label className='text-gray-950 pb-2.5 text-16-m'>{label}</label>
+      <label className='text-gray-950 pb-10 text-16-m'>{label}</label>
 
       <div
-        className={`w-full px-[20px] py-[16px] bg-white rounded-[16px] shadow-custom-5 flex justify-between items-center ${baseOutline} ${outlineColor}`}
+        className={`w-full px-20 py-16 bg-white rounded-[16px] shadow-custom-5 flex justify-between items-center ${baseOutline} ${outlineColor}`}
       >
         <input
           type={inputType}
@@ -34,7 +34,7 @@ function Input({ label = '', error, className = '', type = 'text', ...props }: I
           {...props}
         />
         {isPassword && (
-          <div className='ml-2 flex items-center justify-center'>
+          <div className='ml-8 flex items-center justify-center'>
             <Image
               src={show ? '/icons/icon_gray_eye_on.svg' : '/icons/icon_gray_eye_off.svg'}
               alt='비밀번호 표시'
@@ -48,7 +48,7 @@ function Input({ label = '', error, className = '', type = 'text', ...props }: I
       </div>
 
       {/* 에러 메시지 */}
-      {error && <p className='mt-[6px] ml-[8px] text-[12px] text-red'>{error}</p>}
+      {error && <p className='mt-6 ml-8 text-12-m text-red'>{error}</p>}
     </div>
   );
 }
