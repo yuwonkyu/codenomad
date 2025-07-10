@@ -29,11 +29,10 @@ const LoginPage = () => {
   };
 
   return (
-    <main className='min-h-screen flex justify-center px-1 pt-[60px] lg:pt-[100px]'>
+    <main className='min-h-screen flex justify-center px-1 pt-60 lg:pt-100'>
       <form
         onSubmit={handleSubmit}
-        className='w-full max-w-[376px] md:max-w-[640px] space-y-4 md:space-y-6 
-                 bg-white p-6 md:p-8 rounded-[16px]'
+        className='w-full max-w-376 md:max-w-640 flex flex-col space-y-24 p-24 md:p-32 bg-white rounded-16'
       >
         {/* 로고 */}
         <div>
@@ -41,7 +40,7 @@ const LoginPage = () => {
             <img
               src='/icons/logoHorizon.svg'
               alt='GlobalNomad Logo'
-              className='mx-auto mb-8 w-[144px] md:w-[255px]'
+              className='mx-auto mb-32 w-144 md:w-255'
             />
           </Link>
         </div>
@@ -72,7 +71,7 @@ const LoginPage = () => {
 
         {/* 로그인 버튼 */}
         <button
-          className='w-full mt-2 py-3 rounded-[12px] text-white text-16-m bg-brand-blue disabled:bg-gray-300 cursor-pointer'
+          className='w-full h-48 rounded-[16px] text-white text-16-m bg-brand-blue disabled:bg-gray-300 cursor-pointer'
           disabled={!isFormValid}
           type='submit'
         >
@@ -80,15 +79,15 @@ const LoginPage = () => {
         </button>
 
         {/* or */}
-        <div className='flex items-center justify-center w-full my-6'>
+        <div className='flex items-center justify-center w-full'>
           <hr className='flex-grow border-t border-gray-300' />
-          <span className='px-4 text-16-m text-gray-500 whitespace-nowrap'>or</span>
+          <span className='px-16 text-16-m text-gray-500 whitespace-nowrap'>or</span>
           <hr className='flex-grow border-t border-gray-300' />
         </div>
 
         {/* 카카오 로그인 */}
-        <button className='w-full py-3 border border-gray-300 rounded-[12px] flex justify-center items-center text-gray-600 text-16-m'>
-          <img src='/icons/icon_kakao.svg' alt='kakaoicon' className='w-5 h-5 mr-2' />
+        <button className='w-full h-48 border border-gray-300 rounded-[16px] flex justify-center items-center text-gray-600 text-16-m'>
+          <img src='/icons/icon_kakao.svg' alt='kakaoicon' className='w-20 h-20 mr-8' />
           카카오 로그인
         </button>
 
