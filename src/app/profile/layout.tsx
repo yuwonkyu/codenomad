@@ -9,16 +9,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default function ProfileLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang='ko'>
-      <body className='min-h-screen flex flex-col'>
-        <main className='flex-1'>{children}</main>
-      </body>
-    </html>
-  );
+  return <section>{children}</section>;
 }
