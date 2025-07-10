@@ -2,9 +2,17 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Input from '@/components/common/Input';
 
 const SignupPage = () => {
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
+
+  // 이메일 유효성 검사 함수
+  const validateEmail = (value: string) => {
+    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    setEmailError(isValid ? '' : '잘못된 이메일입니다.');
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +34,16 @@ const SignupPage = () => {
             />
           </Link>
         </div>
+        <Input
+          label='이메일'
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onBlur={(e) => validateEmail(e.target.value)}
+          placeholder='이메일을 입력해 주세요'
+          error={emailError}
+          type='email'
+          autoComplete='email'
+        />
       </form>
     </main>
   );
