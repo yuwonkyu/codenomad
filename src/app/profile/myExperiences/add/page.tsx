@@ -28,7 +28,7 @@ interface ReserveTime {
   end: string;
 }
 
-export default function ExperienceAddPage() {
+const ExperienceAddPage = () => {
   // 입력값 상태 관리
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
@@ -120,23 +120,19 @@ export default function ExperienceAddPage() {
         <h2 className='text-18-b mb-24'>내 체험 등록</h2>
 
         {/* 제목 입력 */}
-        <TitleInput value={title} onChange={(e) => setTitle(e.target.value)} />
+        <TitleInput value={title} onChange={setTitle} />
 
         {/* 카테고리 선택 */}
-        <CategoryInput
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          options={categoryOptions}
-        />
+        <CategoryInput value={category} onChange={setCategory} options={categoryOptions} />
 
         {/* 설명 입력 */}
-        <DescriptionInput value={desc} onChange={(e) => setDesc(e.target.value)} />
+        <DescriptionInput value={desc} onChange={setDesc} />
 
         {/* 가격 입력 */}
-        <PriceInput value={price} onChange={(e) => setPrice(e.target.value)} />
+        <PriceInput value={price} onChange={setPrice} />
 
         {/* 주소 입력 */}
-        <AddressInput value={address} onChange={(e) => setAddress(e.target.value)} />
+        <AddressInput value={address} onChange={setAddress} />
 
         {/* 예약 가능한 시간대 입력 */}
         <ReserveTimesInput
@@ -174,4 +170,6 @@ export default function ExperienceAddPage() {
       </form>
     </div>
   );
-}
+};
+
+export default ExperienceAddPage;

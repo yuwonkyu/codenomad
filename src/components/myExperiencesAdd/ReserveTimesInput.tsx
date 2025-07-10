@@ -1,6 +1,12 @@
 import Input from '@/components/common/Input';
 import Image from 'next/image';
 
+// 00:00 ~ 24:00까지 TIME_OPTIONS를 자동 생성
+const TIME_OPTIONS = Array.from({ length: 25 }, (_, i) => {
+  const hour = i.toString().padStart(2, '0');
+  return { value: `${hour}:00`, label: `${hour}:00` };
+});
+
 interface ReserveTime {
   date: string;
   start: string;
@@ -15,13 +21,13 @@ interface ReserveTimesInputProps {
   isDuplicateTime: () => boolean;
 }
 
-export default function ReserveTimesInput({
+const ReserveTimesInput = ({
   reserveTimes,
   onChange,
   onAdd,
   onRemove,
   isDuplicateTime,
-}: ReserveTimesInputProps) {
+}: ReserveTimesInputProps) => {
   return (
     <div className='mb-30'>
       <div className='text-16-b mb-18'>예약 가능한 시간대</div>
@@ -43,14 +49,7 @@ export default function ReserveTimesInput({
           <div className='flex items-center w-327'>
             <Input
               as='select'
-              options={[
-                { value: '', label: '00:00' },
-                { value: '09:00', label: '09:00' },
-                { value: '10:00', label: '10:00' },
-                { value: '11:00', label: '11:00' },
-                { value: '12:00', label: '12:00' },
-                // ...
-              ]}
+              options={TIME_OPTIONS}
               className='flex-1'
               value={rt.start}
               onChange={(e) => onChange(idx, 'start', e.target.value)}
@@ -58,14 +57,7 @@ export default function ReserveTimesInput({
             <div className='w-12 mx-10 text-center text-gray-800 text-20-b'>-</div>
             <Input
               as='select'
-              options={[
-                { value: '', label: '00:00' },
-                { value: '09:00', label: '09:00' },
-                { value: '10:00', label: '10:00' },
-                { value: '11:00', label: '11:00' },
-                { value: '12:00', label: '12:00' },
-                // ...
-              ]}
+              options={TIME_OPTIONS}
               className='flex-1'
               value={rt.end}
               onChange={(e) => onChange(idx, 'end', e.target.value)}
@@ -95,4 +87,6 @@ export default function ReserveTimesInput({
       )}
     </div>
   );
-}
+};
+
+export default ReserveTimesInput;

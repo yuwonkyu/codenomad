@@ -7,12 +7,7 @@ interface BannerImageInputProps {
   banner: File | null;
 }
 
-export default function BannerImageInput({
-  bannerPreview,
-  onChange,
-  onRemove,
-  banner,
-}: BannerImageInputProps) {
+const BannerImageInput = ({ bannerPreview, onChange, onRemove, banner }: BannerImageInputProps) => {
   return (
     <div className='mb-30'>
       <div className='text-16-b mb-10'>배너 이미지 등록</div>
@@ -50,4 +45,6 @@ export default function BannerImageInput({
       </div>
     </div>
   );
-}
+};
+
+export default BannerImageInput;

@@ -2,10 +2,11 @@ import Input from '@/components/common/Input';
 
 interface DescriptionInputProps {
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onChange: (value: string) => void;
 }
 
-export default function DescriptionInput({ value, onChange }: DescriptionInputProps) {
+// 화살표 함수식 및 타입 호환성 문제 해결
+const DescriptionInput = ({ value, onChange }: DescriptionInputProps) => {
   return (
     <div className='mb-24'>
       <Input
@@ -14,9 +15,11 @@ export default function DescriptionInput({ value, onChange }: DescriptionInputPr
         as='textarea'
         placeholder='체험에 대한 설명을 입력해 주세요'
         value={value}
-        onChange={onChange}
+        onChange={(e) => onChange(e.target.value)}
         className='min-h-108'
       />
     </div>
   );
-}
+};
+
+export default DescriptionInput;

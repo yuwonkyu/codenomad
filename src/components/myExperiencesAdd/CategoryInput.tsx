@@ -2,11 +2,12 @@ import Input from '@/components/common/Input';
 
 interface CategoryInputProps {
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onChange: (value: string) => void;
   options: { value: string; label: string }[];
 }
 
-export default function CategoryInput({ value, onChange, options }: CategoryInputProps) {
+// 화살표 함수식 및 타입 호환성 문제 해결
+const CategoryInput = ({ value, onChange, options }: CategoryInputProps) => {
   return (
     <div className='mb-24'>
       <Input
@@ -15,8 +16,10 @@ export default function CategoryInput({ value, onChange, options }: CategoryInpu
         as='select'
         options={options}
         value={value}
-        onChange={onChange}
+        onChange={(e) => onChange(e.target.value)}
       />
     </div>
   );
-}
+};
+
+export default CategoryInput;

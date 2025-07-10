@@ -2,10 +2,10 @@ import Input from '@/components/common/Input';
 
 interface TitleInputProps {
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (value: string) => void;
 }
 
-export default function TitleInput({ value, onChange }: TitleInputProps) {
+const TitleInput = ({ value, onChange }: TitleInputProps) => {
   return (
     <div className='mb-24'>
       <Input
@@ -13,8 +13,10 @@ export default function TitleInput({ value, onChange }: TitleInputProps) {
         labelClassName='text-16-b'
         placeholder='제목을 입력해 주세요'
         value={value}
-        onChange={onChange}
+        onChange={(e) => onChange(e.target.value)}
       />
     </div>
   );
-}
+};
+
+export default TitleInput;
