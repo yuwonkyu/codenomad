@@ -116,7 +116,7 @@ const ExperienceEditPage = () => {
   return (
     <div className='flex justify-center items-center h-full'>
       <form className='w-375 py-30 flex flex-col px-24' onSubmit={handleSubmit} autoComplete='off'>
-        <h2 className='text-18-b mb-24'>내 체험 등록</h2>
+        <h2 className='text-18-b mb-24'>내 체험 수정</h2>
         {/* 제목 */}
         <TitleInput value={title} onChange={setTitle} />
         {/* 카테고리 */}
