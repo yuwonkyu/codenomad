@@ -7,11 +7,18 @@ import Input from '@/components/common/Input';
 const SignupPage = () => {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [nickname, setNickname] = useState('');
+  const [nicknameError, setNicknameError] = useState('');
 
   // 이메일 유효성 검사 함수
   const validateEmail = (value: string) => {
     const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
     setEmailError(isValid ? '' : '잘못된 이메일입니다.');
+  };
+
+  // 닉네임 유효성 검사 함수
+  const validateNickname = (value: string) => {
+    setNicknameError(value.length <= 10 ? '' : '10자 이하로 작성해주세요.');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -43,6 +50,16 @@ const SignupPage = () => {
           error={emailError}
           type='email'
           autoComplete='email'
+        />
+
+        <Input
+          label='닉네임'
+          value={nickname}
+          onChange={(e) => setNickname(e.target.value)}
+          onBlur={(e) => validateNickname(e.target.value)}
+          placeholder='닉네임을 입력해 주세요'
+          error={nicknameError}
+          autoComplete='username'
         />
       </form>
     </main>
