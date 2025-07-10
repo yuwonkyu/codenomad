@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Input from '@/components/common/Input';
+import ConfirmModal from '@/components/common/ConfirmModal';
 
 const SignupPage = () => {
   const [email, setEmail] = useState('');
@@ -14,6 +15,10 @@ const SignupPage = () => {
   const [passwordError, setPasswordError] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [confirmError, setConfirmError] = useState('');
+
+  const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+
   const router = useRouter();
 
   // 이메일 유효성
@@ -58,18 +63,33 @@ const SignupPage = () => {
     e.preventDefault();
 
     if (email === 'duplicate@email.com') {
-      setEmailError('중복된 이메일입니다.');
+      setIsDuplicateModalOpen(true);
       return;
     }
 
     if (isFormValid) {
-      alert('API 연결 전입니다->회원가입이 완료되었습니다 모달 구현 예정');
-      router.push('/login');
+      setIsSuccessModalOpen(true);
     }
   };
 
   return (
     <main className='min-h-screen flex justify-center px-1 pt-60 lg:pt-100'>
+      {/* 가입 완료 모달 */}
+      <ConfirmModal
+        isOpen={isSuccessModalOpen}
+        message='가입이 완료되었습니다.'
+        onClose={() => {
+          setIsSuccessModalOpen(false);
+          router.push('/login');
+        }}
+      />
+      {/* 중복 이메일 모달 */}
+      <ConfirmModal
+        isOpen={isDuplicateModalOpen}
+        message='이미 사용중인 이메일입니다.'
+        onClose={() => setIsDuplicateModalOpen(false)}
+      />
+
       <form
         onSubmit={handleSubmit}
         className='w-full max-w-376 md:max-w-640 space-y-24 p-24 md:p-32 bg-white rounded-16'
