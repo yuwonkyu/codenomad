@@ -127,13 +127,41 @@ const SignupPage = () => {
           autoComplete='new-password'
         />
 
+        {/* 회원가입 버튼 */}
         <button
           type='submit'
           disabled={!isFormValid}
-          className='w-full py-3 mt-2 rounded-12 text-white text-16-m bg-brand-blue disabled:bg-gray-300 cursor-pointer hover:shadow-md hover:shadow-brand-blue/60 transition-all duration-200'
+          className='w-full h-48 py-3 rounded-[12px] text-white text-16-m bg-brand-blue disabled:bg-gray-300 cursor-pointer hover:shadow-md hover:shadow-brand-blue/60 transition-all duration-200'
         >
           회원가입 하기
         </button>
+
+        {/* or */}
+        <div className='flex items-center justify-center w-full '>
+          <hr className='flex-grow border-t border-gray-300' />
+          <span className='px-16 text-16-m text-gray-500 whitespace-nowrap'>
+            sns 계정으로 회원가입하기
+          </span>
+          <hr className='flex-grow border-t border-gray-300' />
+        </div>
+
+        {/* 카카오 로그인 */}
+        <button className='w-full py-12 border border-gray-300 rounded-[12px] flex justify-center items-center text-gray-600 text-16-m'>
+          <img
+            src='/icons/icon_kakao.svg'
+            alt='kakaoicon'
+            className='text-gray-600 text-13-m w-20 h-20 mr-8'
+          />
+          카카오 회원가입
+        </button>
+
+        {/* 로그인 링크 */}
+        <p className='text-center text-13-m text-gray-600'>
+          회원이신가요?{' '}
+          <Link href='/login' className='text-gray-600 text-13-b underline'>
+            로그인하기
+          </Link>
+        </p>
       </form>
     </main>
   );
