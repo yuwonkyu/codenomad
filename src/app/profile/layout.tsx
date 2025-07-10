@@ -1,16 +1,13 @@
-import type { Metadata } from 'next';
-import '@/app/globals.css';
+'use client';
+import { createContext, useContext, useState, ReactNode } from 'react';
 import ProfileMenu from '@/components/profile/ProfileMenu';
 
-export const metadata: Metadata = {
-  title: 'GlobalNomad',
-  description: '코드노마드 팀프로젝트',
-  icons: {
-    icon: '/favicon.ico',
-  },
-};
+// Context 생성
+export const ProfileMobileContext = createContext<{ onCancel: () => void } | null>(null);
 
-export default function MyLayout({ children }: { children: React.ReactNode }) {
+export default function MyLayout({ children }: { children: ReactNode }) {
+  const [showContent, setShowContent] = useState(false);
+
   return (
     <div
       className='
@@ -31,10 +28,27 @@ export default function MyLayout({ children }: { children: React.ReactNode }) {
           flex justify-center md:block
         '
       >
-        <ProfileMenu />
+        {/* 모바일: 메뉴만 보이고 클릭 시 children 보임, PC: 기존대로 */}
+        <div className='block md:hidden'>
+          {!showContent ? <ProfileMenu onMenuClick={() => setShowContent(true)} /> : null}
+        </div>
+        <div className='hidden md:block'>
+          <ProfileMenu />
+        </div>
       </aside>
       {/* 선택된 메뉴 컨텐츠 */}
-      <main className='w-full md:flex-1'>{children}</main>
+      <main className='w-full md:flex-1'>
+        {/* 모바일: 메뉴 클릭 전에는 children 숨김, 클릭 후에만 children 보임 */}
+        <div className='block md:hidden'>
+          {showContent && (
+            <ProfileMobileContext.Provider value={{ onCancel: () => setShowContent(false) }}>
+              {children}
+            </ProfileMobileContext.Provider>
+          )}
+        </div>
+        {/* PC: 항상 children 보임 */}
+        <div className='hidden md:block'>{children}</div>
+      </main>
     </div>
   );
 }
