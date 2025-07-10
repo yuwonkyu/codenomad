@@ -43,7 +43,7 @@ const Input = ({
   const baseOutline = 'outline outline-1 outline-offset-[-1px] transition-all duration-150';
   const outlineColor = error
     ? 'outline-red'
-    : 'focus-within:outline-brand-blue focus-within:outline-[1.5px] outline-gray-200';
+    : 'focus-within:outline-primary-500 focus-within:outline-[1.5px] outline-gray-200';
 
   return (
     <div className={`flex flex-col items-start w-full ${className}`}>

@@ -165,7 +165,7 @@ const ExperienceAddPage = () => {
         <div className='flex justify-center'>
           <button
             type='submit'
-            className='w-120 py-12 mb-30 bg-brand-blue text-white text-14-b rounded-[12px]'
+            className='w-120 py-12 mb-30 bg-primary-500 text-white text-14-b rounded-[12px]'
           >
             등록하기
           </button>
