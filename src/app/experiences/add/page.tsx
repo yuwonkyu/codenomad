@@ -1,14 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import TitleInput from '@/components/myExperiencesAdd/TitleInput';
-import CategoryInput from '@/components/myExperiencesAdd/CategoryInput';
-import DescriptionInput from '@/components/myExperiencesAdd/DescriptionInput';
-import PriceInput from '@/components/myExperiencesAdd/PriceInput';
-import AddressInput from '@/components/myExperiencesAdd/AddressInput';
-import BannerImageInput from '@/components/myExperiencesAdd/BannerImageInput';
-import IntroImagesInput from '@/components/myExperiencesAdd/IntroImagesInput';
-import ReserveTimesInput from '@/components/myExperiencesAdd/ReserveTimesInput';
+import TitleInput from '@/components/myExperiencesAddEdit/TitleInput';
+import CategoryInput from '@/components/myExperiencesAddEdit/CategoryInput';
+import DescriptionInput from '@/components/myExperiencesAddEdit/DescriptionInput';
+import PriceInput from '@/components/myExperiencesAddEdit/PriceInput';
+import AddressInput from '@/components/myExperiencesAddEdit/AddressInput';
+import BannerImageInput from '@/components/myExperiencesAddEdit/BannerImageInput';
+import IntroImagesInput from '@/components/myExperiencesAddEdit/IntroImagesInput';
+import ReserveTimesInput from '@/components/myExperiencesAddEdit/ReserveTimesInput';
 
 // 카테고리 옵션 목록
 const categoryOptions = [
