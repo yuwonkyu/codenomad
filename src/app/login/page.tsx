@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Input from '@/components/common/Input';
+import ConfirmModal from '@/components/common/ConfirmModal';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 유효성 검사 함수
   const validateEmail = (value: string) => {
@@ -25,11 +27,18 @@ const LoginPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    isFormValid && alert('API 연결 전입니다ㅎㅎ');
+    if (!isFormValid) return;
+    setIsModalOpen(true);
   };
 
   return (
     <main className='min-h-screen flex justify-center px-1 pt-60 lg:pt-100'>
+      <ConfirmModal
+        isOpen={isModalOpen}
+        message='비밀번호가 일치하지 않습니다.'
+        onClose={() => setIsModalOpen(false)}
+      />
+
       <form
         onSubmit={handleSubmit}
         className='w-full max-w-376 md:max-w-640 flex flex-col space-y-24 p-24 md:p-32 bg-white rounded-16'
@@ -71,7 +80,7 @@ const LoginPage = () => {
 
         {/* 로그인 버튼 */}
         <button
-          className='w-full h-48 rounded-[16px] text-white text-16-m bg-brand-blue disabled:bg-gray-300 cursor-pointer'
+          className='w-full h-48 rounded-[16px] text-white text-16-m bg-primary-500 disabled:bg-gray-300 cursor-pointer'
           disabled={!isFormValid}
           type='submit'
         >
@@ -86,7 +95,7 @@ const LoginPage = () => {
         </div>
 
         {/* 카카오 로그인 */}
-        <button className='w-full h-48 border border-gray-300 rounded-[16px] flex justify-center items-center text-gray-600 text-16-m'>
+        <button className='w-full h-48 border border-gray-300 rounded-[16px] flex justify-center items-center text-gray-600 text-16-m cursor-pointer hover:bg-gray-100 transition-colors duration-200'>
           <img src='/icons/icon_kakao.svg' alt='kakaoicon' className='w-20 h-20 mr-8' />
           카카오 로그인
         </button>
