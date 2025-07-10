@@ -71,7 +71,7 @@ const LoginPage = () => {
 
         {/* 로그인 버튼 */}
         <button
-          className='w-full h-48 rounded-[16px] text-white text-16-m bg-brand-blue disabled:bg-gray-300 cursor-pointer'
+          className='w-full h-48 rounded-[16px] text-white text-16-m bg-primary-500 disabled:bg-gray-300 cursor-pointer'
           disabled={!isFormValid}
           type='submit'
         >
@@ -86,7 +86,7 @@ const LoginPage = () => {
         </div>
 
         {/* 카카오 로그인 */}
-        <button className='w-full h-48 border border-gray-300 rounded-[16px] flex justify-center items-center text-gray-600 text-16-m'>
+        <button className='w-full h-48 border border-gray-300 rounded-[16px] flex justify-center items-center text-gray-600 text-16-m cursor-pointer hover:bg-gray-100 transition-colors duration-200'>
           <img src='/icons/icon_kakao.svg' alt='kakaoicon' className='w-20 h-20 mr-8' />
           카카오 로그인
         </button>
