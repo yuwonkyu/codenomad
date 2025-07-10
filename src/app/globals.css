@@ -77,6 +77,8 @@
   --text-20-body-b: 1.25rem;
   --text-20-body-b--font-weight: 700;
   --text-20-body-b--line-height: 1.625;
+
+  --shadow-card: 0 4px 24px rgba(156, 180, 202, 0.2);
 }
 
 /* 커스텀 그림자(쉐도우) */
