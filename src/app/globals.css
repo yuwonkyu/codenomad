@@ -98,3 +98,20 @@ body {
   color: var(--foreground);
   font-family: 'Pretendard', sans-serif;
 }
+/* date input 스타일 수정 */
+input[type='date']::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  display: none;
+}
+input[type='date']::-webkit-input-placeholder {
+  color: #bdbdbd;
+}
+input[type='date']::-moz-placeholder {
+  color: #bdbdbd;
+}
+input[type='date']:-ms-input-placeholder {
+  color: #bdbdbd;
+}
+input[type='date']::placeholder {
+  color: #bdbdbd;
+}
