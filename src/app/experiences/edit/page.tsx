@@ -114,8 +114,12 @@ const ExperienceEditPage = () => {
   };
 
   return (
-    <div className='flex justify-center items-center h-full'>
-      <form className='w-375 py-30 flex flex-col px-24' onSubmit={handleSubmit} autoComplete='off'>
+    <div className='flex justify-center items-center'>
+      <form
+        className='w-375 md:w-744 lg:w-700 px-24 md:px-30 lg:px-0 py-30 md:pt-40 md:pb-53 lg:pb-102 flex flex-col'
+        onSubmit={handleSubmit}
+        autoComplete='off'
+      >
         <h2 className='text-18-b mb-24'>내 체험 수정</h2>
         {/* 제목 */}
         <TitleInput value={title} onChange={setTitle} />
@@ -155,7 +159,7 @@ const ExperienceEditPage = () => {
         <div className='flex justify-center'>
           <button
             type='submit'
-            className='w-120 py-12 mb-30 bg-primary-500 text-white text-14-b rounded-[12px]'
+            className='w-120 h-41 py-12 bg-primary-500 text-white text-14-b rounded-[12px]'
           >
             수정하기
           </button>

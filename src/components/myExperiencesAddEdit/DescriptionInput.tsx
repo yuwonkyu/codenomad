@@ -16,7 +16,7 @@ const DescriptionInput = ({ value, onChange }: DescriptionInputProps) => {
         placeholder='체험에 대한 설명을 입력해 주세요'
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className='min-h-108'
+        className='min-h-108 md:min-h-168'
       />
     </div>
   );
