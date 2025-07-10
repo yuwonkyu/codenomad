@@ -12,7 +12,7 @@ const CategoryInput = ({ value, onChange, options }: CategoryInputProps) => {
     <div className='mb-24'>
       <Input
         label='카테고리'
-        labelClassName='text-16-b '
+        labelClassName='text-16-b'
         as='select'
         options={options}
         value={value}
