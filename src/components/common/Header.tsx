@@ -3,11 +3,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuthStore } from '@/lib/store/useAuthStore';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 const Header = () => {
   const { user, logout } = useAuthStore();
   const [openDropdown, setOpenDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleLogout = () => {
     logout();
@@ -16,6 +17,17 @@ const Header = () => {
   };
 
   const hasNewNotification = false; // 추후 API 연동
+
+  // 외부 클릭 시 드롭다운 닫기(수정 예정)
+  useEffect(() => {
+    const handler = (e: MouseEvent) =>
+      dropdownRef.current &&
+      !dropdownRef.current.contains(e.target as Node) &&
+      setOpenDropdown(false);
+
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   return (
     <header className='w-full border-b border-gray-200 bg-white'>
@@ -65,7 +77,10 @@ const Header = () => {
 
             {/* 드롭다운 */}
             {openDropdown && (
-              <div className='absolute top-40 right-8 bg-white border border-[#dfdfdf] rounded-md shadow-lg w-76 whitespace-nowrap z-10'>
+              <div
+                ref={dropdownRef}
+                className='absolute top-40 right-8 bg-white border border-[#dfdfdf] rounded-md shadow-lg w-76 whitespace-nowrap z-10'
+              >
                 <Link
                   href='/profile'
                   className='block px-4 py-2 text-sm text-center text-gray-800 hover:bg-gray-100'
