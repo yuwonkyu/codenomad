@@ -10,16 +10,21 @@ const IntroImagesInput = ({ introPreviews, onChange, onRemove }: IntroImagesInpu
   return (
     <div className='mb-24'>
       <div className='text-16-b mb-10'>소개 이미지 등록</div>
-      <div className='flex gap-12'>
+      <div className='flex gap-12 md:gap-14'>
         {/* 업로드 버튼(항상 왼쪽, 4개가 되어도 비활성화만) */}
         <label
-          className={`relative min-w-80 min-h-80 bg-white border border-gray-100 rounded-[8px] flex items-center justify-center cursor-pointer
+          className={`relative size-80 md:size-126 lg:size-128 bg-white border border-gray-100 rounded-[8px] flex items-center justify-center cursor-pointer
         ${introPreviews.length >= 4 ? 'pointer-events-none' : ''}`}
         >
-          <Image src='/icons/icon_gray_eye_off.svg' alt='소개 이미지 없음' width={40} height={40} />
-          <span className='absolute bottom-8 left-1/2 -translate-x-1/2 text-13-m text-gray-600'>
-            {introPreviews.length}/4
-          </span>
+          <div className='absolute inset-0 flex flex-col items-center justify-center gap-2 md:gap-10'>
+            <Image
+              src='/icons/icon_gray_eye_off.svg'
+              alt='소개 이미지 없음'
+              width={40}
+              height={40}
+            />
+            <span className='text-13-m text-gray-600'>{introPreviews.length}/4</span>
+          </div>
           <input
             type='file'
             accept='image/*'
@@ -33,7 +38,7 @@ const IntroImagesInput = ({ introPreviews, onChange, onRemove }: IntroImagesInpu
         {introPreviews.map((src, idx) => (
           <div
             key={idx}
-            className='relative w-80 h-80 rounded-[8px] border border-gray-100 flex-shrink-0'
+            className='relative size-80 md:size-126 lg:size-128 rounded-[8px] border border-gray-100 flex-shrink-0'
           >
             <Image
               src={src}
@@ -46,7 +51,13 @@ const IntroImagesInput = ({ introPreviews, onChange, onRemove }: IntroImagesInpu
               className='absolute -top-5 -right-5 z-10'
               onClick={() => onRemove(idx)}
             >
-              <Image src='/icons/icon_white_delete.svg' alt='삭제' width={20} height={20} />
+              <Image
+                src='/icons/icon_white_delete.svg'
+                alt='삭제'
+                width={20}
+                height={20}
+                className='md:w-[26px] md:h-[26px] w-[20px] h-[20px]'
+              />
             </button>
           </div>
         ))}

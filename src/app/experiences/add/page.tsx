@@ -115,25 +115,23 @@ const ExperienceAddPage = () => {
   };
 
   return (
-    <div className='flex justify-center items-center h-full'>
-      <form className='w-375 py-30 flex flex-col px-24' onSubmit={handleSubmit} autoComplete='off'>
+    <div className='flex justify-center items-center'>
+      <form
+        className='w-375 md:w-744 lg:w-700 px-24 md:px-30 lg:px-0 py-30 md:pt-40 md:pb-53 lg:pb-102 flex flex-col'
+        onSubmit={handleSubmit}
+        autoComplete='off'
+      >
         <h2 className='text-18-b mb-24'>내 체험 등록</h2>
-
         {/* 제목 입력 */}
         <TitleInput value={title} onChange={setTitle} />
-
         {/* 카테고리 선택 */}
         <CategoryInput value={category} onChange={setCategory} options={categoryOptions} />
-
         {/* 설명 입력 */}
         <DescriptionInput value={desc} onChange={setDesc} />
-
         {/* 가격 입력 */}
         <PriceInput value={price} onChange={setPrice} />
-
         {/* 주소 입력 */}
         <AddressInput value={address} onChange={setAddress} />
-
         {/* 예약 가능한 시간대 입력 */}
         <ReserveTimesInput
           reserveTimes={reserveTimes}
@@ -142,7 +140,6 @@ const ExperienceAddPage = () => {
           onRemove={handleRemoveReserveTime}
           isDuplicateTime={isDuplicateTime}
         />
-
         {/* 배너 이미지 등록 */}
         <BannerImageInput
           bannerPreview={bannerPreview}
@@ -153,19 +150,17 @@ const ExperienceAddPage = () => {
           }}
           banner={banner}
         />
-
         {/* 소개 이미지 등록 */}
         <IntroImagesInput
           introPreviews={introPreviews}
           onChange={handleIntroChange}
           onRemove={handleRemoveIntro}
         />
-
         {/* 등록 버튼 */}
         <div className='flex justify-center'>
           <button
             type='submit'
-            className='w-120 py-12 mb-30 bg-primary-500 text-white text-14-b rounded-[12px]'
+            className='w-120 h-41 py-12 bg-primary-500 text-white text-14-b rounded-[12px]'
           >
             등록하기
           </button>
