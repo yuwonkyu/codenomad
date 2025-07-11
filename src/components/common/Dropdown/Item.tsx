@@ -12,7 +12,7 @@ interface ItemProps {
 const Item = ({ children, onClick, className }: ItemProps) => {
   const context = useContext(DropdownContext);
 
-  const hadleClick: MouseEventHandler<HTMLButtonElement> = (e) => {
+  const handleClick: MouseEventHandler<HTMLButtonElement> = (e) => {
     onClick?.(e);
     context?.close();
   };
@@ -21,7 +21,7 @@ const Item = ({ children, onClick, className }: ItemProps) => {
     <button
       type='button'
       className={`text-16-m text-center hover:bg-gray-100 ${className ?? ''}`}
-      onClick={hadleClick}
+      onClick={handleClick}
     >
       {children}
     </button>
