@@ -46,6 +46,7 @@ const ExperienceAddPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [leaveModalOpen, setLeaveModalOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   // 최초 입력값 저장
@@ -61,15 +62,19 @@ const ExperienceAddPage = () => {
   });
 
   // 변경사항 비교
-  const hasChanged = () =>
-    title !== initialValues.current.title ||
-    category !== initialValues.current.category ||
-    desc !== initialValues.current.desc ||
-    price !== initialValues.current.price ||
-    address !== initialValues.current.address ||
-    bannerPreview !== initialValues.current.bannerPreview ||
-    JSON.stringify(introPreviews) !== JSON.stringify(initialValues.current.introPreviews) ||
-    JSON.stringify(reserveTimes) !== initialValues.current.reserveTimes;
+  const hasChanged = () => {
+    if (isSubmitting) return false;
+    return (
+      title !== initialValues.current.title ||
+      category !== initialValues.current.category ||
+      desc !== initialValues.current.desc ||
+      price !== initialValues.current.price ||
+      address !== initialValues.current.address ||
+      bannerPreview !== initialValues.current.bannerPreview ||
+      JSON.stringify(introPreviews) !== JSON.stringify(initialValues.current.introPreviews) ||
+      JSON.stringify(reserveTimes) !== initialValues.current.reserveTimes
+    );
+  };
 
   // 등록하기
   const handleSubmit = (e: React.FormEvent) => {
@@ -100,13 +105,14 @@ const ExperienceAddPage = () => {
   };
 
   // 새로고침/닫기/뒤로가기 경고
+  const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+    if (hasChanged()) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  };
+
   useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (hasChanged()) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
-    };
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [title, category, desc, price, address, bannerPreview, introPreviews, reserveTimes]);
@@ -128,6 +134,13 @@ const ExperienceAddPage = () => {
       setPendingAction(null);
     }
     setLeaveModalOpen(false);
+  };
+
+  // 등록 완료 모달 "확인" 클릭 시
+  const handleConfirm = () => {
+    setIsSubmitting(true); // 변경 감지 비활성화
+    window.removeEventListener('beforeunload', handleBeforeUnload); // 경고창 제거
+    router.push('/profile/myExperiences');
   };
 
   // 예약시간 중복 체크
@@ -214,7 +227,7 @@ const ExperienceAddPage = () => {
       <ConfirmModal
         message='체험 등록이 완료되었습니다.'
         isOpen={modalOpen}
-        onClose={() => router.push('/myExperiences')}
+        onClose={handleConfirm}
       />
       {/* 나가기 확인 모달 */}
       <CommonModal
