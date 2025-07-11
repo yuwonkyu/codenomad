@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useState, useCallback, ReactNode, useEffect, useRef } from 'react';
 import Trigger from './Trigger';
 import Content from './Content';
 import Item from './Item';
@@ -23,10 +23,29 @@ const Dropdown = ({ children, className }: DropdownProps) => {
 
   const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
   const close = useCallback(() => setIsOpen(false), []);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        close();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, close]);
 
   return (
     <DropdownContext.Provider value={{ isOpen, toggle, close }}>
-      <div className={`relative ${className ?? ''}`}>{children}</div>
+      <div ref={dropdownRef} className={`relative ${className ?? ''}`}>
+        {children}
+      </div>
     </DropdownContext.Provider>
   );
 };
