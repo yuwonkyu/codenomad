@@ -20,6 +20,6 @@ export const loginApi = async ({ email, password }: LoginPayload) => {
 };
 
 export const signupApi = async (data: SignupPayload) => {
-  const response = await instance.post('/15-5/users', data);
+  const response = await instance.post('/users', data);
   return response.data;
 };
