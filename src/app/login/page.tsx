@@ -42,6 +42,10 @@ const LoginPage = () => {
       // Zustand에 저장
       setAuth(user, accessToken, refreshToken);
 
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('user', JSON.stringify(user));
+
       // 성공 시 이동, 에러 시 모달
       router.push('/');
     } catch (err: any) {
