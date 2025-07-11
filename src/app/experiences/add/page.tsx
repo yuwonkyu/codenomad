@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import TitleInput from '@/components/myExperiencesAddEdit/TitleInput';
 import CategoryInput from '@/components/myExperiencesAddEdit/CategoryInput';
 import DescriptionInput from '@/components/myExperiencesAddEdit/DescriptionInput';
@@ -9,8 +10,9 @@ import AddressInput from '@/components/myExperiencesAddEdit/AddressInput';
 import BannerImageInput from '@/components/myExperiencesAddEdit/BannerImageInput';
 import IntroImagesInput from '@/components/myExperiencesAddEdit/IntroImagesInput';
 import ReserveTimesInput from '@/components/myExperiencesAddEdit/ReserveTimesInput';
+import ConfirmModal from '@/components/common/ConfirmModal';
+import CommonModal from '@/components/common/CancelModal';
 
-// 카테고리 옵션 목록
 const categoryOptions = [
   { value: '', label: '카테고리를 선택해 주세요' },
   { value: 'culture', label: '문화 · 예술' },
@@ -21,7 +23,6 @@ const categoryOptions = [
   { value: 'wellbeing', label: '웰빙' },
 ];
 
-// 예약 시간대 타입 정의
 interface ReserveTime {
   date: string;
   start: string;
@@ -29,7 +30,7 @@ interface ReserveTime {
 }
 
 const ExperienceAddPage = () => {
-  // 입력값 상태 관리
+  // 입력값 상태
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [desc, setDesc] = useState('');
@@ -43,60 +44,36 @@ const ExperienceAddPage = () => {
   const [introImages, setIntroImages] = useState<File[]>([]);
   const [introPreviews, setIntroPreviews] = useState<string[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [leaveModalOpen, setLeaveModalOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
+  const router = useRouter();
 
-  // 예약 시간대 추가
-  const handleAddReserveTime = () => {
-    setReserveTimes([...reserveTimes, { date: '', start: '', end: '' }]);
-  };
+  // 최초 입력값 저장
+  const initialValues = useRef({
+    title: '',
+    category: '',
+    desc: '',
+    price: '',
+    address: '',
+    bannerPreview: null,
+    introPreviews: [],
+    reserveTimes: JSON.stringify([{ date: '', start: '', end: '' }]),
+  });
 
-  // 예약 시간대 삭제
-  const handleRemoveReserveTime = (idx: number) => {
-    setReserveTimes(reserveTimes.filter((_, i) => i !== idx));
-  };
+  // 변경사항 비교
+  const hasChanged = () =>
+    title !== initialValues.current.title ||
+    category !== initialValues.current.category ||
+    desc !== initialValues.current.desc ||
+    price !== initialValues.current.price ||
+    address !== initialValues.current.address ||
+    bannerPreview !== initialValues.current.bannerPreview ||
+    JSON.stringify(introPreviews) !== JSON.stringify(initialValues.current.introPreviews) ||
+    JSON.stringify(reserveTimes) !== initialValues.current.reserveTimes;
 
-  // 예약 시간대 변경
-  const handleReserveChange = (idx: number, key: keyof ReserveTime, value: string) => {
-    setReserveTimes(reserveTimes.map((item, i) => (i === idx ? { ...item, [key]: value } : item)));
-  };
-
-  // 같은 시간대 중복 체크
-  const isDuplicateTime = () => {
-    const set = new Set();
-    for (const { date, start, end } of reserveTimes) {
-      if (!date || !start || !end) continue;
-      const key = `${date}_${start}_${end}`;
-      if (set.has(key)) return true;
-      set.add(key);
-    }
-    return false;
-  };
-
-  // 배너 이미지 업로드 핸들러
-  const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setBanner(file);
-    setBannerPreview(URL.createObjectURL(file));
-  };
-
-  // 소개 이미지 업로드 핸들러
-  const handleIntroChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (introImages.length + files.length > 4) return;
-    setIntroImages((prev) => [...prev, ...files].slice(0, 4));
-    setIntroPreviews((prev) => [...prev, ...files.map((f) => URL.createObjectURL(f))].slice(0, 4));
-  };
-
-  // 소개 이미지 삭제 핸들러
-  const handleRemoveIntro = (idx: number) => {
-    setIntroImages(introImages.filter((_, i) => i !== idx));
-    setIntroPreviews(introPreviews.filter((_, i) => i !== idx));
-  };
-
-  // 등록하기 버튼 클릭 시 실행
+  // 등록하기
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // 필수 입력값 및 중복 시간대 체크
     if (
       !title ||
       !category ||
@@ -104,14 +81,59 @@ const ExperienceAddPage = () => {
       !price ||
       !address ||
       !banner ||
-      reserveTimes.some((rt) => !rt.date || !rt.start || !rt.end) ||
-      isDuplicateTime()
+      reserveTimes.some((rt) => !rt.date || !rt.start || !rt.end)
     ) {
-      alert('필수 항목을 모두 입력해 주세요.\n(중복된 예약 시간대도 확인)');
+      alert('필수 항목을 모두 입력해 주세요.');
       return;
     }
     setModalOpen(true);
-    // 실제 등록 로직은 필요시 추가
+  };
+
+  // 뒤로가기
+  const handleBackClick = () => {
+    if (hasChanged()) {
+      setPendingAction(() => () => router.back());
+      setLeaveModalOpen(true);
+    } else {
+      router.back();
+    }
+  };
+
+  // 새로고침/닫기/뒤로가기 경고
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasChanged()) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [title, category, desc, price, address, bannerPreview, introPreviews, reserveTimes]);
+
+  // 페이지 이동
+  const handleNavigate = (href: string) => {
+    if (hasChanged()) {
+      setPendingAction(() => () => router.push(href));
+      setLeaveModalOpen(true);
+    } else {
+      router.push(href);
+    }
+  };
+
+  // 모달 "네" 클릭
+  const handleLeave = () => {
+    if (pendingAction) {
+      pendingAction();
+      setPendingAction(null);
+    }
+    setLeaveModalOpen(false);
+  };
+
+  // 예약시간 중복 체크
+  const isDuplicateTime = () => {
+    const times = reserveTimes.map((rt) => `${rt.date}-${rt.start}-${rt.end}`);
+    return new Set(times).size !== times.length;
   };
 
   return (
@@ -121,40 +143,62 @@ const ExperienceAddPage = () => {
         onSubmit={handleSubmit}
         autoComplete='off'
       >
-        <h2 className='text-18-b mb-24'>내 체험 등록</h2>
-        {/* 제목 입력 */}
+        {/* 뒤로가기 */}
+        <div className='flex items-center mb-24'>
+          <button
+            type='button'
+            className='mr-8 md:hidden'
+            onClick={handleBackClick}
+            aria-label='뒤로가기'
+          >
+            <img src='/icons/icon_back.svg' alt='뒤로가기' width={24} height={24} />
+          </button>
+          <h2 className='text-18-b'>내 체험 등록</h2>
+        </div>
         <TitleInput value={title} onChange={setTitle} />
-        {/* 카테고리 선택 */}
         <CategoryInput value={category} onChange={setCategory} options={categoryOptions} />
-        {/* 설명 입력 */}
         <DescriptionInput value={desc} onChange={setDesc} />
-        {/* 가격 입력 */}
         <PriceInput value={price} onChange={setPrice} />
-        {/* 주소 입력 */}
         <AddressInput value={address} onChange={setAddress} />
-        {/* 예약 가능한 시간대 입력 */}
         <ReserveTimesInput
           reserveTimes={reserveTimes}
-          onChange={handleReserveChange}
-          onAdd={handleAddReserveTime}
-          onRemove={handleRemoveReserveTime}
+          onChange={(idx, key, value) =>
+            setReserveTimes(
+              reserveTimes.map((item, i) => (i === idx ? { ...item, [key]: value } : item)),
+            )
+          }
+          onAdd={() => setReserveTimes([...reserveTimes, { date: '', start: '', end: '' }])}
+          onRemove={(idx) => setReserveTimes(reserveTimes.filter((_, i) => i !== idx))}
           isDuplicateTime={isDuplicateTime}
         />
-        {/* 배너 이미지 등록 */}
         <BannerImageInput
           bannerPreview={bannerPreview}
-          onChange={handleBannerChange}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            setBanner(file);
+            setBannerPreview(URL.createObjectURL(file));
+          }}
           onRemove={() => {
             setBanner(null);
             setBannerPreview(null);
           }}
           banner={banner}
         />
-        {/* 소개 이미지 등록 */}
         <IntroImagesInput
           introPreviews={introPreviews}
-          onChange={handleIntroChange}
-          onRemove={handleRemoveIntro}
+          onChange={(e) => {
+            const files = Array.from(e.target.files || []);
+            if (introImages.length + files.length > 4) return;
+            setIntroImages((prev) => [...prev, ...files].slice(0, 4));
+            setIntroPreviews((prev) =>
+              [...prev, ...files.map((f) => URL.createObjectURL(f))].slice(0, 4),
+            );
+          }}
+          onRemove={(idx) => {
+            setIntroImages(introImages.filter((_, i) => i !== idx));
+            setIntroPreviews(introPreviews.filter((_, i) => i !== idx));
+          }}
         />
         {/* 등록 버튼 */}
         <div className='flex justify-center'>
@@ -166,6 +210,22 @@ const ExperienceAddPage = () => {
           </button>
         </div>
       </form>
+      {/* 등록 완료 모달 */}
+      <ConfirmModal
+        message='체험 등록이 완료되었습니다.'
+        isOpen={modalOpen}
+        onClose={() => router.push('/myExperiences')}
+      />
+      {/* 나가기 확인 모달 */}
+      <CommonModal
+        open={leaveModalOpen}
+        icon={<img src='/icons/icon_alert.svg' alt='경고' className='w-full h-full' />}
+        text={'저장되지 않았습니다.<br />정말 뒤로 가시겠습니까?'}
+        cancelText='아니오'
+        confirmText='네'
+        onCancel={() => setLeaveModalOpen(false)}
+        onConfirm={handleLeave}
+      />
     </div>
   );
 };
