@@ -79,7 +79,7 @@ const Header = () => {
             {openDropdown && (
               <div
                 ref={dropdownRef}
-                className='absolute top-40 right-8 bg-white border border-[#dfdfdf] rounded-md shadow-lg w-76 whitespace-nowrap z-10'
+                className='absolute top-40 right-8 bg-white border border-[#dfdfdf] rounded-md shadow-lg w-110 whitespace-nowrap z-10'
               >
                 <Link
                   href='/profile'
