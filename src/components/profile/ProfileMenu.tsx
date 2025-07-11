@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const menuItems = [
   { icon: '/icons/icon_user.svg', label: '내 정보', href: '/profile/info' },
@@ -10,15 +11,20 @@ const menuItems = [
   { icon: '/icons/icon_calendar.svg', label: '예약 현황', href: '/profile/reservationStatus' },
 ];
 
-export default function ProfileMenu() {
+interface ProfileMenuProps {
+  onMenuClick?: () => void;
+}
+
+export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
   const pathname = usePathname();
+  const router = useRouter();
   return (
     <div
       className='
       bg-white rounded-2xl shadow-custom-5 flex flex-col items-center
-        w-[327px] h-[453px]
-        md:w-[178px] md:h-[370px]
-        lg:w-[290px] lg:h-[450px]
+        w-[327px]
+        md:w-[178px]
+        lg:w-[290px]
         mx-auto
         px-6 py-8 md:px-4 md:py-6 lg:px-8 lg:py-10
       '
@@ -48,19 +54,53 @@ export default function ProfileMenu() {
       <ul className='w-full flex flex-col gap-6'>
         {menuItems.map((item) => {
           const isActive = pathname === item.href;
+          if (onMenuClick) {
+            // 모바일: 버튼 클릭 시 onMenuClick + router.push
+            return (
+              <li key={item.label} className='w-full'>
+                <button
+                  type='button'
+                  onClick={() => {
+                    onMenuClick();
+                    router.push(item.href);
+                  }}
+                  className={`
+                    flex items-center gap-3 w-full rounded-xl md:px-30
+                    px-3 h-[54px] cursor-pointer transition-colors
+                    ${isActive ? 'bg-blue-100 text-blue-500' : 'text-gray-600'}
+                    hover:bg-blue-100 hover:text-blue-500
+                  `}
+                  style={{ boxSizing: 'border-box' }}
+                >
+                  {/* 내 정보 메뉴에 Vector.png 아이콘 제거 (info/page.tsx에서만 보임) */}
+                  <Image
+                    src={item.icon}
+                    alt={item.label}
+                    width={24}
+                    height={24}
+                    style={{
+                      filter: isActive
+                        ? 'invert(41%) sepia(99%) saturate(749%) hue-rotate(181deg) brightness(97%) contrast(101%)'
+                        : undefined,
+                    }}
+                  />
+                  <span className='text-16-m'>{item.label}</span>
+                </button>
+              </li>
+            );
+          }
+          // PC/태블릿: 기존 Link 사용
           return (
             <li key={item.label} className='w-full'>
               <Link
                 href={item.href}
                 className={`
-            flex items-center gap-3 w-full rounded-xl md:px-30
-            px-3 h-[54px] cursor-pointer transition-colors
-            ${isActive ? 'bg-blue-100 text-blue-500' : 'text-gray-600'}
-            hover:bg-blue-100 hover:text-blue-500
-          `}
-                style={{
-                  boxSizing: 'border-box',
-                }}
+                  flex items-center gap-3 w-full rounded-xl md:px-30
+                  px-3 h-[54px] cursor-pointer transition-colors
+                  ${isActive ? 'bg-blue-100 text-blue-500' : 'text-gray-600'}
+                  hover:bg-blue-100 hover:text-blue-500
+                `}
+                style={{ boxSizing: 'border-box' }}
               >
                 <Image
                   src={item.icon}
