@@ -15,7 +15,9 @@ type InputTypes = InputHTMLAttributes<HTMLInputElement> &
   SelectHTMLAttributes<HTMLSelectElement>;
 
 interface InputProps extends InputTypes {
-  label?: string;
+  label?: string | ReactNode; // string 또는 ReactNode
+  hideLabelOnMobile?: boolean; // 모바일에서 라벨 숨김 여부
+  hideLabelOnDesktop?: boolean; // 데스크탑에서 라벨 숨김 여부
   error?: string;
   className?: string;
   labelClassName?: string;
@@ -26,6 +28,8 @@ interface InputProps extends InputTypes {
 
 const Input = ({
   label = '',
+  hideLabelOnMobile = false,
+  hideLabelOnDesktop = false,
   error,
   className = '',
   labelClassName = '',
@@ -48,7 +52,17 @@ const Input = ({
   return (
     <div className={`flex flex-col items-start w-full ${className}`}>
       {/* 라벨 */}
-      {label && <label className={`pb-10 ${labelClassName}`}>{label}</label>}
+      {label && (
+        <label
+          className={`
+            pb-10 ${labelClassName}
+            ${hideLabelOnMobile ? 'hidden md:block' : ''}
+            ${hideLabelOnDesktop ? 'block md:hidden' : ''}
+          `}
+        >
+          {label}
+        </label>
+      )}
 
       <div
         className={`w-full px-20 py-16 bg-white rounded-[16px] shadow-custom-5 flex justify-between items-center ${baseOutline} ${outlineColor}`}
