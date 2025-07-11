@@ -1,11 +1,10 @@
 'use client';
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { useState, createContext } from 'react';
 import ProfileMenu from '@/components/profile/ProfileMenu';
 
-// Context 생성
 export const ProfileMobileContext = createContext<{ onCancel: () => void } | null>(null);
 
-export default function MyLayout({ children }: { children: ReactNode }) {
+export default function MyLayout({ children }: { children: React.ReactNode }) {
   const [showContent, setShowContent] = useState(false);
 
   return (
@@ -19,7 +18,7 @@ export default function MyLayout({ children }: { children: ReactNode }) {
         min-h-screen bg-gray-50
       '
     >
-      {/* 사이드 메뉴 */}
+      {/* 모바일: 메뉴만 보이고 클릭 시 children 보임, PC: 기존대로 */}
       <aside
         className='
           w-full max-w-xs
@@ -28,7 +27,6 @@ export default function MyLayout({ children }: { children: ReactNode }) {
           flex justify-center md:block
         '
       >
-        {/* 모바일: 메뉴만 보이고 클릭 시 children 보임, PC: 기존대로 */}
         <div className='block md:hidden'>
           {!showContent ? <ProfileMenu onMenuClick={() => setShowContent(true)} /> : null}
         </div>
@@ -39,7 +37,7 @@ export default function MyLayout({ children }: { children: ReactNode }) {
       {/* 선택된 메뉴 컨텐츠 */}
       <main className='w-full md:flex-1'>
         {/* 모바일: 메뉴 클릭 전에는 children 숨김, 클릭 후에만 children 보임 */}
-        <div className='block md:hidden'>
+        <div className='block md:hidden flex items-center justify-center min-h-[60vh]'>
           {showContent && (
             <ProfileMobileContext.Provider value={{ onCancel: () => setShowContent(false) }}>
               {children}

@@ -76,7 +76,17 @@ const InformationPage = () => {
       onSubmit={handleSubmit}
       className='w-full max-w-376 md:max-w-640 space-y-24 p-24 md:p-32 bg-white rounded-16'
     >
-      <h2 className='text-18-b my-[5px]'>내 정보</h2>
+      {/* 모바일: 상단에 Vector.png + 내 정보 (클릭 시 onCancel) */}
+      <div
+        className='flex items-center gap-2 mb-4 block md:hidden'
+        onClick={mobileContext?.onCancel}
+        style={{ cursor: 'pointer' }}
+      >
+        <img src='/icons/Vector.png' alt='vector' width={20} height={20} />
+        <span className='text-[20px] font-bold'>내 정보</span>
+      </div>
+      {/* PC/태블릿: 기존 내 정보 타이틀 */}
+      <h2 className='text-18-b my-[5px] hidden md:block'>내 정보</h2>
       <p>닉네임과 비밀번호를 수정하실 수 있습니다.</p>
 
       <Input
@@ -126,14 +136,14 @@ const InformationPage = () => {
       <div className='flex justify-center gap-3 block md:hidden'>
         <button
           type='button'
-          className='w-[120px] h-[41px] py-3 rounded-[12px] border border-gray-300 text-gray-700 text-16-m bg-white'
+          className='flex-1 h-[41px] py-3 px-[10px] rounded-[12px] border border-gray-300 text-gray-700 text-16-m bg-white'
           onClick={mobileContext?.onCancel}
         >
           취소하기
         </button>
         <button
           type='submit'
-          className='w-[120px] h-[41px] py-3 rounded-[12px] text-white text-16-m bg-blue-500 cursor-pointer hover:shadow-md hover:shadow-brand-blue/60 transition-all duration-200'
+          className='flex-1 h-[41px] py-3 px-[10px] rounded-[12px] text-white text-16-m bg-blue-500 cursor-pointer hover:shadow-md hover:shadow-brand-blue/60 transition-all duration-200'
         >
           저장하기
         </button>
