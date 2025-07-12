@@ -130,16 +130,6 @@ const ExperienceEditPage = () => {
     isSubmitting,
   ]);
 
-  // 페이지 이동
-  const handleNavigate = (href: string) => {
-    if (hasChanged()) {
-      setPendingAction(() => () => router.push(href));
-      setLeaveModalOpen(true);
-    } else {
-      router.push(href);
-    }
-  };
-
   // 모달 "네" 클릭
   const handleLeave = () => {
     if (pendingAction) {

@@ -86,9 +86,10 @@ const ExperienceAddPage = () => {
       !price ||
       !address ||
       !banner ||
-      reserveTimes.some((rt) => !rt.date || !rt.start || !rt.end)
+      reserveTimes.some((rt) => !rt.date || !rt.start || !rt.end) ||
+      isDuplicateTime()
     ) {
-      alert('필수 항목을 모두 입력해 주세요.');
+      alert('필수 항목을 모두 입력해 주세요.\n또는 예약 시간이 중복되었습니다.');
       return;
     }
     setModalOpen(true);
@@ -116,16 +117,6 @@ const ExperienceAddPage = () => {
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [title, category, desc, price, address, bannerPreview, introPreviews, reserveTimes]);
-
-  // 페이지 이동
-  const handleNavigate = (href: string) => {
-    if (hasChanged()) {
-      setPendingAction(() => () => router.push(href));
-      setLeaveModalOpen(true);
-    } else {
-      router.push(href);
-    }
-  };
 
   // 모달 "네" 클릭
   const handleLeave = () => {
