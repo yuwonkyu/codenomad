@@ -4,6 +4,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Input from '@/components/common/Input';
 import ConfirmModal from '@/components/common/ConfirmModal';
+import { useRouter } from 'next/navigation';
+import { loginApi } from '@/lib/api/auth';
+import { useAuthStore } from '@/lib/store/useAuthStore';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -11,6 +14,9 @@ const LoginPage = () => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const router = useRouter();
+  const { setAuth } = useAuthStore();
 
   // 유효성 검사 함수
   const validateEmail = (value: string) => {
@@ -25,10 +31,28 @@ const LoginPage = () => {
   // 폼 유효성 상태
   const isFormValid = email && password && !emailError && !passwordError;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isFormValid) return;
-    setIsModalOpen(true);
+
+    try {
+      const res = await loginApi({ email, password });
+      const { user, accessToken, refreshToken } = res;
+
+      // Zustand에 저장
+      setAuth(user, accessToken, refreshToken);
+
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      // 성공 시 이동, 에러 시 모달
+      router.push('/');
+    } catch (err: any) {
+      const msg = err.response?.data?.message || '로그인 실패';
+      setIsModalOpen(true);
+      console.error('로그인 오류:', msg);
+    }
   };
 
   return (
