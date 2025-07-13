@@ -3,11 +3,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 const Header = () => {
   const [user, setUser] = useState<{ nickname: string; profileImageUrl?: string } | null>(null);
   const [openDropdown, setOpenDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   // 유저 정보 로드
   useEffect(() => {
@@ -34,8 +36,10 @@ const Header = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = '/';
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    router.push('/');
   };
 
   const hasNewNotification = false; // 추후 API 연동
