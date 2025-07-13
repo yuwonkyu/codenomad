@@ -145,13 +145,22 @@ export default function ReservationStatusPage() {
           onChange={(value) => setDate(value as Date)}
           calendarType='gregory'
           className='w-full'
+          formatShortWeekday={(_, date) => {
+            const week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            return week[date.getDay()];
+          }}
+          formatDay={() => ''}
           tileContent={({ date }: { date: Date }) => {
             const key = formatDate(date);
             const reservations = reservationData[key] || [];
-            // 상태별 예약 건수
+            const hasStatus = reservations.length > 0;
             const statusList = ['예약', '승인', '거절', '완료'];
             return (
-              <div className='flex flex-col items-center mt-1'>
+              <div className='flex flex-col items-center mt-1 calendar-badge-scroll'>
+                <div className='flex items-center justify-center'>
+                  <span>{date.getDate()}</span>
+                  {hasStatus && <div className='calendar-dot ml-5' />}
+                </div>
                 {statusList.map((status) => {
                   const count = reservations.filter((r) => r.status === status).length;
                   return count > 0 ? (
@@ -161,7 +170,6 @@ export default function ReservationStatusPage() {
               </div>
             );
           }}
-          formatDay={(_, date) => date.getDate().toString()}
           prev2Label={null}
           next2Label={null}
           onClickDay={(date, event) => handleDayClick(date, event)}
@@ -206,7 +214,7 @@ export default function ReservationStatusPage() {
               {/* 예약 시간 드롭다운 */}
               <div className='w-full mb-6'>
                 <label className='block text-sm font-semibold mb-2'>예약 시간</label>
-                <select className='w-full border rounded text-base bg-white h-[54px] px-10'>
+                <select className='w-full border rounded-xl text-base bg-white h-[54px] px-10'>
                   {timeOptions.map((t) => (
                     <option key={t} value={t}>
                       {t}

@@ -126,7 +126,7 @@ input[type='date']::placeholder {
 /* 달력 셀(요일, 날짜)도 넓게 */
 .react-calendar__tile {
   width: 54px !important;
-  height: 104px !important;
+  height: 120px !important; /* 4개 뱃지에 딱 맞게 */
   padding: 0 !important;
   display: flex;
   flex-direction: column;
@@ -144,4 +144,33 @@ input[type='date']::placeholder {
     width: 92px !important;
     height: 124px !important;
   }
+}
+
+.calendar-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #eb5757;
+  margin-bottom: 2px;
+}
+
+.react-calendar__month-view__weekdays {
+  border-bottom: 2px solid #e0e0e5;
+  margin-bottom: 10px;
+}
+
+.react-calendar__navigation__label {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.react-calendar__navigation {
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.react-calendar__navigation button {
+  font-size: 1.5rem;
+  font-weight: 600;
 }
