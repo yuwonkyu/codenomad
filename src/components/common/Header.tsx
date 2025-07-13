@@ -13,15 +13,23 @@ const Header = () => {
 
   // 유저 정보 로드
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (e) {
-        console.error('유저 정보 파싱 에러:', e);
+    const loadUser = () => {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (e) {
+          setUser(null);
+        }
+      } else {
         setUser(null);
       }
-    }
+    };
+    loadUser();
+    window.addEventListener('user-update', loadUser);
+    return () => {
+      window.removeEventListener('user-update', loadUser);
+    };
   }, []);
 
   // 외부 클릭 시 드롭다운 닫기
@@ -39,6 +47,7 @@ const Header = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
+    window.dispatchEvent(new Event('user-update'));
     router.push('/');
   };
 

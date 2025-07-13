@@ -42,6 +42,7 @@ const LoginPage = () => {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('user', JSON.stringify(user));
+      window.dispatchEvent(new Event('user-update'));
 
       // 성공 시 이동, 에러 시 모달
       router.push('/');
