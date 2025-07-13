@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import axios from 'axios';
 import Link from 'next/link';
 import Input from '@/components/common/Input';
 import ConfirmModal from '@/components/common/ConfirmModal';
@@ -43,10 +44,16 @@ const LoginPage = () => {
 
       // 성공 시 이동, 에러 시 모달
       router.push('/');
-    } catch (err: any) {
-      const msg = err.response?.data?.message || '로그인 실패';
-      setIsModalOpen(true);
-      console.error('로그인 오류:', msg);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const serverMessage = (error.response?.data as { message?: string })?.message;
+        const fallback = error.message || '로그인 실패';
+        console.error('로그인 오류:', serverMessage ?? fallback);
+        // ConfirmModal 띄우기
+        setIsModalOpen(true);
+      } else {
+        setIsModalOpen(true);
+      }
     }
   };
 
