@@ -43,8 +43,8 @@ const Header = () => {
   const hasNewNotification = false; // 추후 API 연동
 
   return (
-    <header className='w-full border-b border-gray-200 bg-white'>
-      <div className='max-w-screen-xl mx-auto flex justify-between items-center px-6 py-4'>
+    <header className='w-full h-[48px] md:h-[80px] bg-white'>
+      <div className='max-w-screen-xl h-full mx-auto flex justify-between items-center px-6'>
         {/* 로고 */}
         <Link href='/' className='flex items-center gap-2'>
           <Image
