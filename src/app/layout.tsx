@@ -1,27 +1,24 @@
-import type { Metadata } from 'next';
+'use client';
+
 import './globals.css';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
-
-export const metadata: Metadata = {
-  title: 'GlobalNomad',
-  description: '코드노마드 팀프로젝트',
-  icons: {
-    icon: '/favicon.ico',
-  },
-};
+import { usePathname } from 'next/navigation';
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const hideLayout = pathname === '/login' || pathname === '/signup';
+
   return (
     <html lang='ko'>
       <body className='min-h-screen flex flex-col'>
-        <Header />
+        {!hideLayout && <Header />}
         <main className='flex-1'>{children}</main>
-        <Footer />
+        {!hideLayout && <Footer />}
       </body>
     </html>
   );

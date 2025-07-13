@@ -105,7 +105,7 @@ const Header = () => {
             </Dropdown>
           </div>
         ) : (
-          <nav className='flex gap-4 text-sm text-gray-900 no-underline'>
+          <nav className='flex gap-10 whitespace-nowrap text-sm text-gray-900 no-underline'>
             <Link href='/login'>로그인</Link>
             <Link href='/signup'>회원가입</Link>
           </nav>
