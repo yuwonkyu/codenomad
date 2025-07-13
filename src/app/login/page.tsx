@@ -14,6 +14,7 @@ const LoginPage = () => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const router = useRouter();
 
@@ -47,13 +48,13 @@ const LoginPage = () => {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const serverMessage = (error.response?.data as { message?: string })?.message;
-        const fallback = error.message || '로그인 실패';
-        console.error('로그인 오류:', serverMessage ?? fallback);
-        // ConfirmModal 띄우기
-        setIsModalOpen(true);
+        const fallback = '로그인에 실패했습니다.';
+        setErrorMessage(serverMessage ?? fallback);
       } else {
-        setIsModalOpen(true);
+        setErrorMessage('알 수 없는 오류가 발생했습니다.');
       }
+
+      setIsModalOpen(true); // 모달 오픈
     }
   };
 
@@ -61,7 +62,7 @@ const LoginPage = () => {
     <main className='min-h-screen flex justify-center px-1 pt-60 lg:pt-100'>
       <ConfirmModal
         isOpen={isModalOpen}
-        message='비밀번호가 일치하지 않습니다.'
+        message={errorMessage}
         onClose={() => setIsModalOpen(false)}
       />
 
