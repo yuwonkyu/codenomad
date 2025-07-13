@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Input from '@/components/common/Input';
 import ConfirmModal from '@/components/common/ConfirmModal';
+import instance from '@/lib/api/axios';
+import { signupApi } from '@/lib/api/auth';
 
 const SignupPage = () => {
   const [email, setEmail] = useState('');
@@ -59,16 +61,25 @@ const SignupPage = () => {
     !passwordError &&
     !confirmError;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (email === 'duplicate@email.com') {
-      setIsDuplicateModalOpen(true);
-      return;
-    }
+    if (!isFormValid) return;
 
-    if (isFormValid) {
-      setIsSuccessModalOpen(true);
+    try {
+      await signupApi({ email, password, nickname }); // API 요청
+      setIsSuccessModalOpen(true); // 성공 모달
+    } catch (error: any) {
+      console.error(error);
+      const status = error?.response?.status;
+
+      if (status === 409) {
+        setIsDuplicateModalOpen(true); // 중복 이메일 모달
+      } else if (status === 400) {
+        setEmailError('이메일 형식이 올바르지 않습니다.');
+      } else {
+        alert('회원가입 중 오류가 발생했습니다.');
+      }
     }
   };
 
