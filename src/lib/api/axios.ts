@@ -1,11 +1,12 @@
-//Axios 인스턴스
+// Axios 인스턴스
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: 'https://sp-globalnomad-api.vercel.app/15-5/',
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 });
 
 export default instance;
