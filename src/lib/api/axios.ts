@@ -6,7 +6,7 @@ const instance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true,
+  withCredentials: false, // 쿠키를 사용하지 않음 ,,cors에러 나길래 확인하니깐 api 서버에서 쿠키를 사용하지 않도록 설정되어 있어서 false로 설정
 });
 
 export default instance;
