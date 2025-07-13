@@ -2,23 +2,27 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useAuthStore } from '@/lib/store/useAuthStore';
 import { useState, useRef, useEffect } from 'react';
 
 const Header = () => {
-  const { user, logout } = useAuthStore();
+  const [user, setUser] = useState<{ nickname: string; profileImageUrl?: string } | null>(null);
   const [openDropdown, setOpenDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const handleLogout = () => {
-    logout();
-    localStorage.clear();
-    window.location.href = '/';
-  };
+  // 유저 정보 로드
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.error('유저 정보 파싱 에러:', e);
+        setUser(null);
+      }
+    }
+  }, []);
 
-  const hasNewNotification = false; // 추후 API 연동
-
-  // 외부 클릭 시 드롭다운 닫기(수정 예정)
+  // 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
     const handler = (e: MouseEvent) =>
       dropdownRef.current &&
@@ -28,6 +32,13 @@ const Header = () => {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href = '/';
+  };
+
+  const hasNewNotification = false; // 추후 API 연동
 
   return (
     <header className='w-full border-b border-gray-200 bg-white'>
@@ -60,7 +71,7 @@ const Header = () => {
 
             {/* 프로필 + 닉네임 */}
             <div
-              className='flex items-center gap-2 item-center cursor-pointer'
+              className='flex items-center gap-2 cursor-pointer'
               onClick={() => setOpenDropdown(!openDropdown)}
             >
               <Image
@@ -70,9 +81,7 @@ const Header = () => {
                 height={30}
                 className='rounded-full w-auto h-auto object-cover'
               />
-              <span className='text-sm font-bold text-gray-950 cursor-pointer '>
-                {user.nickname}
-              </span>
+              <span className='text-sm font-bold text-gray-950'>{user.nickname}</span>
             </div>
 
             {/* 드롭다운 */}

@@ -6,7 +6,6 @@ import Input from '@/components/common/Input';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import { useRouter } from 'next/navigation';
 import { loginApi } from '@/lib/api/auth';
-import { useAuthStore } from '@/lib/store/useAuthStore';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -16,7 +15,6 @@ const LoginPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const router = useRouter();
-  const { setAuth } = useAuthStore();
 
   // 유효성 검사 함수
   const validateEmail = (value: string) => {
@@ -38,9 +36,6 @@ const LoginPage = () => {
     try {
       const res = await loginApi({ email, password });
       const { user, accessToken, refreshToken } = res;
-
-      // Zustand에 저장
-      setAuth(user, accessToken, refreshToken);
 
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
