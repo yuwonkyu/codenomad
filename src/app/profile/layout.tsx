@@ -15,7 +15,7 @@ export default function MyLayout({ children }: { children: React.ReactNode }) {
         max-w-full md:max-w-5xl lg:max-w-7xl
         mx-auto px-4 md:px-8 lg:px-16 py-10
         gap-8 md:gap-12
-        min-h-screen bg-gray-50
+        min-h-screen bg-white
       '
     >
       {/* 모바일: 메뉴만 보이고 클릭 시 children 보임, PC: 기존대로 */}
