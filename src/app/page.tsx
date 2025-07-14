@@ -11,8 +11,11 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div>
-      <Banner></Banner>home
-    </div>
+    <main className='w-full'>
+      {' '}
+      <div className='w-full max-w-[1120px] mx-auto px-24 md:px-30 lg:px-40'>
+        <Banner />
+      </div>
+    </main>
   );
 }
