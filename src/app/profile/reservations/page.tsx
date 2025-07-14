@@ -1,6 +1,7 @@
 'use client';
 import Badge from '@/components/reservationList/Badge';
 import ReservationCard from '@/components/reservationList/ReservationCard';
+import ReviewModal from '@/components/reservationList/ReviewModal';
 import { StatusType } from '@/components/reservationList/StatusBadge';
 import { useState } from 'react';
 
@@ -15,6 +16,14 @@ const page = () => {
   ];
   return (
     <div className='p-24 flex flex-col w-full'>
+      <ReviewModal
+        title='title'
+        date='0000. 00. 00'
+        startTime='11:00'
+        endTime='13:30'
+        headCount={30}
+        reservationId={10020}
+      />
       <h1 className='text-18-b text-gray-950'>예약 내역</h1>
       <h2 className='text-gray-500 text-14-m my-10'>예약 내역을 변경 및 취소 할 수 있습니다.</h2>
       <div className='overflow-x-scroll scrollbar-hide '>
