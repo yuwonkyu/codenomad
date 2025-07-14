@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Input from '@/components/common/Input';
 import ConfirmModal from '@/components/common/ConfirmModal';
-import instance from '@/lib/api/axios';
+import axios from 'axios';
 import { signupApi } from '@/lib/api/auth';
 
 const SignupPage = () => {
@@ -18,7 +18,8 @@ const SignupPage = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [confirmError, setConfirmError] = useState('');
 
-  const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   const router = useRouter();
@@ -69,17 +70,16 @@ const SignupPage = () => {
     try {
       await signupApi({ email, password, nickname }); // API 요청
       setIsSuccessModalOpen(true); // 성공 모달
-    } catch (error: any) {
-      console.error(error);
-      const status = error?.response?.status;
-
-      if (status === 409) {
-        setIsDuplicateModalOpen(true); // 중복 이메일 모달
-      } else if (status === 400) {
-        setEmailError('이메일 형식이 올바르지 않습니다.');
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const serverMessage = (error.response?.data as { message?: string })?.message;
+        const fallback = '회원가입에 실패했습니다.';
+        setErrorMessage(serverMessage ?? fallback);
       } else {
-        alert('회원가입 중 오류가 발생했습니다.');
+        setErrorMessage('알 수 없는 오류가 발생했습니다.');
       }
+
+      setIsModalOpen(true);
     }
   };
 
@@ -96,9 +96,9 @@ const SignupPage = () => {
       />
       {/* 중복 이메일 모달 */}
       <ConfirmModal
-        isOpen={isDuplicateModalOpen}
-        message='이미 사용중인 이메일입니다.'
-        onClose={() => setIsDuplicateModalOpen(false)}
+        isOpen={isModalOpen}
+        message={errorMessage}
+        onClose={() => setIsModalOpen(false)}
       />
 
       <form
