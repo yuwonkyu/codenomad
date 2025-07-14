@@ -28,7 +28,7 @@ const ReservationCard = ({
   }, []);
 
   return (
-    <div className='static md:w-640 mb-20'>
+    <div className='static md:w-640 mb-20 '>
       <h1 className='text-16-b text-gray-800 mb-12 lg:hidden'>{date}</h1>
       <div className='h-136 lg:h-181 shadow-card'>
         <div className='bg-white inline-block absolute h-136 rounded-3xl p-20 w-229 md:w-360 lg:w-485 lg:h-181 shadow-card'>

@@ -14,10 +14,10 @@ const page = () => {
     { text: '체험 완료', value: 'completed' },
   ];
   return (
-    <div className='p-19'>
+    <div className='p-24 flex flex-col w-full'>
       <h1 className='text-18-b text-gray-950'>예약 내역</h1>
       <h2 className='text-gray-500 text-14-m my-10'>예약 내역을 변경 및 취소 할 수 있습니다.</h2>
-      <div className='overflow-x-scroll scrollbar-hide'>
+      <div className='overflow-x-scroll scrollbar-hide '>
         <div className='my-14 w-max gap-8 flex grow-0'>
           {statusList.map((item) => {
             return (
