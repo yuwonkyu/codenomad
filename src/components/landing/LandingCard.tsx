@@ -10,8 +10,13 @@ interface LandingCardType {
 const LandingCard = ({ imageUrl, title, rating, totalReview, price }: LandingCardType) => {
   return (
     <div className='w-155 h-243 md:w-331 md:h-423 lg:w-262 lg:h-366 shadow-card rounded-4xl'>
-      <div className='h-290 bg-gray-200 rounded-t-4xl'>
-        {imageUrl && <Image src={imageUrl} alt='카드이미지' className='bg-gray-400'></Image>}
+      <div className='h-290 bg-gray-200 rounded-t-4xl relative'>
+        <Image
+          src={imageUrl || '/imgs/thumbnail.jpg'}
+          alt='카드 이미지'
+          fill
+          className='object-cover rounded-t-4xl bg-gray-400'
+        />
       </div>
       <div className='flex flex-col justify-center items-start px-30 rounded-4xl relative bg-white w-full h-100 md:h-136 bottom-60'>
         <h2 className='text-lg/26 font-semibold tex'>{title}</h2>
