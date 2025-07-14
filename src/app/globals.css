@@ -81,6 +81,18 @@
   --shadow-card: 0 4px 24px rgba(156, 180, 202, 0.2);
 }
 
+@utility scrollbar-hide {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  scrollbar-width: none;
+}
+
+@layer base {
+  button {
+    cursor: pointer;
+  }
+}
 /* 커스텀 그림자(쉐도우) */
 .shadow-custom-5 {
   /* 값: x:0, y:4, blur:16, spread:0, 색상:#112211, 투명도:5% */
