@@ -91,6 +91,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --bg-main-gradient: linear-gradient(to bottom, #bbddff, #f7fbff, #ffffff);
 }
 
 body {
