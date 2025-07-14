@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Input from '@/components/common/Input';
 import ConfirmModal from '@/components/common/ConfirmModal';
+import axios from 'axios';
+import { signupApi } from '@/lib/api/auth';
 
 const SignupPage = () => {
   const [email, setEmail] = useState('');
@@ -16,7 +18,8 @@ const SignupPage = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [confirmError, setConfirmError] = useState('');
 
-  const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
   const router = useRouter();
@@ -59,16 +62,24 @@ const SignupPage = () => {
     !passwordError &&
     !confirmError;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (email === 'duplicate@email.com') {
-      setIsDuplicateModalOpen(true);
-      return;
-    }
+    if (!isFormValid) return;
 
-    if (isFormValid) {
-      setIsSuccessModalOpen(true);
+    try {
+      await signupApi({ email, password, nickname }); // API 요청
+      setIsSuccessModalOpen(true); // 성공 모달
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const serverMessage = (error.response?.data as { message?: string })?.message;
+        const fallback = '회원가입에 실패했습니다.';
+        setErrorMessage(serverMessage ?? fallback);
+      } else {
+        setErrorMessage('알 수 없는 오류가 발생했습니다.');
+      }
+
+      setIsModalOpen(true);
     }
   };
 
@@ -85,9 +96,9 @@ const SignupPage = () => {
       />
       {/* 중복 이메일 모달 */}
       <ConfirmModal
-        isOpen={isDuplicateModalOpen}
-        message='이미 사용중인 이메일입니다.'
-        onClose={() => setIsDuplicateModalOpen(false)}
+        isOpen={isModalOpen}
+        message={errorMessage}
+        onClose={() => setIsModalOpen(false)}
       />
 
       <form

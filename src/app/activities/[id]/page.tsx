@@ -1,10 +1,15 @@
 // app/activities/[id]/page.tsx
 import PhotoSection from '@/components/activities/PhotoSection';
 import ReviewCard from '@/components/activities/ReviewCard';
+import DropdownMenu from '@/components/activities/ActivitesDropdown';
+
 const ActivityPage = async ({ params }: { params: { id: string } }) => {
   return (
     <>
       <div>Activity ID: {params.id}</div>
+      <div className=' float-right mr-100'>
+        <DropdownMenu />
+      </div>
       <PhotoSection />
       <ReviewCard
         nickname='아무개'

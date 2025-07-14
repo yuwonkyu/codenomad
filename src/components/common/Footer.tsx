@@ -4,8 +4,8 @@ import Image from 'next/image';
 
 const Footer = () => {
   return (
-    <footer className='w-full bg-white border-t'>
-      <div className='max-w-screen-xl mx-auto flex justify-between items-center px-6 py-6 text-xs text-gray-500'>
+    <footer className='w-full bg-white h-[114px] md:h-[140px] border-t border-b border-gray-200'>
+      <div className='max-w-screen-xl h-full mx-auto flex justify-between items-center px-6 text-13-m text-gray-500'>
         {/* 왼쪽: 저작권 */}
         <div>©codeit - 2023</div>
 

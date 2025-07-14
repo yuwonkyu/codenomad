@@ -1,9 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import axios from 'axios';
 import Link from 'next/link';
 import Input from '@/components/common/Input';
 import ConfirmModal from '@/components/common/ConfirmModal';
+import { useRouter } from 'next/navigation';
+import { loginApi } from '@/lib/api/auth';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -11,6 +14,9 @@ const LoginPage = () => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const router = useRouter();
 
   // 유효성 검사 함수
   const validateEmail = (value: string) => {
@@ -25,17 +31,39 @@ const LoginPage = () => {
   // 폼 유효성 상태
   const isFormValid = email && password && !emailError && !passwordError;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isFormValid) return;
-    setIsModalOpen(true);
+
+    try {
+      const res = await loginApi({ email, password });
+      const { user, accessToken, refreshToken } = res;
+
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('user', JSON.stringify(user));
+      window.dispatchEvent(new Event('user-update'));
+
+      // 성공 시 이동, 에러 시 모달
+      router.push('/');
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const serverMessage = (error.response?.data as { message?: string })?.message;
+        const fallback = '로그인에 실패했습니다.';
+        setErrorMessage(serverMessage ?? fallback);
+      } else {
+        setErrorMessage('알 수 없는 오류가 발생했습니다.');
+      }
+
+      setIsModalOpen(true); // 모달 오픈
+    }
   };
 
   return (
     <main className='min-h-screen flex justify-center px-1 pt-60 lg:pt-100'>
       <ConfirmModal
         isOpen={isModalOpen}
-        message='비밀번호가 일치하지 않습니다.'
+        message={errorMessage}
         onClose={() => setIsModalOpen(false)}
       />
 
