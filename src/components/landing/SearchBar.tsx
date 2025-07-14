@@ -19,7 +19,9 @@ const SearchBar = () => {
 
   return (
     <section className='w-full mt-32 md:mt-50 flex flex-col items-center gap-4'>
-      <h2 className='text-16-b md:text-32-b text-gray-950'>무엇을 체험하고 싶으신가요?</h2>
+      <h2 className='text-16-b mb-12 md:text-32-b text-gray-950 whitespace-nowrap'>
+        무엇을 체험하고 싶으신가요?
+      </h2>
 
       <div className='relative w-full max-w-[1080px]'>
         {/* 아이콘 */}
@@ -45,7 +47,7 @@ const SearchBar = () => {
           onChange={(e) => setKeyword(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder='내가 원하는 체험은?'
-          className='w-full h-53 rounded-[12px] 
+          className='w-full h-53 rounded-[12px] bg-white
                      pl-[30px] pr-[95px] md:pr-[130px] 
                      text-gray-500 text-14-m md:h-70 focus:outline-none cursor-pointer'
           style={{
