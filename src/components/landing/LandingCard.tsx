@@ -1,6 +1,7 @@
 import Image from 'next/image';
 
-interface LandingCardType {
+export interface Activity {
+  id?: number;
   bannerImageUrl?: string;
   title: string;
   rating: number;
@@ -8,7 +9,8 @@ interface LandingCardType {
   price: number;
 }
 
-const LandingCard = ({ bannerImageUrl, title, rating, reviewCount, price }: LandingCardType) => {
+const LandingCard = ({ activity }: { activity: Activity }) => {
+  const { id, bannerImageUrl, title, rating, reviewCount, price } = activity;
   return (
     <div className='relative shrink-0 w-[132px] h-[242px] sm:w-[332px] sm:h-[423px] lg:w-[262px] lg:h-[366px] shadow-card rounded-[32px] overflow-hidden'>
       {/* 이미지 영역 */}

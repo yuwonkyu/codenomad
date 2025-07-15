@@ -35,7 +35,7 @@ const MostCommentedActivities = () => {
       <h2 className='text-20-b md:text-24-b mb-30'>🔥 인기 체험</h2>
       <div className='flex gap-16 sm:gap-24 overflow-x-auto no-scrollbar'>
         {mockData.map((item) => (
-          <LandingCard key={item.id} {...item} />
+          <LandingCard key={item.id} activity={item} />
         ))}
       </div>
     </section>

@@ -4,6 +4,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import axios from '@/lib/api/axios';
+import type { Activity } from '@/components/landing/LandingCard';
 import LandingCard from '@/components/landing/LandingCard';
 import Pagination from '@/components/common/Pagination';
 import NoResult from '@/components/search/NoResult';
@@ -15,7 +16,7 @@ const SearchPage = () => {
   const size = 8;
   const router = useRouter();
 
-  const [activities, setActivities] = useState([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
