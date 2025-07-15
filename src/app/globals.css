@@ -93,6 +93,43 @@
     cursor: pointer;
   }
 }
+
+.input-range {
+  appearance: none;
+  /* width: 214px; */
+  height: 36px;
+}
+
+/* WebKit 기반 브라우저용 Thumb */
+.input-range::-webkit-slider-thumb {
+  height: 36px;
+  border-radius: 100%;
+  background: #facc15; /* 노란색 썸 */
+  cursor: pointer;
+  margin-top: -12px;
+}
+
+/* WebKit 기반 브라우저용 Track */
+.input-range::-webkit-slider-runnable-track {
+  height: 36px;
+  background: #e5e7eb; /* 회색 트랙 */
+  border-radius: 999px;
+}
+
+/* Firefox용 Thumb */
+.input-range::-moz-range-thumb {
+  border-radius: 100%;
+  background: #facc15;
+  cursor: pointer;
+}
+
+/* Firefox용 Track */
+.input-range::-moz-range-track {
+  height: 36px;
+  background: #e5e7eb;
+  border-radius: 999px;
+}
+
 /* 커스텀 그림자(쉐도우) */
 .shadow-custom-5 {
   /* 값: x:0, y:4, blur:16, spread:0, 색상:#112211, 투명도:5% */
