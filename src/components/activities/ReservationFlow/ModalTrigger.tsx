@@ -25,17 +25,11 @@ const ModalTrigger = ({
   };
 
   const handleOpenModal = () => {
-    // 모달을 열 때 상태 초기화
-    setScheduleId(null);
-    setHeadCount(1);
     setIsOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsOpen(false);
-    // 모달이 닫힐 때 상태 초기화
-    setScheduleId(null);
-    setHeadCount(1);
   };
 
   const handleReservationConfirm = (data: ReservationData) => {
@@ -62,7 +56,24 @@ const ModalTrigger = ({
             {selectedSchedule ? formatScheduleText(selectedSchedule) : '날짜 선택하기'}
           </button>
         </div>
-        <button className='bg-primary-500 h-50 w-auto rounded-[14px] py-15 text-white'>
+        <button 
+          className={`h-50 w-auto rounded-[14px] py-15 text-white transition-colors ${
+            selectedSchedule 
+              ? 'bg-primary-500 hover:bg-primary-600 cursor-pointer' 
+              : 'bg-gray-300 cursor-not-allowed'
+          }`}
+          onClick={() => {
+            if (selectedSchedule) {
+              handleReservationConfirm({
+                scheduleId: selectedSchedule.id,
+                headCount: headCount,
+              });
+            } else {
+              handleOpenModal();
+            }
+          }}
+          disabled={!selectedSchedule}
+        >
           예약하기
         </button>
       </div>
