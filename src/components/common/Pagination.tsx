@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
@@ -28,7 +30,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) 
         disabled={currentPage === 1}
         className='w-40 h-40 flex items-center justify-center cursor-pointer disabled:opacity-30 disabled:cursor-default'
       >
-        <img src='/icons/icon_chevron_left.svg' alt='이전 페이지' className='w-40 h-40' />
+        <Image src='/icons/icon_chevron_left.svg' alt='이전 페이지' width={40} height={40} />
       </button>
 
       {/* 페이지 번호 */}
@@ -54,7 +56,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) 
         disabled={currentPage === totalPages}
         className='w-40 h-40 flex items-center justify-center cursor-pointer disabled:opacity-30 disabled:cursor-default'
       >
-        <img src='/icons/icon_chevron_right.svg' alt='다음 페이지' className='w-40 h-40' />
+        <Image src='/icons/icon_chevron_right.svg' alt='이전 페이지' width={40} height={40} />
       </button>
     </div>
   );
