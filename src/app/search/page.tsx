@@ -1,4 +1,3 @@
-// app/search/page.tsx
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -8,6 +7,8 @@ import type { Activity } from '@/components/landing/LandingCard';
 import LandingCard from '@/components/landing/LandingCard';
 import Pagination from '@/components/common/Pagination';
 import NoResult from '@/components/search/NoResult';
+import Banner from '@/components/landing/Banner';
+import SearchBar from '@/components/landing/SearchBar';
 
 const SearchPage = () => {
   const searchParams = useSearchParams();
@@ -45,31 +46,41 @@ const SearchPage = () => {
 
   return (
     <main className='w-full min-h-screen px-20'>
-      <div className='text-20-b mb-20'>{`‘${keyword}’에 대한 검색 결과입니다.`}</div>
+      <div className='max-w-screen-xl mx-auto'>
+        {/* 배너 & 검색바 */}
+        <Banner />
+        <SearchBar />
 
-      {activities.length === 0 ? (
-        <NoResult />
-      ) : (
-        <>
-          <section className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-20'>
-            {activities.map((activity) => (
-              <LandingCard key={activity.id} activity={activity} />
-            ))}
-          </section>
-          {totalCount > 0 && (
-            <Pagination
-              currentPage={page}
-              totalPages={totalPages}
-              onPageChange={(newPage) => {
-                const newParams = new URLSearchParams(searchParams.toString());
-                newParams.set('page', newPage.toString());
-                router.push(`?${newParams.toString()}`);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-            />
-          )}
-        </>
-      )}
+        {/* 검색 결과 안내 텍스트 */}
+        <div className='text-20-b mt-40 mb-10'>‘{keyword}’에 대한 검색 결과입니다.</div>
+        {totalCount > 0 && <div className='text-14-m text-gray-400'>총 {totalCount}개의 결과</div>}
+        {/* 결과 리스트 */}
+        {activities.length === 0 ? (
+          <NoResult />
+        ) : (
+          <>
+            <section className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-20'>
+              {activities.map((activity) => (
+                <LandingCard key={activity.id} activity={activity} />
+              ))}
+            </section>
+
+            {/* 페이지네이션 */}
+            {totalCount > 0 && (
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={(newPage) => {
+                  const newParams = new URLSearchParams(searchParams.toString());
+                  newParams.set('page', newPage.toString());
+                  router.push(`?${newParams.toString()}`);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              />
+            )}
+          </>
+        )}
+      </div>
     </main>
   );
 };
