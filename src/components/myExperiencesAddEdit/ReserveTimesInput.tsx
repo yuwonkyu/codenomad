@@ -1,6 +1,6 @@
 import Input from '@/components/common/Input';
 import Image from 'next/image';
-import CalendarModal from '@/components/common/CalendarModal';
+import CalendarModal from '@/components/common/Calendar';
 import { useState } from 'react';
 
 const TIME_OPTIONS = Array.from({ length: 25 }, (_, i) => {
@@ -56,6 +56,7 @@ const ReserveTimesInput = ({
                   onChange={(date) => onChange(idx, 'date', date.toISOString().slice(0, 10))}
                   onClose={() => setCalendarOpenIdx(null)}
                   position={{ top: 50, left: 0 }}
+                  type='default' // 디폴트 타입으로 지정
                 />
               )}
             </div>
