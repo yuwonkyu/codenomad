@@ -1,6 +1,7 @@
 import Banner from '@/components/landing/Banner';
 import SearchBar from '@/components/landing/SearchBar';
 import MostCommentedActivities from '@/components/landing/MostCommentedActivities';
+import AllActivities from '@/components/landing/AllActivities';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -18,6 +19,7 @@ export default function Home() {
         <Banner />
         <SearchBar />
         <MostCommentedActivities />
+        <AllActivities />
       </div>
     </main>
   );
