@@ -24,6 +24,7 @@ interface InputProps extends InputTypes {
   as?: 'input' | 'textarea' | 'select';
   options?: { value: string; label: ReactNode }[];
   dateIcon?: boolean;
+  onDateIconClick?: () => void; // 추가
 }
 
 const Input = ({
@@ -37,6 +38,7 @@ const Input = ({
   as = 'input',
   options = [],
   dateIcon = false,
+  onDateIconClick,
   ...props
 }: InputProps) => {
   const [show, setShow] = useState(false);
@@ -103,15 +105,20 @@ const Input = ({
           <>
             <input
               type={inputType}
-              className='flex-1 border-none outline-none text-gray-950 text-16-m placeholder:text-gray-400 bg-transparent'
+              className='flex-1 border-none outline-none text-gray-950 text-16-m placeholder:text-gray-400 bg-transparent pointer-events-none'
               placeholder={props.placeholder}
-              {...(props as InputHTMLAttributes<HTMLInputElement>)}
+              readOnly
+              value={props.value as string}
             />
-            {/* 날짜 아이콘 (dateIcon 옵션이 true이고 type이 date일 때) */}
-            {dateIcon && type === 'date' && (
-              <span className='ml-8'>
-                <Image src='/icons/icon_calendar.svg' alt='달력' width={24} height={24} />
-              </span>
+            {dateIcon && (
+              <button
+                type='button'
+                className='absolute right-20 top-50 cursor-pointer'
+                tabIndex={-1}
+                onClick={onDateIconClick}
+              >
+                <img src='/icons/icon_calendar.svg' alt='달력' width={24} height={24} />
+              </button>
             )}
             {/* 비밀번호 보기/숨기기 토글 */}
             {isPassword && (

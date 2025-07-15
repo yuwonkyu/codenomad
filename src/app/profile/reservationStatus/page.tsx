@@ -3,10 +3,9 @@ import { useState, useContext, useRef, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { ProfileMobileContext } from '../layout';
-// import axios from '@/lib/api/axios'; // axios.ts가 default export라면 그대로, 아니면 { axios }로 변경 필요
 
 // 예약 상태 뱃지 컴포넌트
-function StatusBadge({ status, count }: { status: string; count: number }) {
+const StatusBadge = ({ status, count }: { status: string; count: number }) => {
   const colorMap: Record<string, string> = {
     완료: 'bg-gray-100 text-gray-500',
     예약: 'bg-blue-100 text-blue-500',
@@ -15,16 +14,16 @@ function StatusBadge({ status, count }: { status: string; count: number }) {
   };
   return (
     <span
-      className={`w-fill h-21 px-2 py-0.5 rounded text-xs font-semibold mr-1 mb-3 ${
+      className={`inline-flex items-center px-8 py-2 rounded-[4px] text-11-m w-45.57 h-16 justify-center whitespace-nowrap ${
         colorMap[status] || ''
       }`}
     >
       {status} {count}
     </span>
   );
-}
+};
 
-// 하드코딩 예약 데이터 (예시)
+// 예약 데이터 (목데이터)
 const reservationData: Record<string, { status: string; count: number; nickname: string }[]> = {
   '2025-07-01': [{ status: '완료', count: 10, nickname: '정만철' }],
   '2025-07-10': [
@@ -52,15 +51,11 @@ const reservationData: Record<string, { status: string; count: number; nickname:
   ],
 };
 
-// API 연동 예시 (axios)
-// import axios from '@/lib/api/axios'; // 만약 default export가 아니면 { axios }로 변경
-// async function fetchReservations() {
-//   const res = await axios.get('/api/reservations');
-//   return res.data;
-// }
+// 날짜를 yyyy-mm-dd 문자열로 변환
+const formatDate = (date: Date | null) => (date ? date.toISOString().split('T')[0] : '');
 
 export default function ReservationStatusPage() {
-  const [date, setDate] = useState<Date | null>(new Date()); // 항상 오늘 날짜(현재 월)로 시작
+  const [date, setDate] = useState<Date | null>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTab, setSelectedTab] = useState<'신청' | '승인' | '거절'>('신청');
   const [selectedTime, setSelectedTime] = useState('14:00 - 15:00');
@@ -73,9 +68,6 @@ export default function ReservationStatusPage() {
     width: number;
     height: number;
   } | null>(null);
-
-  // 날짜를 yyyy-mm-dd 문자열로 변환
-  const formatDate = (date: Date | null) => (date ? date.toISOString().split('T')[0] : '');
 
   // 예약이 있는 날짜만 클릭 시 모달 오픈
   const handleDayClick = (clickedDate: Date, event?: React.MouseEvent) => {
@@ -97,20 +89,15 @@ export default function ReservationStatusPage() {
     }
   };
 
-  // 탭/시간 변경 시 visibleCount 리셋
   useEffect(() => {
     setVisibleCount(2);
   }, [selectedTab, selectedTime, selectedDate]);
 
-  // 모달 닫기
   const closeModal = () => setSelectedDate(null);
 
-  // 모달 예약 정보 (예시)
+  // 모달 상세 예약 내역
   const selectedKey = formatDate(selectedDate);
   const allReservations = reservationData[selectedKey] || [];
-  // 예시: 예약 시간별로 그룹핑 (여기선 단일 시간)
-  const timeOptions = ['14:00 - 15:00'];
-  // 상태별 분류
   const tabMap = { 완료: '완료', 신청: '예약', 승인: '승인', 거절: '거절' };
   const filteredReservations = allReservations.filter((r) => r.status === tabMap[selectedTab]);
 
@@ -121,64 +108,65 @@ export default function ReservationStatusPage() {
         {/* 모바일: 아이콘+텍스트, 클릭 시 onCancel */}
         <button
           type='button'
-          className='flex items-center gap-2 mb-1 block md:hidden'
+          className='flex items-center gap-2 mb-1 block md:hidden cursor-pointer'
           onClick={mobileContext?.onCancel}
-          style={{ cursor: 'pointer' }}
         >
           <img src='/icons/Vector.png' alt='vector' width={20} height={20} />
-          <span className='text-xl font-bold'>예약 현황</span>
+          <span className='text-18-b'>예약 현황</span>
         </button>
         {/* PC/테블릿: 텍스트만 */}
-        <h1 className='text-xl font-bold mb-1 hidden md:block'>예약 현황</h1>
-        <p className='text-gray-500 text-sm mb-4'>
+        <h1 className='text-18-b mb-1 hidden md:block'>예약 현황</h1>
+        <p className='text-gray-500 text-14-m mb-4'>
           내 체험에 예약된 내역들을 한 눈에 확인할 수 있습니다.
         </p>
       </div>
-      {/* 드롭다운 + 캘린더를 같은 컨테이너로 묶고, w-full/max-w-2xl 적용 */}
+      {/* 드롭다운 + 캘린더 컨테이너 */}
       <div className='bg-white rounded-2xl shadow-custom-5 p-4 md:p-8 w-full max-w-2xl mx-auto flex flex-col gap-4'>
-        <select className='w-full h-54 border rounded px-10 py-2 shadow-custom-5 mb-20'>
+        <select className='w-full h-54 border border-gray-100 rounded-[16px] px-20 py-16 shadow-custom-5 mb-20'>
           <option>함께 배우면 즐거운 스트릿 댄스</option>
-          {/* 추후 체험 목록 동적 렌더링 */}
         </select>
+        {/* 캘린더 UI */}
         <Calendar
           value={date}
           onChange={(value) => setDate(value as Date)}
           calendarType='gregory'
           className='w-full'
           formatShortWeekday={(_, date) => {
-            const week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const week = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
             return week[date.getDay()];
           }}
-          formatDay={() => ''}
-          tileContent={({ date }: { date: Date }) => {
+          // 캘린더 배지용
+          tileContent={({ date }) => {
             const key = formatDate(date);
             const reservations = reservationData[key] || [];
-            const hasStatus = reservations.length > 0;
             const statusList = ['예약', '승인', '거절', '완료'];
             return (
-              <div className='flex flex-col items-center mt-1 calendar-badge-scroll'>
-                <div className='flex items-center justify-center'>
-                  <span>{date.getDate()}</span>
-                  {hasStatus && <div className='calendar-dot ml-5' />}
+              <div>
+                {/* 날짜 */}
+                <span>{date.getDate()}</span>
+                {/* 배지 */}
+                <div>
+                  {statusList.map((status) => {
+                    const count = reservations
+                      .filter((r) => r.status === status)
+                      .reduce((sum, r) => sum + r.count, 0);
+                    return count > 0 ? (
+                      <StatusBadge key={status} status={status} count={count} />
+                    ) : null;
+                  })}
                 </div>
-                {statusList.map((status) => {
-                  const count = reservations.filter((r) => r.status === status).length;
-                  return count > 0 ? (
-                    <StatusBadge key={status} status={status} count={count} />
-                  ) : null;
-                })}
               </div>
             );
           }}
           prev2Label={null}
           next2Label={null}
-          onClickDay={(date, event) => handleDayClick(date, event)}
+          onClickDay={handleDayClick}
         />
       </div>
-      {/* 모바일 바텀시트 모달 (이미지 시안 스타일) */}
+      {/* 예약 모달: 예약이 있는 날짜 클릭 시만 노출 */}
       {selectedDate && (
         <>
-          {/* 모바일 모달 */}
+          {/* 모바일 바텀시트 모달 */}
           <div
             className='fixed inset-0 z-50 flex items-end justify-center bg-black/40 block md:hidden'
             onClick={closeModal}
@@ -207,7 +195,10 @@ export default function ReservationStatusPage() {
                     }`}
                     onClick={() => setSelectedTab(tab)}
                   >
-                    {tab} {allReservations.filter((r) => r.status === tabMap[tab]).length}
+                    {tab}{' '}
+                    {allReservations
+                      .filter((r) => r.status === tabMap[tab])
+                      .reduce((sum, r) => sum + r.count, 0)}
                   </button>
                 ))}
               </div>
@@ -215,7 +206,7 @@ export default function ReservationStatusPage() {
               <div className='w-full mb-6'>
                 <label className='block text-sm font-semibold mb-2'>예약 시간</label>
                 <select className='w-full border rounded-xl text-base bg-white h-[54px] px-10'>
-                  {timeOptions.map((t) => (
+                  {['14:00 - 15:00'].map((t) => (
                     <option key={t} value={t}>
                       {t}
                     </option>
@@ -287,7 +278,7 @@ export default function ReservationStatusPage() {
                 className='fixed z-50 rounded-3xl bg-white shadow-xl flex flex-col items-center transition-transform duration-300 p-[20px]'
                 style={{
                   top: `${calendarCellRect.top + window.scrollY}px`,
-                  left: `${calendarCellRect.left + calendarCellRect.width + 16}px`, // 16px 오른쪽 여백
+                  left: `${calendarCellRect.left + calendarCellRect.width + 16}px`,
                   width: '420px',
                   boxShadow: '0 8px 32px rgba(0,0,0,0.10)',
                 }}
@@ -318,7 +309,10 @@ export default function ReservationStatusPage() {
                       }`}
                       onClick={() => setSelectedTab(tab)}
                     >
-                      {tab} {allReservations.filter((r) => r.status === tabMap[tab]).length}
+                      {tab}{' '}
+                      {allReservations
+                        .filter((r) => r.status === tabMap[tab])
+                        .reduce((sum, r) => sum + r.count, 0)}
                     </button>
                   ))}
                 </div>
@@ -326,7 +320,7 @@ export default function ReservationStatusPage() {
                 <div className='w-full mb-4'>
                   <label className='block text-sm font-semibold mb-2'>예약 시간</label>
                   <select className='w-full border rounded px-10 py-3 text-base bg-white h-[54px]'>
-                    {timeOptions.map((t) => (
+                    {['14:00 - 15:00'].map((t) => (
                       <option key={t} value={t}>
                         {t}
                       </option>
@@ -421,7 +415,10 @@ export default function ReservationStatusPage() {
                     }`}
                     onClick={() => setSelectedTab(tab)}
                   >
-                    {tab} {allReservations.filter((r) => r.status === tabMap[tab]).length}
+                    {tab}{' '}
+                    {allReservations
+                      .filter((r) => r.status === tabMap[tab])
+                      .reduce((sum, r) => sum + r.count, 0)}
                   </button>
                 ))}
               </div>
@@ -431,7 +428,7 @@ export default function ReservationStatusPage() {
                 <div className='w-full md:w-1/2 mb-4 md:mb-0'>
                   <label className='block text-sm font-semibold mb-2'>예약 시간</label>
                   <select className='w-full border rounded px-10 py-3 text-base bg-white h-[54px]'>
-                    {timeOptions.map((t) => (
+                    {['14:00 - 15:00'].map((t) => (
                       <option key={t} value={t}>
                         {t}
                       </option>
