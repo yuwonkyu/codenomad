@@ -1,3 +1,7 @@
+import Banner from '@/components/landing/Banner';
+import SearchBar from '@/components/landing/SearchBar';
+import MostCommentedActivities from '@/components/landing/MostCommentedActivities';
+import AllActivities from '@/components/landing/AllActivities';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -9,5 +13,14 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return <div>home</div>;
+  return (
+    <main className='w-full'>
+      <div className='w-full max-w-[1120px] mx-auto px-24 md:px-30 lg:px-40'>
+        <Banner />
+        <SearchBar />
+        <MostCommentedActivities />
+        <AllActivities />
+      </div>
+    </main>
+  );
 }

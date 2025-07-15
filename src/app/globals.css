@@ -81,6 +81,55 @@
   --shadow-card: 0 4px 24px rgba(156, 180, 202, 0.2);
 }
 
+@utility scrollbar-hide {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  scrollbar-width: none;
+}
+
+@layer base {
+  button {
+    cursor: pointer;
+  }
+}
+
+.input-range {
+  appearance: none;
+  /* width: 214px; */
+  height: 36px;
+}
+
+/* WebKit 기반 브라우저용 Thumb */
+.input-range::-webkit-slider-thumb {
+  height: 36px;
+  border-radius: 100%;
+  background: #facc15; /* 노란색 썸 */
+  cursor: pointer;
+  margin-top: -12px;
+}
+
+/* WebKit 기반 브라우저용 Track */
+.input-range::-webkit-slider-runnable-track {
+  height: 36px;
+  background: #e5e7eb; /* 회색 트랙 */
+  border-radius: 999px;
+}
+
+/* Firefox용 Thumb */
+.input-range::-moz-range-thumb {
+  border-radius: 100%;
+  background: #facc15;
+  cursor: pointer;
+}
+
+/* Firefox용 Track */
+.input-range::-moz-range-track {
+  height: 36px;
+  background: #e5e7eb;
+  border-radius: 999px;
+}
+
 /* 커스텀 그림자(쉐도우) */
 .shadow-custom-5 {
   /* 값: x:0, y:4, blur:16, spread:0, 색상:#112211, 투명도:5% */
@@ -114,4 +163,67 @@ input[type='date']:-ms-input-placeholder {
 }
 input[type='date']::placeholder {
   color: #bdbdbd;
+}
+
+/* react-calendar 전체를 부모 컨테이너에 맞게 넓게 */
+.react-calendar {
+  width: 100% !important;
+  max-width: 100% !important;
+  font-size: 1.1rem;
+}
+
+/* 달력 셀(요일, 날짜)도 넓게 */
+.react-calendar__tile {
+  width: 54px !important;
+  height: 120px !important; /* 4개 뱃지에 딱 맞게 */
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+@media (min-width: 768px) {
+  .react-calendar__tile {
+    width: 68px !important;
+    height: 124px !important;
+  }
+}
+@media (min-width: 1024px) {
+  .react-calendar__tile {
+    width: 92px !important;
+    height: 124px !important;
+  }
+}
+
+.calendar-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #eb5757;
+  margin-bottom: 2px;
+}
+
+.react-calendar__month-view__weekdays {
+  border-bottom: 2px solid #e0e0e5;
+  margin-bottom: 10px;
+}
+
+.react-calendar__navigation__label {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.react-calendar__navigation {
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.react-calendar__navigation button {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.bg-gradient-main {
+  background: linear-gradient(to bottom, #bbddff, #f7fbff, #ffffff);
 }
