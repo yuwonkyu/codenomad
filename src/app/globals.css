@@ -223,3 +223,7 @@ input[type='date']::placeholder {
   font-size: 1.5rem;
   font-weight: 600;
 }
+
+.bg-gradient-main {
+  background: linear-gradient(to bottom, #bbddff, #f7fbff, #ffffff);
+}
