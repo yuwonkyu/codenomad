@@ -21,7 +21,7 @@ const LandingCard = ({ bannerImageUrl, title, rating, reviewCount, price }: Land
         />
       </div>
       {/* 텍스트 박스 */}
-      <div className='absolute bottom-12 rounded-[32px] sm:bottom-20 lg:bottom-16 z-10 flex flex-col justify-center items-start px-12 sm:px-30 bg-white w-full h-[110px] sm:h-[133px] lg:h-[126px]'>
+      <div className='absolute bottom-20 rounded-[32px] sm:bottom-20 lg:bottom-20 z-10 flex flex-col justify-center items-start px-12 sm:px-30 bg-white w-full h-[110px] sm:h-[133px] lg:h-[126px]'>
         <h2 className='text-14-b sm:text-18-b mb-4 line-clamp-1'>{title}</h2>
         <div className='flex items-center gap-1'>
           <div className='relative w-16 h-16 mr-2'>

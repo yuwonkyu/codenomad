@@ -77,20 +77,23 @@ const AllActivities = () => {
   const [selectedSort, setSelectedSort] = useState<string | null>(null);
 
   return (
-    <section className='mt-80'>
-      <h2 className='text-20-b md:text-24-b mb-30'>🛼 모든 체험</h2>
+    <section className='mt-80 mb-160'>
+      {/* 타이틀 + 드롭다운 */}
+      <div className='flex items-center justify-between mb-12'>
+        <h2 className='text-20-b md:text-24-b'>🛼 모든 체험</h2>
+        <PriceSortDropdown selectedSort={selectedSort} onSelectSort={setSelectedSort} />
+      </div>
 
-      {/* 정렬 + 필터 */}
-      <div className='flex justify-between items-center mb-20'>
+      {/* 카테고리 필터 (아래로 내려오기) */}
+      <div className='mb-20'>
         <CategoryFilter
           selectedCategory={selectedCategory}
           onSelectCategory={setSelectedCategory}
         />
-        <PriceSortDropdown selectedSort={selectedSort} onSelectSort={setSelectedSort} />
       </div>
 
       {/* 카드 목록 */}
-      <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-16 sm:gap-24 overflow-x-auto no-scrollbar'>
+      <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-16 sm:gap-24 no-scrollbar'>
         {mockActivities.map((item) => (
           <LandingCard key={item.id} {...item} />
         ))}

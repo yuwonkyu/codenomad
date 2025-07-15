@@ -1,3 +1,6 @@
+'use client';
+
+import Image from 'next/image';
 import clsx from 'clsx';
 
 interface CategoryFilterProps {
@@ -5,26 +8,41 @@ interface CategoryFilterProps {
   onSelectCategory: (category: string | null) => void;
 }
 
-const CATEGORY_LIST = ['문화 · 예술', '식음료', '스포츠', '투어', '관광', '웰빙'];
+const CATEGORY_LIST = [
+  { label: '문화 · 예술', icon: '/icons/icon_art.svg' },
+  { label: '식음료', icon: '/icons/icon_food.svg' },
+  { label: '스포츠', icon: '/icons/icon_sport.svg' },
+  { label: '투어', icon: '/icons/icon_tour.svg' },
+  { label: '관광', icon: '/icons/icon_bus.svg' },
+  { label: '웰빙', icon: '/icons/icon_wellbeing.svg' },
+];
 
 const CategoryFilter = ({ selectedCategory, onSelectCategory }: CategoryFilterProps) => {
   return (
-    <div className='flex flex-wrap gap-8'>
-      {CATEGORY_LIST.map((category) => {
-        const isSelected = selectedCategory === category;
+    <div className='flex overflow-x-auto no-scrollbar sm:flex-wrap gap-8'>
+      {CATEGORY_LIST.map(({ label, icon }) => {
+        const isSelected = selectedCategory === label;
 
         return (
           <button
-            key={category}
-            onClick={() => onSelectCategory(isSelected ? null : category)}
+            key={label}
+            onClick={() => onSelectCategory(isSelected ? null : label)}
             className={clsx(
-              'px-12 py-6 rounded-full border transition-colors duration-200',
+              'flex items-center shrink-0 px-12 py-6 rounded-full border transition-colors duration-200 cursor-pointer whitespace-nowrap',
               isSelected
-                ? 'bg-primary text-white border-primary'
-                : 'bg-white text-gray-500 border-gray-300',
+                ? 'bg-[#333333] text-white border-primary text-14-m md:text-16-m'
+                : 'bg-white text-gray-950 border-gray-300 text-14-m md:text-16-m',
             )}
           >
-            {category}
+            <Image
+              src={icon}
+              alt={`${label} 아이콘`}
+              width={16}
+              height={16}
+              className={clsx('transition-all duration-200', isSelected && 'invert brightness-0')}
+            />
+
+            <span className='ml-4'>{label}</span>
           </button>
         );
       })}

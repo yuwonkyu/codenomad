@@ -32,7 +32,7 @@ const PriceSortDropdown = ({ selectedSort, onSelectSort }: SortDropdownProps) =>
       </button>
 
       {isOpen && (
-        <ul className='absolute top-full mt-4 right-0 bg-white border border-gray-200 shadow-md rounded-md z-10'>
+        <ul className='absolute top-full mt-4 right-1/2 translate-x-1/2 bg-white border border-gray-200 shadow-md rounded-md z-10 min-w-[90px] whitespace-nowrap sm:right-0 sm:translate-x-0'>
           {SORT_OPTIONS.map((option) => (
             <li key={option.value}>
               <button
@@ -41,7 +41,7 @@ const PriceSortDropdown = ({ selectedSort, onSelectSort }: SortDropdownProps) =>
                   setIsOpen(false);
                 }}
                 className={clsx(
-                  'px-16 py-10 w-full text-left hover:bg-gray-100',
+                  'px-16 py-8 w-full text-left text-14-m hover:bg-gray-100 transition-colors duration-150',
                   selectedSort === option.value && 'text-primary font-semibold',
                 )}
               >
