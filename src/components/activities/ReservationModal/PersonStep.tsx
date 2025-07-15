@@ -41,7 +41,7 @@ const PersonStep = ({
       wrapper: 'flex items-center justify-between',
       title: 'text-16-b text-gray-950',
       counterContainer:
-        'flex items-center justify-around rounded-[12px] border-gray-100 border w-144 h-48',
+        'flex items-center justify-around rounded-3xl border-gray-100 border w-144 h-48',
     },
   };
 
