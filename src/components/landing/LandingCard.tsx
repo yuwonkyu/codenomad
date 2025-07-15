@@ -9,29 +9,29 @@ interface LandingCardType {
 
 const LandingCard = ({ imageUrl, title, rating, totalReview, price }: LandingCardType) => {
   return (
-    <div className='w-155 h-243 md:w-331 md:h-423 lg:w-262 lg:h-366 shadow-card rounded-4xl'>
-      <div className='h-290 bg-gray-200 rounded-t-4xl relative'>
+    <div className='relative shrink-0 w-[132px] h-[242px] sm:w-[332px] sm:h-[423px] lg:w-[262px] lg:h-[366px] shadow-card rounded-[32px] overflow-hidden'>
+      {/* 이미지 영역 */}
+      <div className='relative h-[132px] sm:h-[290px] lg:h-[240px] rounded-t-4xl overflow-hidden'>
         <Image
           src={imageUrl || '/imgs/thumbnail.jpg'}
           alt='카드 이미지'
           fill
-          className='object-cover rounded-t-4xl bg-gray-400'
+          className='object-cover'
         />
       </div>
-      <div className='flex flex-col justify-center items-start px-30 rounded-4xl relative bg-white w-full h-100 md:h-136 bottom-60'>
-        <h2 className='text-lg/26 font-semibold tex'>{title}</h2>
-        <div className='flex gap-2'>
-          <div className='relative w-20 h-20 mr-3'>
+      {/* 텍스트 박스 */}
+      <div className='absolute bottom-12 rounded-[32px] sm:bottom-20 lg:bottom-16 z-10 flex flex-col justify-center items-start px-12 sm:px-30 bg-white w-full h-[110px] sm:h-[133px] lg:h-[126px]'>
+        <h2 className='text-14-b sm:text-18-b mb-4 line-clamp-1'>{title}</h2>
+        <div className='flex items-center gap-1'>
+          <div className='relative w-16 h-16 mr-2'>
             <Image src='/icons/icon_star_on.svg' fill alt='별 아이콘' />
           </div>
-          <span className='text-12-m md:text-14-m'>{rating}</span>
-          <span className='text-12-m md:text-14-m text-gray-400'>({totalReview})</span>
+          <span className='text-12-m sm:text-14-m'>{rating}</span>
+          <span className='text-12-m text-gray-400 sm:text-14-m'>({totalReview})</span>
         </div>
-        <p className='text-[15px] font-bold lg:text-18-b mt-18'>
-          &#8361;{price}
-          <strong className='text-xs font-semibold lg:text-lg lg:font-semibold text-gray-400'>
-            / 인
-          </strong>
+        <p className='text-14-b sm:text-18-b mt-10'>
+          ₩{price.toLocaleString()}
+          <strong className='text-12-m sm:text-16-m text-gray-400'> / 인</strong>
         </p>
       </div>
     </div>
