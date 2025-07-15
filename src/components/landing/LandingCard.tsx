@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export interface Activity {
   id?: number;
@@ -11,8 +12,13 @@ export interface Activity {
 
 const LandingCard = ({ activity }: { activity: Activity }) => {
   const { id, bannerImageUrl, title, rating, reviewCount, price } = activity;
+  const router = useRouter();
+
   return (
-    <div className='relative shrink-0 w-[132px] h-[242px] sm:w-[332px] sm:h-[423px] lg:w-[262px] lg:h-[366px] shadow-card rounded-[32px] overflow-hidden'>
+    <div
+      onClick={() => router.push(`/activities/${id}`)}
+      className='relative shrink-0 w-[132px] h-[242px] sm:w-[332px] sm:h-[423px] lg:w-[262px] lg:h-[366px] shadow-card rounded-[32px] overflow-hidden cursor-pointer transition-transform duration-200 hover:scale-105'
+    >
       {/* 이미지 영역 */}
       <div className='relative h-[132px] sm:h-[290px] lg:h-[240px] rounded-t-4xl overflow-hidden'>
         <Image
