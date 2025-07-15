@@ -14,10 +14,13 @@ export default function RootLayout({
   const pathname = usePathname();
   const hideLayout = pathname === '/login' || pathname === '/signup';
   const isHome = pathname === '/';
+  const isSearch = pathname.startsWith('/search');
 
   return (
     <html lang='ko'>
-      <body className={clsx('min-h-screen flex flex-col', isHome && 'bg-gradient-main')}>
+      <body
+        className={clsx('min-h-screen flex flex-col', (isHome || isSearch) && 'bg-gradient-main')}
+      >
         {!hideLayout && <Header />}
         <main className='flex-1'>{children}</main>
         {!hideLayout && <Footer />}
