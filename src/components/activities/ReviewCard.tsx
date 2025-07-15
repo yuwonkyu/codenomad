@@ -18,15 +18,15 @@ const ReviewCard = ({ nickname, rating, content, createdAt }: ReviewCardProps) =
     })
     .replace(/\.$/, '');
   return (
-    <div className='rounded-3xl p-20 flex flex-col gap-12 max-w-327 h-auto bg-white shadow-custom-5 sm:max-w-684'>
+    <div className='shadow-custom-5 flex h-auto w-auto flex-col gap-12 rounded-3xl bg-white p-20'>
       <div className='flex flex-col justify-center gap-4'>
-        <div className='flex gap-8 items-center'>
-          <p className='text-gray-950 text-16-b'>{nickname}</p>
+        <div className='flex items-center gap-8'>
+          <p className='text-16-b text-gray-950'>{nickname}</p>
           <p className='text 16-b text-[#A4A1AA]'>{viewDate}</p>
         </div>
         <StarRatingDisplay rating={rating} />
       </div>
-      <p className='text-gray-950 text-14-body-m sm:text-16-body-m break-keep'>{content}</p>
+      <p className='text-14-body-m sm:text-16-body-m break-keep text-gray-950'>{content}</p>
     </div>
   );
 };
