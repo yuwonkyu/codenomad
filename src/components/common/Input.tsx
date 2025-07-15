@@ -105,10 +105,14 @@ const Input = ({
           <>
             <input
               type={inputType}
-              className='flex-1 border-none outline-none text-gray-950 text-16-m placeholder:text-gray-400 bg-transparent pointer-events-none'
+              className='flex-1 border-none outline-none text-gray-950 text-16-m placeholder:text-gray-400 bg-transparent'
               placeholder={props.placeholder}
-              readOnly
               value={props.value as string}
+              onChange={props.onChange}
+              onFocus={props.onFocus}
+              onBlur={props.onBlur}
+              disabled={props.disabled}
+              {...(props as InputHTMLAttributes<HTMLInputElement>)}
             />
             {dateIcon && (
               <button
