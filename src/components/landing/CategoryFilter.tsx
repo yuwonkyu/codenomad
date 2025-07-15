@@ -19,7 +19,7 @@ const CATEGORY_LIST = [
 
 const CategoryFilter = ({ selectedCategory, onSelectCategory }: CategoryFilterProps) => {
   return (
-    <div className='flex overflow-x-auto no-scrollbar sm:flex-wrap gap-8'>
+    <div className='flex overflow-x-auto no-scrollbar sm:flex-wrap gap-8 cursor-pointer'>
       {CATEGORY_LIST.map(({ label, icon }) => {
         const isSelected = selectedCategory === label;
 
@@ -30,8 +30,8 @@ const CategoryFilter = ({ selectedCategory, onSelectCategory }: CategoryFilterPr
             className={clsx(
               'flex items-center shrink-0 px-12 py-6 rounded-full border transition-colors duration-200 cursor-pointer whitespace-nowrap',
               isSelected
-                ? 'bg-[#333333] text-white border-primary text-14-m md:text-16-m'
-                : 'bg-white text-gray-950 border-gray-300 text-14-m md:text-16-m',
+                ? 'bg-[#333333] text-white border-primary text-14-m md:text-16-m hover:bg-[#2a2a2a]'
+                : 'bg-white text-gray-950 border-gray-300 text-14-m md:text-16-m hover:bg-gray-100',
             )}
           >
             <Image
