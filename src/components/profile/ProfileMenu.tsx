@@ -30,7 +30,6 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
     (async () => {
       try {
         const profile = await getUserProfile();
-        console.log('프로필 정보:', profile);
         setImageUrl(profile.profileImageUrl || null);
       } catch {
         setImageUrl(null);
@@ -45,7 +44,6 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
     setIsUploading(true);
     try {
       const updated = await uploadProfileImage(file);
-      console.log('업로드 응답:', updated);
       // 캐시 버스터 추가
       const updatedUrl = updated.profileImageUrl
         ? updated.profileImageUrl + '?t=' + Date.now()

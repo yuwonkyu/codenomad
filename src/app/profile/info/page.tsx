@@ -88,6 +88,7 @@ const InformationPage = () => {
       setIsLoading(true);
       setError('');
 
+      // 2. 나머지 정보 업데이트
       const updateData: any = {
         nickname,
         email,

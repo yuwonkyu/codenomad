@@ -158,25 +158,28 @@ export default function ReservationStatusPage() {
             const week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             return week[date.getDay()];
           }}
-          tileContent={({ date }: { date: Date }) => {
-            const key = formatDate(date);
-            const reservations = reservationData[key] || [];
-            const hasStatus = reservations.length > 0;
-            const statusList = ['예약', '승인', '거절', '완료'];
-            return (
-              <div className='flex flex-col items-center mt-1 calendar-badge-scroll'>
-                <div className='flex items-center justify-center'>
-                  <span>{date.getDate()}</span>
-                  {hasStatus && <div className={styles.calendarDot} />}
+          tileContent={({ date, view }: { date: Date; view: string }) => {
+            if (view === 'month') {
+              const key = formatDate(date);
+              const reservations = reservationData[key] || [];
+              const hasStatus = reservations.length > 0;
+              const statusList = ['예약', '승인', '거절', '완료'];
+              return (
+                <div className='flex flex-col items-center mt-1 calendar-badge-scroll'>
+                  <div className='flex items-center justify-center'>
+                    <span>{date.getDate()}</span>
+                    {hasStatus && <div className={styles.calendarDot} />}
+                  </div>
+                  {statusList.map((status) => {
+                    const count = reservations.filter((r) => r.status === status).length;
+                    return count > 0 ? (
+                      <StatusBadge key={status} status={status} count={count} />
+                    ) : null;
+                  })}
                 </div>
-                {statusList.map((status) => {
-                  const count = reservations.filter((r) => r.status === status).length;
-                  return count > 0 ? (
-                    <StatusBadge key={status} status={status} count={count} />
-                  ) : null;
-                })}
-              </div>
-            );
+              );
+            }
+            return null;
           }}
           onClickDay={(date, event) => handleDayClick(date, event)}
         />

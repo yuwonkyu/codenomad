@@ -1,190 +1,111 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import Link from 'next/link';
 import ExperienceCard from '@/components/profile/ExperienceCard';
-
-const INITIAL_DATA = [
-  {
-    title: '함께 배우면 즐거운 스트릿 댄스',
-    rating: 4.9,
-    reviews: 293,
-    price: 10000,
-    image: '/imgs/thumbnail.jpg',
-  },
-  {
-    title: '서울 야경 투어 가이드',
-    rating: 4.8,
-    reviews: 156,
-    price: 25000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '한국 전통 요리 클래스',
-    rating: 4.7,
-    reviews: 89,
-    price: 35000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '한강 래프팅 체험',
-    rating: 4.6,
-    reviews: 234,
-    price: 45000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '전통 한복 체험',
-    rating: 4.5,
-    reviews: 178,
-    price: 20000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '서울 타워 전망대 투어',
-    rating: 4.4,
-    reviews: 312,
-    price: 30000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '강남 쇼핑 가이드',
-    rating: 4.3,
-    reviews: 145,
-    price: 18000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '한국 전통 차 문화 체험',
-    rating: 4.2,
-    reviews: 98,
-    price: 22000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '서울 지하철 투어',
-    rating: 4.1,
-    reviews: 267,
-    price: 15000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '한국 전통 공예 체험',
-    rating: 4.0,
-    reviews: 134,
-    price: 28000,
-    image: '/icons/profile_default.svg',
-  },
-];
-
-const MORE_DATA = [
-  {
-    title: '새로운 체험 1',
-    rating: 4.8,
-    reviews: 120,
-    price: 15000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '새로운 체험 2',
-    rating: 4.7,
-    reviews: 95,
-    price: 22000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '새로운 체험 3',
-    rating: 4.6,
-    reviews: 88,
-    price: 18000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '새로운 체험 4',
-    rating: 4.5,
-    reviews: 156,
-    price: 32000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '새로운 체험 5',
-    rating: 4.4,
-    reviews: 203,
-    price: 25000,
-    image: '/icons/profile_default.svg',
-  },
-];
+import { getMyActivities, MyActivity } from '@/lib/api/profile/my-activities';
+import { ProfileMobileContext } from '../layout';
+import { useContext } from 'react';
 
 export default function MyExperiencesPage() {
-  const [experiences, setExperiences] = useState<typeof INITIAL_DATA>([]);
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [activities, setActivities] = useState<MyActivity[]>([]);
+  const [cursorId, setCursorId] = useState<number | null>(null);
   const [hasMore, setHasMore] = useState(true);
-  const loader = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const loaderRef = useRef<HTMLDivElement | null>(null);
+  const mobileContext = useContext(ProfileMobileContext);
 
-  // 초기 데이터 로드 (처음 5개만)
+  const fetchActivities = useCallback(async () => {
+    if (!hasMore || isLoading) return;
+
+    setIsLoading(true);
+    try {
+      const data = await getMyActivities(cursorId ?? undefined, 5);
+      setActivities((prev) => [...prev, ...data.activities]);
+      setCursorId(
+        data.activities.length > 0 ? data.activities[data.activities.length - 1].id : null,
+      );
+      setHasMore(data.activities.length > 0);
+    } catch (err) {
+      console.error('체험 목록을 가져오는데 실패했습니다:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [cursorId, hasMore, isLoading]);
+
   useEffect(() => {
-    setExperiences(INITIAL_DATA.slice(0, 5));
-  }, []);
+    fetchActivities();
+  }, []); // 초기 한 번만 호출
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading) {
-          fetchMoreData();
+        if (entries[0].isIntersecting) {
+          fetchActivities();
         }
       },
-      { threshold: 0.1 },
+      { threshold: 1.0 },
     );
 
-    if (loader.current) {
-      observer.observe(loader.current);
+    const loader = loaderRef.current;
+    if (loader) {
+      observer.observe(loader);
     }
 
     return () => {
-      if (loader.current) {
-        observer.unobserve(loader.current);
+      if (loader) {
+        observer.unobserve(loader);
       }
     };
-  }, [hasMore, loading]);
-
-  function fetchMoreData() {
-    if (loading || !hasMore) return;
-
-    setLoading(true);
-
-    // 실제 API 호출 또는 더미 데이터 추가
-    setTimeout(() => {
-      const currentLength = experiences.length;
-      const remainingData = INITIAL_DATA.slice(currentLength, currentLength + 5);
-
-      if (remainingData.length > 0) {
-        setExperiences((prev) => [...prev, ...remainingData]);
-        setPage((p) => p + 1);
-      } else {
-        // 초기 데이터가 모두 로드되면 추가 데이터 로드
-        setExperiences((prev) => [...prev, ...MORE_DATA]);
-        setHasMore(false); // 더 이상 로드할 데이터가 없음을 표시
-      }
-
-      setLoading(false);
-    }, 1000);
-  }
+  }, [fetchActivities]);
 
   return (
-    <div className='flex flex-col items-center gap-6 py-6'>
-      {experiences.map((exp, idx) => (
-        <ExperienceCard key={`${exp.title}-${idx}`} {...exp} />
-      ))}
+    <div className='w-full max-w-4xl mx-auto'>
+      <div className='flex justify-between items-center mb-6'>
+        {/* 모바일: 아이콘+텍스트, 클릭 시 onCancel */}
+        <button
+          type='button'
+          className='flex items-center gap-2 mb-1 block md:hidden'
+          onClick={mobileContext?.onCancel}
+          style={{ cursor: 'pointer' }}
+        >
+          <img src='/icons/Vector.png' alt='vector' width={20} height={20} />
+          <span className='text-xl font-bold'>내 체험 관리</span>
+        </button>
+        {/* PC/테블릿: 텍스트만 */}
+        <h1 className='text-xl font-bold mb-1 hidden md:block'>내 체험 관리</h1>
 
-      {/* 로딩 인디케이터 */}
-      {loading && (
-        <div className='flex justify-center items-center py-4'>
-          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900'></div>
+        <Link
+          href='/experiences/add'
+          className='px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors'
+        >
+          체험 등록하기
+        </Link>
+      </div>
+
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
+        {activities.map((activity) => (
+          <ExperienceCard
+            key={activity.id}
+            title={activity.title}
+            rating={activity.rating}
+            reviews={activity.reviewCount}
+            price={activity.price}
+            image={activity.bannerImageUrl}
+          />
+        ))}
+      </div>
+      <div ref={loaderRef} className='h-10 flex justify-center items-center'>
+        {isLoading && <p>로딩 중...</p>}
+      </div>
+      {!hasMore && activities.length > 0 && (
+        <p className='text-center my-4'>더 이상 체험이 없습니다.</p>
+      )}
+      {!isLoading && activities.length === 0 && (
+        <div className='text-center py-10'>
+          <p>등록된 체험이 없습니다.</p>
         </div>
       )}
-
-      {/* 무한 스크롤 트리거 */}
-      {hasMore && <div ref={loader} className='h-4' />}
     </div>
   );
 }
