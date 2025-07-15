@@ -6,7 +6,7 @@ import TimeSelectionStep from './TimeSelectionStep';
 import PersonStep from './PersonStep';
 import { ReservationComponentProps, ReservationData } from './types';
 
-const ReservationCard = ({
+const DesktopCard = ({
   activity,
   scheduleId,
   setScheduleId,
@@ -107,4 +107,4 @@ const ReservationCard = ({
   );
 };
 
-export default ReservationCard;
+export default DesktopCard;

@@ -1,8 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { useResponsive } from '@/hooks/useResponsive';
-import ReservationTrigger from './ReservationTrigger';
-import ReservationCard from './ReservationCard';
+import ModalTrigger from './ModalTrigger';
+import DesktopCard from './DesktopCard';
 
 // 임시 활동 데이터 (나중에 props로 받도록 수정 예정)
 const activity = {
@@ -54,10 +54,10 @@ const ReservationContent = () => {
   };
 
   // 데스크톱: lg 이상
-  // 태블릿/모바일: lg 미만 (ReservationTrigger에서 자체적으로 태블릿/모바일 구분)
+  // 태블릿/모바일: lg 미만 (ModalTrigger에서 자체적으로 태블릿/모바일 구분)
   if (breakpoint === 'lg') {
     return (
-      <ReservationCard
+      <DesktopCard
         activity={activity}
         scheduleId={scheduleId}
         setScheduleId={setScheduleId}
@@ -69,7 +69,7 @@ const ReservationContent = () => {
   }
 
   return (
-    <ReservationTrigger
+    <ModalTrigger
       activity={activity}
       scheduleId={scheduleId}
       setScheduleId={setScheduleId}

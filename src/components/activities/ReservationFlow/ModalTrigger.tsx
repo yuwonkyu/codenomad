@@ -4,7 +4,7 @@ import TabletModal from './TabletModal';
 import MobileModal from './MobileModal';
 import { Schedule, ReservationComponentProps, ReservationData } from './types';
 
-const ReservationTrigger = ({
+const ModalTrigger = ({
   activity,
   scheduleId,
   setScheduleId,
@@ -96,4 +96,4 @@ const ReservationTrigger = ({
   );
 };
 
-export default ReservationTrigger;
+export default ModalTrigger;
