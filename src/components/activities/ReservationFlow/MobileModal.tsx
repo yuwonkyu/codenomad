@@ -78,9 +78,9 @@ const MobileModal = ({
 
   return (
     <>
-      <div className='fixed inset-0 bg-black/50 z-40' onClick={onClose} />
+      <div className='fixed inset-0 z-40 bg-black/50' onClick={onClose} />
       {/* 캘린더 부분 추가 시 아래 스타일 수정 예정 */}
-      <div className='fixed bottom-0 left-0 w-full z-50 bg-white rounded-t-3xl p-24 max-h-699 overflow-y-auto'>
+      <div className='fixed bottom-0 left-0 z-50 max-h-699 w-full overflow-y-auto rounded-t-3xl bg-white p-24'>
         <div className='mb-30'>
           {step === 'calendar' ? (
             <h3 className='text-18-b'>날짜</h3>
@@ -88,7 +88,7 @@ const MobileModal = ({
             <div className='flex items-center gap-8'>
               <button
                 onClick={handleBackStep}
-                className='relative size-24 text-gray-500 cursor-pointer'
+                className='relative size-24 cursor-pointer text-gray-500'
               >
                 <Image src={'/icons/icon_back.svg'} alt='뒤로 가기' fill />
               </button>
@@ -96,7 +96,7 @@ const MobileModal = ({
             </div>
           )}
           {step !== 'calendar' && (
-            <p className='mt-8 text-16-m text-[#4b4b4b]'>예약할 인원을 선택해주세요.</p>
+            <p className='text-16-m mt-8 text-[#4b4b4b]'>예약할 인원을 선택해주세요.</p>
           )}
         </div>
 
@@ -116,10 +116,10 @@ const MobileModal = ({
             />
 
             <button
-              className={`w-full h-50 text-16-b rounded-[14px] py-15 mt-30 ${
+              className={`text-16-b mt-30 h-50 w-full rounded-[14px] py-15 ${
                 isConfirmEnabled
-                  ? 'bg-primary-500 text-white hover:bg-primary-600 cursor-pointer'
-                  : 'bg-gray-300 text-gray-50 cursor-not-allowed'
+                  ? 'bg-primary-500 hover:bg-primary-600 cursor-pointer text-white'
+                  : 'cursor-not-allowed bg-gray-300 text-gray-50'
               }`}
               disabled={!isConfirmEnabled}
               onClick={handleNextStep}

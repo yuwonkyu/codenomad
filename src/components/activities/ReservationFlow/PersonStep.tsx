@@ -65,7 +65,7 @@ const PersonStep = ({
 
       {showConfirmButton && onConfirm && (
         <button
-          className='w-full h-50 bg-primary-500 text-white text-16-b rounded-[14px] py-15 hover:bg-primary-600 mt-30 cursor-pointer'
+          className='bg-primary-500 text-16-b hover:bg-primary-600 mt-30 h-50 w-full cursor-pointer rounded-[14px] py-15 text-white'
           onClick={onConfirm}
         >
           확인

@@ -24,9 +24,9 @@ const TimeSelectionStep = ({
             <button
               key={s.id}
               onClick={() => onTimeSelect(s.id)}
-              className={`w-full h-52 text-center rounded-[11px] border-2 text-gray-950 text-16-m cursor-pointer hover:bg-blue-50  hover:text-primary-500 hover:border-primary-500 ${
+              className={`text-16-m hover:text-primary-500 hover:border-primary-500 h-52 w-full cursor-pointer rounded-[11px] border-2 text-center text-gray-950 hover:bg-blue-50 ${
                 scheduleId === s.id
-                  ? 'border-primary-500 bg-blue-50 text-primary-500'
+                  ? 'border-primary-500 text-primary-500 bg-blue-50'
                   : 'border-gray-300'
               }`}
             >
@@ -35,7 +35,7 @@ const TimeSelectionStep = ({
           ))}
         </div>
       ) : (
-        <p className='text-center text-gray-500 pt-24 pb-24'>날짜를 선택해주세요.</p>
+        <p className='pt-24 pb-24 text-center text-gray-500'>날짜를 선택해주세요.</p>
       )}
     </>
   );

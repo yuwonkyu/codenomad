@@ -50,19 +50,19 @@ const ModalTrigger = ({
 
   return (
     <>
-      <div className='fixed bottom-0 left-0 right-0 px-20 py-24 justify-center flex flex-col w-auto h-124 border-t-1 border-[#e6e6e6] gap-12 bg-white'>
+      <div className='fixed right-0 bottom-0 left-0 flex h-124 w-auto flex-col justify-center gap-12 border-t-1 border-[#e6e6e6] bg-white px-20 py-24'>
         <div className='flex justify-between'>
           <p className='text-18-b text-gray-950'>
             {price} <span className='text-16-b text-[#79747e]'>/ 명</span>
           </p>
           <button
-            className='text-primary-500 text-16-b decoration-primary-500 decoration-2 underline cursor-pointer'
+            className='text-primary-500 text-16-b decoration-primary-500 cursor-pointer underline decoration-2'
             onClick={handleOpenModal}
           >
             {selectedSchedule ? formatScheduleText(selectedSchedule) : '날짜 선택하기'}
           </button>
         </div>
-        <button className='py-15 rounded-[14px] w-auto h-50 text-white bg-primary-500'>
+        <button className='bg-primary-500 h-50 w-auto rounded-[14px] py-15 text-white'>
           예약하기
         </button>
       </div>

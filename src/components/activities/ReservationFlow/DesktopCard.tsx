@@ -53,16 +53,16 @@ const DesktopCard = ({
   const totalAmount = formatPrice(activity.price * headCount);
 
   return (
-    <div className='p-30 rounded-3xl max-w-410 shadow-custom-5 bg-white'>
+    <div className='shadow-custom-5 max-w-410 rounded-3xl bg-white p-30'>
       {/* 헤더 */}
 
-      <p className='text-24-b text-gray-950 mb-24'>
+      <p className='text-24-b mb-24 text-gray-950'>
         {price} <span className='text-20-m text-gray-600'>/ 인</span>
       </p>
 
       {/* 캘린더 섹션 */}
       <div className='mb-24'>
-        <h4 className='text-16-b text-gray-950 mb-8'>날짜</h4>
+        <h4 className='text-16-b mb-8 text-gray-950'>날짜</h4>
         <CalendarStep
           schedules={activity.schedules}
           selectedDate={selectedDate}
@@ -80,7 +80,7 @@ const DesktopCard = ({
       </div>
 
       {/* 시간 선택 섹션 */}
-      <div className='flex flex-col gap-16 mb-24'>
+      <div className='mb-24 flex flex-col gap-16'>
         <TimeSelectionStep
           selectedDate={selectedDate}
           schedules={activity.schedules}
@@ -89,13 +89,13 @@ const DesktopCard = ({
         />
       </div>
       {/* 하단 예약 확정 버튼 */}
-      <div className='flex items-center justify-between pt-20 border-t-1 border-gray-200'>
+      <div className='flex items-center justify-between border-t-1 border-gray-200 pt-20'>
         <p className='text-16-b text-gray-950'>총 금액 : {totalAmount}</p>
         <button
-          className={`w-135 h-50 text-16-b rounded-[14px] py-15 cursor-pointer ${
+          className={`text-16-b h-50 w-135 cursor-pointer rounded-[14px] py-15 ${
             isConfirmEnabled
-              ? 'bg-primary-500 text-white hover:bg-primary-600'
-              : 'bg-gray-300 text-gray-50 cursor-not-allowed'
+              ? 'bg-primary-500 hover:bg-primary-600 text-white'
+              : 'cursor-not-allowed bg-gray-300 text-gray-50'
           }`}
           disabled={!isConfirmEnabled}
           onClick={handleReservationConfirm}

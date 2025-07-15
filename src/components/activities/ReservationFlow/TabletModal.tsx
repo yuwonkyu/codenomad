@@ -64,14 +64,14 @@ const TabletModal = ({
 
   return (
     <>
-      <div className='fixed inset-0 bg-black/50 z-40' onClick={onClose} />
-      <div className='fixed bottom-0 left-0 w-full z-50 bg-white rounded-t-3xl px-30 py-24 max-h-675'>
-        <div className='flex items-center justify-between mb-6'>
+      <div className='fixed inset-0 z-40 bg-black/50' onClick={onClose} />
+      <div className='fixed bottom-0 left-0 z-50 max-h-675 w-full rounded-t-3xl bg-white px-30 py-24'>
+        <div className='mb-6 flex items-center justify-between'>
           <h3 className='text-18-b'>날짜</h3>
         </div>
 
         {/* 태블릿 2열 레이아웃 */}
-        <div className='flex justify-center gap-24 max-h-492'>
+        <div className='flex max-h-492 justify-center gap-24'>
           {/* 왼쪽: 캘린더 ※UI 부터 구성 중에 있어 임시로 overflow-hidden 추가 */}
           <div className='w-full overflow-hidden'>
             <CalendarStep
@@ -82,7 +82,7 @@ const TabletModal = ({
           </div>
 
           {/* 오른쪽: 시간 선택 + 인원 선택 (날짜 선택 후에만 표시) */}
-          <div className='w-full h-492 p-24 shadow-custom-5 flex flex-col gap-32 rounded-3xl'>
+          <div className='shadow-custom-5 flex h-492 w-full flex-col gap-32 rounded-3xl p-24'>
             <TimeSelectionStep
               selectedDate={selectedDate}
               schedules={schedules}
@@ -104,10 +104,10 @@ const TabletModal = ({
 
         {/* 하단 예약 확정 버튼 ※ 추후 hover 색상 추가*/}
         <button
-          className={`w-full h-50 text-16-b rounded-[14px] py-15 mt-30 ${
+          className={`text-16-b mt-30 h-50 w-full rounded-[14px] py-15 ${
             isConfirmEnabled
-              ? 'bg-primary-500 text-white cursor-pointer'
-              : 'bg-gray-300 text-gray-50 cursor-not-allowed'
+              ? 'bg-primary-500 cursor-pointer text-white'
+              : 'cursor-not-allowed bg-gray-300 text-gray-50'
           }`}
           disabled={!isConfirmEnabled}
           onClick={handleReservationConfirm}
