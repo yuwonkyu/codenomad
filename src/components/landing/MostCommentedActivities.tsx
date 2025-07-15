@@ -5,26 +5,26 @@ import LandingCard from './LandingCard';
 const mockData = [
   {
     id: 1,
-    imageUrl: '/imgs/banner.jpg',
+    bannerImageUrl: '/imgs/banner.jpg',
     title: '요가 클래스',
     rating: 4.9,
-    totalReview: 120,
+    reviewCount: 120,
     price: 15000,
   },
   {
     id: 2,
-    imageUrl: '/imgs/thumbnail.jpg',
+    bannerImageUrl: '/imgs/thumbnail.jpg',
     title: '수제 도자기 만들기',
     rating: 4.8,
-    totalReview: 95,
+    reviewCount: 95,
     price: 20000,
   },
   {
     id: 3,
-    imageUrl: '/imgs/banner.jpg',
+    bannerImageUrl: '/imgs/banner.jpg',
     title: '스트릿 댄스 워크샵',
     rating: 4.7,
-    totalReview: 87,
+    reviewCount: 87,
     price: 18000,
   },
 ];
