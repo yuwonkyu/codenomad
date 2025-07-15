@@ -29,6 +29,15 @@ export interface ReservationComponentProps {
   onReservationConfirm: (data: ReservationData) => void;
 }
 
+// ModalTrigger용 Props (자체적으로 예약 처리)
+export interface ModalTriggerProps {
+  activity: Activity;
+  scheduleId: number | null;
+  setScheduleId: (id: number | null) => void;
+  headCount: number;
+  setHeadCount: (count: number) => void;
+}
+
 export interface BaseModalProps {
   isOpen: boolean;
   onClose: () => void;

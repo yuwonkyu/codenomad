@@ -1,6 +1,7 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useResponsive } from '@/hooks/useResponsive';
+import ConfirmModal from '@/components/common/ConfirmModal';
 import ModalTrigger from './ModalTrigger';
 import DesktopCard from './DesktopCard';
 
@@ -45,26 +46,46 @@ const ReservationContent = () => {
   // 공통 상태 관리
   const [scheduleId, setScheduleId] = useState<number | null>(null);
   const [headCount, setHeadCount] = useState(1);
+  const [isClient, setIsClient] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) return null; // or return fallback
   if (breakpoint === null) return null;
 
   const handleReservationConfirm = (data: { scheduleId: number; headCount: number }) => {
     console.log('예약 확정:', data);
-    // 여기서 실제 예약 API 호출
+    // ConfirmModal 띄우기
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleConfirmModalClose = () => {
+    setIsConfirmModalOpen(false);
+    // 여기서 실제 예약 API 호출 가능
   };
 
   // 데스크톱: lg 이상
   // 태블릿/모바일: lg 미만 (ModalTrigger에서 자체적으로 태블릿/모바일 구분)
   if (breakpoint === 'lg') {
     return (
-      <DesktopCard
-        activity={activity}
-        scheduleId={scheduleId}
-        setScheduleId={setScheduleId}
-        headCount={headCount}
-        setHeadCount={setHeadCount}
-        onReservationConfirm={handleReservationConfirm}
-      />
+      <>
+        <DesktopCard
+          activity={activity}
+          scheduleId={scheduleId}
+          setScheduleId={setScheduleId}
+          headCount={headCount}
+          setHeadCount={setHeadCount}
+          onReservationConfirm={handleReservationConfirm}
+        />
+        <ConfirmModal
+          message="예약이 완료되었습니다!"
+          isOpen={isConfirmModalOpen}
+          onClose={handleConfirmModalClose}
+        />
+      </>
     );
   }
 
@@ -75,7 +96,6 @@ const ReservationContent = () => {
       setScheduleId={setScheduleId}
       headCount={headCount}
       setHeadCount={setHeadCount}
-      onReservationConfirm={handleReservationConfirm}
     />
   );
 };
