@@ -53,11 +53,7 @@ const ReserveTimesInput = ({
               <div className='w-128.5 md:w-122'>
                 <Input
                   label={
-                    idx === 0 ? (
-                      <span className='hidden md:block text-16-m'>시작 시간</span>
-                    ) : (
-                      ''
-                    )
+                    idx === 0 ? <span className='hidden md:block text-16-m'>시작 시간</span> : ''
                   }
                   as='select'
                   options={TIME_OPTIONS}
