@@ -1,5 +1,7 @@
 import Input from '@/components/common/Input';
 import Image from 'next/image';
+import CalendarModal from '@/components/common/CalendarModal';
+import { useState } from 'react';
 
 const TIME_OPTIONS = Array.from({ length: 25 }, (_, i) => {
   const hour = i.toString().padStart(2, '0');
@@ -27,25 +29,35 @@ const ReserveTimesInput = ({
   onRemove,
   isDuplicateTime,
 }: ReserveTimesInputProps) => {
+  const [calendarOpenIdx, setCalendarOpenIdx] = useState<number | null>(null);
+
   return (
     <div className='mb-30'>
       <div className='text-16-b mb-18'>예약 가능한 시간대</div>
       {reserveTimes.map((rt, idx) => (
         <div key={idx} className='mb-18'>
-          {/* 첫 번째(추가)행만 라벨 노출, 나머지는 라벨 없음 */}
           <div className='flex flex-col md:flex-row md:items-end gap-0 md:gap-0'>
-            {/* 날짜 라벨+인풋 */}
-            <div className='flex flex-col md:flex-row flex-1 md:w-344 md:mr-14'>
+            <div className='flex flex-col md:flex-row flex-1 md:w-344 md:mr-14 relative'>
               <Input
                 label={idx === 0 ? '날짜' : ''}
                 placeholder='yyyy/mm/dd'
                 className='mb-10 md:mb-0 w-full text-16-m'
-                type='date'
+                type='text'
                 value={rt.date}
-                max='9999-12-31'
-                onChange={(e) => onChange(idx, 'date', e.target.value)}
-                dateIcon={idx === 0} // 첫 번째(추가)행만 달력 아이콘 노출
+                readOnly
+                dateIcon={idx === 0}
+                onDateIconClick={idx === 0 ? () => setCalendarOpenIdx(idx) : undefined}
               />
+              {/* 달력 아이콘 클릭 시 CalendarModal 노출 */}
+              {calendarOpenIdx === idx && idx === 0 && (
+                <CalendarModal
+                  open={true}
+                  value={rt.date ? new Date(rt.date) : null}
+                  onChange={(date) => onChange(idx, 'date', date.toISOString().slice(0, 10))}
+                  onClose={() => setCalendarOpenIdx(null)}
+                  position={{ top: 50, left: 0 }}
+                />
+              )}
             </div>
             {/* 시간 인풋/버튼 */}
             <div className='flex flex-row flex-1 items-center mt-0'>
@@ -85,33 +97,61 @@ const ReserveTimesInput = ({
               <div className='flex items-center ml-8'>
                 {idx === 0 ? (
                   <>
-                    <button type='button' className='flex-shrink-0 md:hidden ml-14' onClick={onAdd}>
-                      <Image src='/icons/icon_blue_plus.svg' alt='추가' width={28} height={28} />
+                    <button
+                      type='button'
+                      className='flex-shrink-0 md:hidden ml-14 cursor-pointer'
+                      onClick={onAdd}
+                    >
+                      <Image
+                        src='/icons/icon_blue_plus.svg'
+                        alt='추가'
+                        width={28}
+                        height={28}
+                        className='cursor-pointer'
+                      />
                     </button>
                     <button
                       type='button'
-                      className='hidden md:flex items-center justify-center flex-shrink-0 ml-14 mt-25'
+                      className='hidden md:flex items-center justify-center flex-shrink-0 ml-14 mt-25 cursor-pointer'
                       onClick={onAdd}
                     >
-                      <Image src='/icons/icon_blue_plus.svg' alt='추가' width={42} height={42} />
+                      <Image
+                        src='/icons/icon_blue_plus.svg'
+                        alt='추가'
+                        width={42}
+                        height={42}
+                        className='cursor-pointer'
+                      />
                     </button>
                   </>
                 ) : (
                   <>
                     <button
                       type='button'
-                      className='size-28 flex items-center justify-center rounded-full bg-gray-50 flex-shrink-0 md:hidden ml-14'
+                      className='size-28 flex items-center justify-center rounded-full bg-gray-50 flex-shrink-0 md:hidden ml-14 cursor-pointer'
                       onClick={() => onRemove(idx)}
                     >
-                      <Image src='/icons/icon_gray_minus.svg' alt='제거' width={24} height={24} />
+                      <Image
+                        src='/icons/icon_gray_minus.svg'
+                        alt='제거'
+                        width={24}
+                        height={24}
+                        className='cursor-pointer'
+                      />
                     </button>
                     <button
                       type='button'
-                      className='hidden md:flex items-center justify-center rounded-full bg-gray-50 flex-shrink-0 ml-14'
+                      className='hidden md:flex items-center justify-center rounded-full bg-gray-50 flex-shrink-0 ml-14 cursor-pointer'
                       style={{ width: 42, height: 42 }}
                       onClick={() => onRemove(idx)}
                     >
-                      <Image src='/icons/icon_gray_minus.svg' alt='제거' width={42} height={42} />
+                      <Image
+                        src='/icons/icon_gray_minus.svg'
+                        alt='제거'
+                        width={42}
+                        height={42}
+                        className='cursor-pointer'
+                      />
                     </button>
                   </>
                 )}
