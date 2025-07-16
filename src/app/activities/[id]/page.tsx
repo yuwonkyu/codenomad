@@ -65,7 +65,15 @@ const mockReviews = {
     },
   ],
 };
-const ActivityPage = async () => {
+
+interface Props {
+  params: {
+    id: string;
+  };
+}
+
+const ActivityPage = async ({ params }: Props) => {
+  const id = params.id;
   return (
     <>
       {/* 모바일/태블릿용 레이아웃 */}
