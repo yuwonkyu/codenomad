@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { clsx } from 'clsx';
@@ -64,6 +64,20 @@ const ReservationCalendar = ({
   onExperienceChange,
 }: ReservationCalendarProps) => {
   const [date, setDate] = useState<Date | null>(selectedDate || new Date());
+  const calendarRef = useRef<HTMLDivElement>(null);
+
+  // 캘린더 스타일 적용을 위한 useEffect
+  useEffect(() => {
+    if (calendarRef.current) {
+      const weekdaysElement = calendarRef.current.querySelector('.react-calendar__month-view__weekdays');
+      if (weekdaysElement) {
+        const element = weekdaysElement as HTMLElement;
+        element.style.borderBottom = '1px solid #d1d5db';
+        element.style.marginBottom = '12px';
+        // element.style.paddingBottom = window.innerWidth >= 640 ? '48px' : '16px';
+      }
+    }
+  }, [date]); // date가 변경될 때마다 다시 적용
 
   // 날짜를 yyyy-mm-dd 문자열로 변환
   const formatDate = (date: Date | null) => (date ? date.toISOString().split('T')[0] : '');
@@ -112,7 +126,10 @@ const ReservationCalendar = ({
       </div>
 
       {/* 캘린더 - Tailwind CSS 클래스 사용 */}
-      <div className="w-full">
+      <div 
+        ref={calendarRef}
+        className="w-full"
+      >
         <Calendar
           value={date}
           onChange={(value) => handleDateChange(value as Date)}
@@ -140,9 +157,8 @@ const ReservationCalendar = ({
             "[&_.react-calendar__navigation__arrow]:!justify-center",
             
             // 요일 헤더
-            "[&_.react-calendar__month-view__weekdays]:!border-b [&_.react-calendar__month-view__weekdays]:!border-gray-100",
-            "[&_.react-calendar__month-view__weekdays]:!mb-3 [&_.react-calendar__month-view__weekdays]:!flex",
-            "[&_.react-calendar__month-view__weekdays]:!justify-between [&_.react-calendar__month-view__weekdays]:!pb-12",
+            "[&_.react-calendar__month-view__weekdays]:!flex",
+            "[&_.react-calendar__month-view__weekdays]:!justify-between",
             "[&_.react-calendar__month-view__weekdays]:!h-55",
             
             // 개별 요일
@@ -157,7 +173,12 @@ const ReservationCalendar = ({
             
             // 일요일, 토요일 색상
             "[&_.react-calendar__month-view__weekdays__weekday:first-child_abbr]:!text-red-500",
-            "[&_.react-calendar__month-view__weekdays__weekday:last-child_abbr]:!text-blue-500"
+            "[&_.react-calendar__month-view__weekdays__weekday:last-child_abbr]:!text-blue-500",
+            
+            // abbr 태그 점선 밑줄 제거
+            "[&_abbr]:!no-underline",
+            "[&_abbr]:!border-none",
+            "[&_abbr]:!text-decoration-none"
           )}
           tileClassName={cn(
             // 이 부분이 각 날짜 셀의 크기와 모양을 제어
