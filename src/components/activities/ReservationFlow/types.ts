@@ -36,15 +36,16 @@ export interface ModalTriggerProps {
   setScheduleId: (id: number | null) => void;
   headCount: number;
   setHeadCount: (count: number) => void;
+  onReservationComplete?: () => void;
 }
 
 export interface BaseModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onConfirm: () => void; // 확인 버튼으로 모달 닫기 (상태 유지)
   schedules: Schedule[];
   scheduleId: number | null;
   setScheduleId: (id: number | null) => void;
   headCount: number;
   setHeadCount: (count: number) => void;
-  onReservationConfirm?: (data: ReservationData) => void;
 } 
