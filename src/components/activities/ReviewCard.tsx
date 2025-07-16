@@ -22,7 +22,7 @@ const ReviewCard = ({ nickname, rating, content, createdAt }: ReviewCardProps) =
       <div className='flex flex-col justify-center gap-4'>
         <div className='flex items-center gap-8'>
           <p className='text-16-b text-gray-950'>{nickname}</p>
-          <p className='text 16-b text-[#A4A1AA]'>{viewDate}</p>
+          <p className='text-16-b text-[#A4A1AA]'>{viewDate}</p>
         </div>
         <StarRatingDisplay rating={rating} />
       </div>
