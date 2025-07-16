@@ -1,0 +1,70 @@
+/* 캘린더 전체 */
+.reactCalendar {
+  width: 100% !important;
+  max-width: 100% !important;
+  font-size: 1.1rem;
+}
+.reactCalendarTile {
+  width: 54px !important;
+  height: 120px !important;
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+.reactCalendarTile abbr {
+  display: none !important;
+}
+@media (min-width: 768px) {
+  .reactCalendarTile {
+    width: 68px !important;
+    height: 124px !important;
+  }
+}
+@media (min-width: 1024px) {
+  .reactCalendarTile {
+    width: 92px !important;
+    height: 124px !important;
+  }
+}
+.calendarDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #eb5757;
+  margin-bottom: 2px;
+  margin-left: 5px;
+}
+.reactCalendarMonthViewWeekdays {
+  border-bottom: 3px solid #e0e0e5;
+  margin-bottom: 10px;
+}
+.reactCalendarNavigationLabel {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  width: 100%;
+  display: inline-block;
+  letter-spacing: -1px;
+}
+.reactCalendarNavigation {
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 0.5rem;
+}
+.reactCalendarNavigationButton {
+  font-size: 1.5rem;
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.reactCalendar :global(.react-calendar__month-view__weekdays) {
+  border-bottom: 2px solid #e0e0e5;
+  margin-bottom: 10px;
+}
+.reactCalendar :global(.react-calendar__month-view__week) {
+  border-top: 1px solid #e0e0e5;
+}

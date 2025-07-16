@@ -1,4 +1,5 @@
 'use client';
+import styles from '@/styles/reservationStatus.module.css';
 import { useState, useContext, useRef, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -144,12 +145,19 @@ export default function ReservationStatusPage() {
           value={date}
           onChange={(value) => setDate(value as Date)}
           calendarType='gregory'
-          className='w-full'
+          className={styles.reactCalendar}
+          tileClassName={styles.reactCalendarTile}
+          navigationLabel={({ date }) => (
+            <span className={styles.reactCalendarNavigationLabel}>
+              {date.getFullYear()}년 {date.getMonth() + 1}월
+            </span>
+          )}
+          prev2Label={null}
+          next2Label={null}
           formatShortWeekday={(_, date) => {
             const week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             return week[date.getDay()];
           }}
-          formatDay={() => ''}
           tileContent={({ date }: { date: Date }) => {
             const key = formatDate(date);
             const reservations = reservationData[key] || [];
@@ -159,7 +167,7 @@ export default function ReservationStatusPage() {
               <div className='flex flex-col items-center mt-1 calendar-badge-scroll'>
                 <div className='flex items-center justify-center'>
                   <span>{date.getDate()}</span>
-                  {hasStatus && <div className='calendar-dot ml-5' />}
+                  {hasStatus && <div className={styles.calendarDot} />}
                 </div>
                 {statusList.map((status) => {
                   const count = reservations.filter((r) => r.status === status).length;
@@ -170,8 +178,6 @@ export default function ReservationStatusPage() {
               </div>
             );
           }}
-          prev2Label={null}
-          next2Label={null}
           onClickDay={(date, event) => handleDayClick(date, event)}
         />
       </div>
