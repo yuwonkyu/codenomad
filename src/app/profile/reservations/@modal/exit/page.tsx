@@ -1,14 +1,14 @@
 'use client';
-
-
 import CommonModal from '@/components/common/CancelModal';
 import { useRouter } from 'next/navigation';
-
 
 const page = () => {
   const router = useRouter();
   const onDismiss = () => {
     router.back();
+  };
+  const onOpen = () => {
+    // router.push();
   };
 
   return (

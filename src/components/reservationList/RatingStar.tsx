@@ -12,7 +12,7 @@ const RatingStar = ({ rating }: RatingType) => {
     <div className='flex justify-center gap-6'>
       {[...Array(5)].map((item, idx) => {
         return (
-          <div className='w-36 h-36 md:w-42 md:h-42 relative'>
+          <div className='relative h-36 w-36 md:h-42 md:w-42' key={`star-${idx}`}>
             <Image
               src={idx < rating ? starOn : starOff}
               key={`star-${idx}`}
