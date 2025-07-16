@@ -26,6 +26,7 @@ const CategoryFilter = ({ selectedCategory, onSelectCategory }: CategoryFilterPr
         return (
           <button
             key={label}
+            aria-pressed={isSelected}
             onClick={() => onSelectCategory(isSelected ? null : label)}
             className={clsx(
               'flex items-center shrink-0 px-12 py-6 rounded-full border transition-colors duration-200 cursor-pointer whitespace-nowrap',
