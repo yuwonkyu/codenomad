@@ -4,8 +4,6 @@ import ReviewCard from '@/components/activities/ReviewCard';
 import DropdownMenu from '@/components/activities/ActivitesDropdown';
 import ReservationContent from '@/components/activities/ReservationFlow/ReservationContent';
 import Image from 'next/image';
-// 미적용
-import Pagination from '@/components/common/Pagination';
 
 const mock = {
   id: 7,
@@ -67,13 +65,13 @@ const mockReviews = {
 };
 
 interface Props {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 const ActivityPage = async ({ params }: Props) => {
-  const id = params.id;
+  await params; // params validation
   return (
     <>
       {/* 모바일/태블릿용 레이아웃 */}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, ReactNode, Children } from 'react';
+import { useContext, ReactNode } from 'react';
 import { DropdownContext } from './Dropdown';
 
 interface TriggerProps {

@@ -1,11 +1,10 @@
 'use client';
 
-
 import CommonModal from '@/components/common/CancelModal';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
-
-const page = () => {
+const Page = () => {
   const router = useRouter();
   const onDismiss = () => {
     router.back();
@@ -14,7 +13,15 @@ const page = () => {
   return (
     <CommonModal
       open={true}
-      icon={<img src='/icons/icon_alert.svg' alt='경고' className='h-full w-full' />}
+      icon={
+        <Image
+          src='/icons/icon_alert.svg'
+          alt='경고'
+          width={24}
+          height={24}
+          className='h-full w-full'
+        />
+      }
       text={'저장되지 않았습니다.<br />정말 뒤로 가시겠습니까?'}
       cancelText='아니오'
       confirmText='네'
@@ -24,4 +31,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

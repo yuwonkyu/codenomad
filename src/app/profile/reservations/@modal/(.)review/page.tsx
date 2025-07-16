@@ -9,7 +9,6 @@ export default async function page() {
       startTime='12:00'
       endTime='13:30'
       headCount={30}
-      reservationId={10010}
     />
   );
 }

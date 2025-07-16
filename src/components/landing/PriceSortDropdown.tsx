@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import clsx from 'clsx';
+import Image from 'next/image';
 
 interface SortDropdownProps {
   selectedSort: string | null;
@@ -21,18 +22,20 @@ const PriceSortDropdown = ({ selectedSort, onSelectSort }: SortDropdownProps) =>
     <div className='relative'>
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className='text-14-m text-gray-700 flex items-center gap-4'
+        className='text-14-m flex items-center gap-4 text-gray-700'
       >
         {selectedLabel}
-        <img
+        <Image
           src='/icons/icon_alt arrow_down.svg'
           alt='드롭다운 화살표'
+          width={16}
+          height={16}
           className={clsx('transition-transform', { 'rotate-180': isOpen })}
         />
       </button>
 
       {isOpen && (
-        <ul className='absolute top-full mt-4 right-1/2 translate-x-1/2 bg-white border border-gray-200 shadow-md rounded-md z-10 min-w-[90px] whitespace-nowrap sm:right-0 sm:translate-x-0'>
+        <ul className='absolute top-full right-1/2 z-10 mt-4 min-w-[90px] translate-x-1/2 rounded-md border border-gray-200 bg-white whitespace-nowrap shadow-md sm:right-0 sm:translate-x-0'>
           {SORT_OPTIONS.map((option) => (
             <li key={option.value}>
               <button
@@ -41,7 +44,7 @@ const PriceSortDropdown = ({ selectedSort, onSelectSort }: SortDropdownProps) =>
                   setIsOpen(false);
                 }}
                 className={clsx(
-                  'px-16 py-8 w-full text-left text-14-m hover:bg-gray-100 transition-colors duration-150',
+                  'text-14-m w-full px-16 py-8 text-left transition-colors duration-150 hover:bg-gray-100',
                   selectedSort === option.value && 'text-primary font-semibold',
                 )}
               >
