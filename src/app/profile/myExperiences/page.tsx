@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import ExperienceCard from '@/components/profile/ExperienceCard';
-import { getMyActivities, MyActivity } from '@/lib/api/profile/my-activities';
+import { getMyActivities, MyActivity, deleteMyActivity } from '@/lib/api/profile/my-activities';
 import { ProfileMobileContext } from '../layout';
 import { useContext } from 'react';
 
@@ -58,6 +58,17 @@ export default function MyExperiencesPage() {
     };
   }, [cursorId, hasMore]);
 
+  // 삭제 핸들러
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('정말 삭제하시겠습니까?')) return;
+    try {
+      await deleteMyActivity(id);
+      setActivities((prev) => prev.filter((a) => a.id !== id));
+    } catch (err) {
+      alert('삭제에 실패했습니다.');
+    }
+  };
+
   return (
     <section className='w-full max-w-2xl mx-auto'>
       {/* 상단 타이틀/설명 */}
@@ -108,6 +119,7 @@ export default function MyExperiencesPage() {
               reviews={activity.reviewCount}
               price={activity.price}
               image={activity.bannerImageUrl}
+              onDelete={handleDelete}
             />
           ))}
         </div>

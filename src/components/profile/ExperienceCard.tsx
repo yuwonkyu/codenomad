@@ -8,6 +8,7 @@ interface ExperienceCardProps {
   reviews: number;
   price: number;
   image: string;
+  onDelete?: (id: number) => void; // 추가
 }
 
 export default function ExperienceCard({
@@ -17,6 +18,7 @@ export default function ExperienceCard({
   reviews,
   price,
   image,
+  onDelete,
 }: ExperienceCardProps) {
   return (
     <div
@@ -46,7 +48,10 @@ export default function ExperienceCard({
               수정하기
             </button>
           </Link>
-          <button className='w-68 h-29 px-3 py-1 rounded-lg bg-gray-200 text-gray-600 text-14-m border border-gray-300'>
+          <button
+            className='w-68 h-29 px-3 py-1 rounded-lg bg-gray-200 text-gray-600 text-14-m border border-gray-300'
+            onClick={() => onDelete && onDelete(id)}
+          >
             삭제하기
           </button>
         </div>

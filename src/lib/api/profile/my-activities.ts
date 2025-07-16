@@ -44,3 +44,13 @@ export const getMyActivities = async (
   });
   return response.data;
 };
+
+// 내 체험 삭제
+export const deleteMyActivity = async (activityId: number) => {
+  const token = localStorage.getItem('accessToken');
+  await axios.delete(`/my-activities/${activityId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
