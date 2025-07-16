@@ -1,6 +1,8 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface ExperienceCardProps {
+  id: number;
   title: string;
   rating: number;
   reviews: number;
@@ -9,6 +11,7 @@ interface ExperienceCardProps {
 }
 
 export default function ExperienceCard({
+  id,
   title,
   rating,
   reviews,
@@ -38,9 +41,11 @@ export default function ExperienceCard({
           </div>
         </div>
         <div className='flex gap-2 mt-3'>
-          <button className='w-68 h-29 px-3 py-1 rounded-lg bg-gray-100 text-gray-600 text-14-m border border-gray-300'>
-            수정하기
-          </button>
+          <Link href={`/experiences/edit?id=${id}`}>
+            <button className='w-68 h-29 px-3 py-1 rounded-lg bg-gray-100 text-gray-600 text-14-m border border-gray-300'>
+              수정하기
+            </button>
+          </Link>
           <button className='w-68 h-29 px-3 py-1 rounded-lg bg-gray-200 text-gray-600 text-14-m border border-gray-300'>
             삭제하기
           </button>
