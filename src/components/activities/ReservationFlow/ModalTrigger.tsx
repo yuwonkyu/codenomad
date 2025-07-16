@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useResponsive } from '@/hooks/useResponsive';
+import ConfirmModal from '@/components/common/ConfirmModal';
 import TabletModal from './TabletModal';
 import MobileModal from './MobileModal';
-import { Schedule, ReservationComponentProps, ReservationData } from './types';
+import { Schedule, ModalTriggerProps } from './types';
 
 const ModalTrigger = ({
   activity,
@@ -10,9 +11,10 @@ const ModalTrigger = ({
   setScheduleId,
   headCount,
   setHeadCount,
-  onReservationConfirm,
-}: ReservationComponentProps) => {
+  onReservationComplete,
+}: ModalTriggerProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const breakpoint = useResponsive();
 
   const price = '\u20A9' + ' ' + String(activity.price).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -30,11 +32,39 @@ const ModalTrigger = ({
 
   const handleCloseModal = () => {
     setIsOpen(false);
+    // 모달을 중간에 닫을 때 상태 초기화
+    onReservationComplete?.();
   };
 
-  const handleReservationConfirm = (data: ReservationData) => {
-    console.log('예약 확정:', data);
-    onReservationConfirm(data);
+  const handleModalConfirm = () => {
+    // 확인 버튼으로 모달 닫을 때는 상태 유지
+    setIsOpen(false);
+  };
+
+  const handleTriggerReservation = () => {
+    if (selectedSchedule) {
+      console.log('ModalTrigger 예약 확정:', {
+        scheduleId: selectedSchedule.id,
+        headCount: headCount,
+      });
+      // ConfirmModal 띄우기
+      setIsConfirmModalOpen(true);
+    } else {
+      handleOpenModal();
+    }
+  };
+
+  const handleConfirmModalClose = () => {
+    setIsConfirmModalOpen(false);
+    onReservationComplete?.(); // 상태 초기화
+    // 실제 예약 처리 (나중에 API 호출로 대체)
+    if (selectedSchedule) {
+      console.log('예약 완료:', {
+        scheduleId: selectedSchedule.id,
+        headCount: headCount,
+      });
+      // TODO: 실제 예약 API 호출
+    }
   };
 
   if (breakpoint === null) return null;
@@ -62,16 +92,7 @@ const ModalTrigger = ({
               ? 'bg-primary-500 hover:bg-primary-600 cursor-pointer' 
               : 'bg-gray-300 cursor-not-allowed'
           }`}
-          onClick={() => {
-            if (selectedSchedule) {
-              handleReservationConfirm({
-                scheduleId: selectedSchedule.id,
-                headCount: headCount,
-              });
-            } else {
-              handleOpenModal();
-            }
-          }}
+          onClick={handleTriggerReservation}
           disabled={!selectedSchedule}
         >
           예약하기
@@ -83,26 +104,33 @@ const ModalTrigger = ({
         <TabletModal
           isOpen={isOpen}
           onClose={handleCloseModal}
+          onConfirm={handleModalConfirm}
           schedules={activity.schedules}
           scheduleId={scheduleId}
           setScheduleId={setScheduleId}
           headCount={headCount}
           setHeadCount={setHeadCount}
-          onReservationConfirm={handleReservationConfirm}
         />
       ) : (
         /* 모바일용 모달 */
         <MobileModal
           isOpen={isOpen}
           onClose={handleCloseModal}
+          onConfirm={handleModalConfirm}
           schedules={activity.schedules}
           scheduleId={scheduleId}
           setScheduleId={setScheduleId}
           headCount={headCount}
           setHeadCount={setHeadCount}
-          onReservationConfirm={handleReservationConfirm}
         />
       )}
+
+      {/* ConfirmModal */}
+      <ConfirmModal
+        message="예약이 완료되었습니다!"
+        isOpen={isConfirmModalOpen}
+        onClose={handleConfirmModalClose}
+      />
     </>
   );
 };

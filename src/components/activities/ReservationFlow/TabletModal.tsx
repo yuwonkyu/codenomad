@@ -9,12 +9,12 @@ import PersonStep from './PersonStep';
 const TabletModal = ({
   isOpen,
   onClose,
+  onConfirm,
   schedules,
   scheduleId,
   setScheduleId,
   headCount,
   setHeadCount,
-  onReservationConfirm,
 }: BaseModalProps) => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
@@ -31,13 +31,9 @@ const TabletModal = ({
     }
   }, [scheduleId, schedules]);
 
-  // 모달 상태에 따른 초기화
+  // 모달이 닫힐 때 내부 상태만 초기화 (상위 상태는 ModalTrigger에서 처리)
   useEffect(() => {
-    if (isOpen) {
-      // 모달이 열릴 때 내부 상태 초기화
-      setSelectedDate(null);
-    } else {
-      // 모달이 닫힐 때도 내부 상태 초기화
+    if (!isOpen) {
       setSelectedDate(null);
     }
   }, [isOpen]);
@@ -53,8 +49,7 @@ const TabletModal = ({
 
   const handleReservationConfirm = () => {
     if (scheduleId) {
-      onReservationConfirm?.({ scheduleId, headCount });
-      onClose();
+      onConfirm(); // 확인 버튼으로 닫을 때는 상태 유지
     }
   };
 

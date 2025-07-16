@@ -3,21 +3,21 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { BaseModalProps } from './types';
-
-type ModalStep = 'calendar' | 'person';
 import CalendarStep from './CalendarStep';
 import TimeSelectionStep from './TimeSelectionStep';
 import PersonStep from './PersonStep';
 
+type ModalStep = 'calendar' | 'person';
+
 const MobileModal = ({
   isOpen,
   onClose,
+  onConfirm,
   schedules,
   scheduleId,
   setScheduleId,
   headCount,
   setHeadCount,
-  onReservationConfirm,
 }: BaseModalProps) => {
   const [step, setStep] = useState<ModalStep>('calendar');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -36,11 +36,7 @@ const MobileModal = ({
   // 모달 상태에 따른 초기화
   useEffect(() => {
     if (isOpen) {
-      // 모달이 열릴 때 내부 상태 초기화
-      setStep('calendar');
-      setSelectedDate(null);
-    } else {
-      // 모달이 닫힐 때도 내부 상태 초기화 (혹시 모를 상황 대비)
+      // 모달이 열릴 때만 내부 상태 초기화
       setStep('calendar');
       setSelectedDate(null);
     }
@@ -67,8 +63,7 @@ const MobileModal = ({
 
   const handleReservationConfirm = () => {
     if (scheduleId) {
-      onReservationConfirm?.({ scheduleId, headCount });
-      onClose();
+      onConfirm(); // 확인 버튼으로 닫을 때는 상태 유지
     }
   };
 
