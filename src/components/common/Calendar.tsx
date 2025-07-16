@@ -36,6 +36,10 @@ const CalendarModal = ({
   const currentDate = value || new Date();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalDate, setModalDate] = useState<string | null>(null);
+  // ReservationModal용 상태 추가
+  const [tab, setTab] = useState<'신청' | '승인' | '거절'>('신청');
+  const [timeOptions] = useState<string[]>(['10:00', '14:00', '18:00']);
+  const [selectedTime, setSelectedTime] = useState<string>(timeOptions[0]);
 
   const handlePrevMonth = () => {
     const prevMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
@@ -140,8 +144,17 @@ const CalendarModal = ({
       {/* 예약 내역 모달 컴포넌트 연동 */}
       {modalOpen && modalDate && (
         <ReservationModal
-          date={modalDate}
-          badges={badges[modalDate] ?? []}
+          date={new Date(modalDate)}
+          tab={tab}
+          setTab={setTab}
+          timeOptions={timeOptions}
+          selectedTime={selectedTime}
+          setSelectedTime={setSelectedTime}
+          reservations={(badges[modalDate] ?? []).map((badge) => ({
+            status: '신청',
+            count: badge.count ?? 1,
+            nickname: badge.nickname
+          }))}
           onClose={() => setModalOpen(false)}
         />
       )}
