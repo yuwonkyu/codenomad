@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import CalendarStep from './CalendarStep';
 import TimeSelectionStep from './TimeSelectionStep';
 import PersonStep from './PersonStep';
-import { ReservationComponentProps, ReservationData } from './types';
+import { ReservationComponentProps } from './types';
 
 const DesktopCard = ({
   activity,

@@ -1,5 +1,4 @@
 import { twMerge } from 'tailwind-merge';
-import { StatusType } from './StatusBadge';
 
 interface BadgeType {
   children: React.ReactNode;
@@ -11,7 +10,7 @@ const Badge = ({ children, setFilter, selected }: BadgeType) => {
   return (
     <span
       className={twMerge(
-        `cursor-pointer hover:bg-black hover:text-white text-16-m text-gray-950 bg-white px-16 py-10 rounded-full border-1 border-[#d8d8d8] ${
+        `text-16-m cursor-pointer rounded-full border-1 border-[#d8d8d8] bg-white px-16 py-10 text-gray-950 hover:bg-black hover:text-white ${
           selected && selectedStyle
         }`,
       )}
