@@ -10,7 +10,7 @@ import Image from 'next/image';
 const cn = (...inputs: (string | undefined)[]) => twMerge(clsx(inputs));
 
 // 예약 상태 뱃지 컴포넌트
-function StatusBadge({ status, count }: { status: string; count: number }) {
+const StatusBadge = ({ status, count }: { status: string; count: number }) => {
   const colorMap: Record<string, string> = {
     완료: 'bg-gray-100 text-gray-600',
     예약: 'bg-blue-100 text-blue-600',
@@ -29,7 +29,7 @@ function StatusBadge({ status, count }: { status: string; count: number }) {
       {status} {count}
     </span>
   );
-}
+};
 
 interface ReservationData {
   status: string;
@@ -54,7 +54,7 @@ interface ReservationCalendarProps {
   onExperienceChange?: (experienceId: string) => void;
 }
 
-export default function ReservationCalendar({
+const ReservationCalendar = ({
   selectedDate,
   onDateChange,
   onDayClick,
@@ -62,7 +62,7 @@ export default function ReservationCalendar({
   experiences = [{ id: 'default', title: '함께 배우면 즐거운 스트릿 댄스' }],
   selectedExperienceId = 'default',
   onExperienceChange,
-}: ReservationCalendarProps) {
+}: ReservationCalendarProps) => {
   const [date, setDate] = useState<Date | null>(selectedDate || new Date());
 
   // 날짜를 yyyy-mm-dd 문자열로 변환
@@ -88,7 +88,7 @@ export default function ReservationCalendar({
       <div className="relative">
         <select 
           className={cn(
-            'h-54 w-full rounded-[16px] border border-gray-100 py-17.5 px-20 text-16-m text-gray-950',
+            'h-54 w-full rounded-[16px] border border-gray-100 px-20 text-16-m text-gray-950',
             'bg-white focus:border-blue-500 focus:outline-none',
             'appearance-none'
           )}
@@ -118,13 +118,17 @@ export default function ReservationCalendar({
           onChange={(value) => handleDateChange(value as Date)}
           calendarType='gregory'
           className={cn(
-            // 기본 캘린더 스타일
-            "!w-full !max-w-full !bg-transparent !border-none text-lg",
-            "!font-['Pretendard',sans-serif]",
+            // 이 부분이 캘린더 전체 컨테이너를 제어
+            "!w-full !max-w-full !bg-transparent !border-none",
+            
+            // 캘린더 그리드 레이아웃 (날짜 셀들의 배치)
+            "[&_.react-calendar__month-view__days]:!grid [&_.react-calendar__month-view__days]:!grid-cols-7 grid-rows-auto",
+            "[&_.react-calendar__month-view__days]:!gap-1",
             
             // 네비게이션 스타일
-            "[&_.react-calendar__navigation]:!flex [&_.react-calendar__navigation]:!justify-center",
-            "[&_.react-calendar__navigation]:!items-center [&_.react-calendar__navigation]:!gap-16",
+            "[&_.react-calendar__navigation]:!flex",
+            "[&_.react-calendar__navigation]:!justify-center",
+            "[&_.react-calendar__navigation]:!items-center [&_.react-calendar__navigation]:!gap-10",
             "[&_.react-calendar__navigation]:!mb-4 [&_.react-calendar__navigation]:!h-12",
             
             // 네비게이션 화살표
@@ -136,36 +140,34 @@ export default function ReservationCalendar({
             "[&_.react-calendar__navigation__arrow]:!justify-center",
             
             // 요일 헤더
-            "[&_.react-calendar__month-view__weekdays]:!border-b [&_.react-calendar__month-view__weekdays]:!border-gray-300",
+            "[&_.react-calendar__month-view__weekdays]:!border-b [&_.react-calendar__month-view__weekdays]:!border-gray-100",
             "[&_.react-calendar__month-view__weekdays]:!mb-3 [&_.react-calendar__month-view__weekdays]:!flex",
-            "[&_.react-calendar__month-view__weekdays]:!justify-between [&_.react-calendar__month-view__weekdays]:!pb-2",
+            "[&_.react-calendar__month-view__weekdays]:!justify-between [&_.react-calendar__month-view__weekdays]:!pb-12",
+            "[&_.react-calendar__month-view__weekdays]:!h-55",
             
             // 개별 요일
             "[&_.react-calendar__month-view__weekdays__weekday]:!flex-1 [&_.react-calendar__month-view__weekdays__weekday]:!min-w-12",
-            "[&_.react-calendar__month-view__weekdays__weekday]:!text-sm [&_.react-calendar__month-view__weekdays__weekday]:!font-semibold",
-            "[&_.react-calendar__month-view__weekdays__weekday]:!text-gray-700 [&_.react-calendar__month-view__weekdays__weekday]:!text-center",
-            "[&_.react-calendar__month-view__weekdays__weekday]:!py-1 [&_.react-calendar__month-view__weekdays__weekday]:!font-['Pretendard',sans-serif]",
+            "[&_.react-calendar__month-view__weekdays__weekday]:!w-[53.57px] sm:[&_.react-calendar__month-view__weekdays__weekday]:!w-[68px] lg:[&_.react-calendar__month-view__weekdays__weekday]:!w-[91.43px]",
+            "[&_.react-calendar__month-view__weekdays__weekday]:!h-[40px] sm:[&_.react-calendar__month-view__weekdays__weekday]:!h-[43px] lg:[&_.react-calendar__month-view__weekdays__weekday]:!h-[43px]",
+            "[&_.react-calendar__month-view__weekdays__weekday]:!flex [&_.react-calendar__month-view__weekdays__weekday]:!items-center [&_.react-calendar__month-view__weekdays__weekday]:!justify-center",
+            "[&_.react-calendar__month-view__weekdays__weekday]:!text-[13px] sm:[&_.react-calendar__month-view__weekdays__weekday]:!text-[16px]",
+            "[&_.react-calendar__month-view__weekdays__weekday]:!font-bold",
+            "[&_.react-calendar__month-view__weekdays__weekday]:!text-gray-700",
+            "[&_.react-calendar__month-view__weekdays__weekday]:!font-['Pretendard',sans-serif]",
             
             // 일요일, 토요일 색상
             "[&_.react-calendar__month-view__weekdays__weekday:first-child_abbr]:!text-red-500",
             "[&_.react-calendar__month-view__weekdays__weekday:last-child_abbr]:!text-blue-500"
           )}
           tileClassName={cn(
-            // 기본 타일 스타일 - 피그마에 맞게 조정
-            "!w-16 !h-20 !min-w-12 !p-1 !flex !flex-col !items-center !justify-start",
-            "!border !border-gray-200 !bg-white !rounded-lg !relative !m-px !box-border",
-            
-            // 반응형 크기
-            "md:!w-20 md:!h-24 lg:!w-24 lg:!h-28",
-            "max-[744px]:!w-12 max-[744px]:!h-16 max-[744px]:!rounded-md",
-            "max-[744px]:!p-0.5",
-            
-            // abbr 숨기기
-            "[&_abbr]:!hidden"
+            // 이 부분이 각 날짜 셀의 크기와 모양을 제어
+            "!w-53.57 !md-w-68 !lg:w-91.43 !h-104 !md:h-124 !lg:h-124 !min-w-12 !p-0",  // 크기
+            "!flex !flex-col !items-center !justify-start", // 레이아웃
+            "!border !border-gray-200 !bg-white !rounded-lg", // 스타일
           )}
           navigationLabel={({ date }) => (
             <span className={cn(
-              "text-xl font-bold text-center w-full inline-block tracking-tight text-gray-800",
+              "text-16-b md:text-20-b text-center w-full inline-block text-black",
               "font-['Pretendard',sans-serif] max-[744px]:text-base"
             )}>
               {date.getFullYear()}년 {date.getMonth() + 1}월
@@ -202,12 +204,12 @@ export default function ReservationCalendar({
             return (
               <div className='flex flex-col items-center w-full h-full relative'>
                 {/* 날짜 숫자 */}
-                <div className='w-full flex justify-start pt-1 pl-1'>
-                  <span className="text-xs font-medium text-gray-700">
+                <div className='w-full flex justify-start pt-18'>
+                  <span className="text-16-m text-gray-800">
                     {date.getDate()}
                   </span>
                   {hasStatus && (
-                    <div className="w-1 h-1 bg-red-500 rounded-full ml-auto mr-1" />
+                    <div className="w-5 h-5 bg-red-500 rounded-full ml-auto mr-1" />
                   )}
                 </div>
                 
@@ -228,4 +230,6 @@ export default function ReservationCalendar({
       </div>
     </div>
   );
-}
+};
+
+export default ReservationCalendar;
