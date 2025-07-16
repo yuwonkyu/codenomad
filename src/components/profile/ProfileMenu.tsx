@@ -21,18 +21,17 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string>('/icons/profile_default.svg');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 최초 렌더링 시 프로필 이미지 불러오기
-  // (실제 서비스에서는 Context 등으로 전역 관리 추천)
   React.useEffect(() => {
     (async () => {
       try {
         const profile = await getUserProfile();
-        setImageUrl(profile.profileImageUrl || null);
+        setImageUrl(profile.profileImageUrl || '/icons/profile_default.svg');
       } catch {
-        setImageUrl(null);
+        setImageUrl('/icons/profile_default.svg');
       }
     })();
   }, []);
@@ -44,10 +43,10 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
     setIsUploading(true);
     try {
       const updated = await uploadProfileImage(file);
-      // 캐시 버스터 추가
+      // 업로드 후에만 캐시 버스터 쿼리 추가
       const updatedUrl = updated.profileImageUrl
         ? updated.profileImageUrl + '?t=' + Date.now()
-        : null;
+        : '/icons/profile_default.svg';
       setImageUrl(updatedUrl);
       alert('프로필 이미지가 변경되었습니다!');
     } catch (err) {
@@ -73,7 +72,7 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
       <div className='relative mb-8'>
         <div className='w-[120px] h-[120px] rounded-full bg-blue-100 flex items-center justify-center overflow-hidden'>
           <Image
-            src={imageUrl && imageUrl.trim() !== '' ? imageUrl : '/icons/profile_default.svg'}
+            src={imageUrl}
             alt='프로필'
             width={120}
             height={120}
