@@ -7,17 +7,17 @@ const PhotoSection = () => {
     switch (length) {
       case 1:
         return (
-          <div className='relative w-full h-full rounded-3xl border border-black'>
+          <div className='relative h-full w-full rounded-3xl border border-black'>
             <Image src='/icons/empty.svg' alt='text01' fill />
           </div>
         );
       case 2:
         return (
           <>
-            <div className='relative w-full h-full rounded-l-3xl border border-black'>
+            <div className='relative h-full w-full rounded-l-3xl border border-black'>
               <Image src='/icons/empty.svg' alt='text01' fill />
             </div>
-            <div className='relative w-full h-full rounded-r-3xl border border-black'>
+            <div className='relative h-full w-full rounded-r-3xl border border-black'>
               <Image src='/icons/empty.svg' alt='text01' fill />
             </div>
           </>
@@ -25,11 +25,11 @@ const PhotoSection = () => {
       case 3:
         return (
           <>
-            <div className='relative w-full h-full rounded-l-3xl border border-black'>
+            <div className='relative h-full w-full rounded-l-3xl border border-black'>
               <Image src='/icons/empty.svg' alt='text01' fill />
             </div>
-            <div className='grid grid-rows-2 w-full gap-12 h-full'>
-              <div className='relative h-full rounded-tr-3xl border border-black overflow-hidden'>
+            <div className='grid h-full w-full grid-rows-2 gap-12'>
+              <div className='relative h-full overflow-hidden rounded-tr-3xl border border-black'>
                 <Image src='/icons/empty.svg' alt='test02' fill className='object-cover' />
               </div>
               <div className='relative h-full rounded-br-3xl border border-black'>
@@ -41,17 +41,17 @@ const PhotoSection = () => {
       case 4:
         return (
           <>
-            <div className='relative w-full h-full rounded-l-3xl border border-black'>
+            <div className='relative h-full w-full rounded-l-3xl border border-black'>
               <Image src='/icons/empty.svg' alt='text01' fill />
             </div>
-            <div className='grid grid-rows-2 grid-cols-2 w-full gap-12 h-full'>
-              <div className='grid relative h-full border border-black'>
+            <div className='grid h-full w-full grid-cols-2 grid-rows-2 gap-12'>
+              <div className='relative grid h-full border border-black'>
                 <Image src='/icons/empty.svg' alt='test02' fill className='object-cover' />
               </div>
               <div className='relative h-full rounded-tr-3xl border border-black'>
                 <Image src='/icons/empty.svg' alt='test03' fill className='object-cover' />
               </div>
-              <div className=' col-span-2 relative h-full rounded-br-3xl border border-black'>
+              <div className='relative col-span-2 h-full rounded-br-3xl border border-black'>
                 <Image src='/icons/empty.svg' alt='test03' fill className='object-cover' />
               </div>
             </div>
@@ -63,7 +63,7 @@ const PhotoSection = () => {
   };
 
   return (
-    <div className='flex max-w-327 h-245 justify-center items-center gap-12 sm:max-w-684 sm:h-400 lg:max-w-670'>
+    <div className='flex h-245 w-auto items-center justify-center gap-12 sm:h-400'>
       {renderImageSection(4)}
     </div>
   );

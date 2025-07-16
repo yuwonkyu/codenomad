@@ -1,4 +1,13 @@
 'use client';
+<<<<<<< HEAD
+=======
+import styles from '@/styles/reservationStatus.module.css';
+import { useState, useContext, useRef, useEffect } from 'react';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import { ProfileMobileContext } from '../layout';
+// import axios from '@/lib/api/axios'; // axios.ts가 default export라면 그대로, 아니면 { axios }로 변경 필요
+>>>>>>> f79fb75b8cb6e485de62b747e28bb55625308844
 
 import { useState } from 'react';
 import CalendarModal from '@/components/common/Calendar';

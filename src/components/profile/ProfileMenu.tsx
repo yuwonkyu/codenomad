@@ -3,6 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
+import React, { useState, useRef } from 'react';
+import { uploadProfileImage, getUserProfile } from '@/lib/api/profile';
 
 const menuItems = [
   { icon: '/icons/icon_user.svg', label: '내 정보', href: '/profile/info' },
@@ -18,6 +20,46 @@ interface ProfileMenuProps {
 export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [isUploading, setIsUploading] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 최초 렌더링 시 프로필 이미지 불러오기
+  // (실제 서비스에서는 Context 등으로 전역 관리 추천)
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const profile = await getUserProfile();
+        console.log('프로필 정보:', profile);
+        setImageUrl(profile.profileImageUrl || null);
+      } catch {
+        setImageUrl(null);
+      }
+    })();
+  }, []);
+
+  // 이미지 업로드 핸들러
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploading(true);
+    try {
+      const updated = await uploadProfileImage(file);
+      console.log('업로드 응답:', updated);
+      // 캐시 버스터 추가
+      const updatedUrl = updated.profileImageUrl
+        ? updated.profileImageUrl + '?t=' + Date.now()
+        : null;
+      setImageUrl(updatedUrl);
+      alert('프로필 이미지가 변경되었습니다!');
+    } catch (err) {
+      alert('이미지 업로드에 실패했습니다.');
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   return (
     <div
       className='
@@ -31,13 +73,22 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
     >
       {/* 프로필 이미지 */}
       <div className='relative mb-8'>
-        <div className='w-[120px] h-[120px] rounded-full bg-blue-100 flex items-center justify-center'>
-          <Image src='/icons/profile_default.svg' alt='프로필' width={120} height={120} />
+        <div className='w-[120px] h-[120px] rounded-full bg-blue-100 flex items-center justify-center overflow-hidden'>
+          <Image
+            src={imageUrl && imageUrl.trim() !== '' ? imageUrl : '/icons/profile_default.svg'}
+            alt='프로필'
+            width={120}
+            height={120}
+            style={{ objectFit: 'cover' }}
+            key={imageUrl}
+          />
         </div>
         {/* 연필 아이콘 */}
         <button
           className='absolute bottom-2 right-2 bg-gray-300 rounded-full p-1 shadow-custom-5 border border-gray-200'
           aria-label='프로필 수정'
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading}
         >
           <Image
             src='/icons/icon_edit.svg'
@@ -49,6 +100,21 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
             }}
           />
         </button>
+        {/* 실제 파일 input은 숨김 */}
+        <input
+          type='file'
+          accept='image/*'
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={handleImageChange}
+          disabled={isUploading}
+        />
+        {/* 업로드 중 오버레이 */}
+        {isUploading && (
+          <div className='absolute inset-0 bg-white/60 flex items-center justify-center rounded-full'>
+            <span className='text-blue-500 font-bold'>업로드 중...</span>
+          </div>
+        )}
       </div>
       {/* 메뉴 리스트 */}
       <ul className='w-full flex flex-col gap-6'>

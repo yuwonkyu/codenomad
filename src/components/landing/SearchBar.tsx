@@ -25,12 +25,14 @@ const SearchBar = () => {
 
       <div className='relative w-full max-w-[1080px]'>
         {/* 아이콘 */}
-        <span className='absolute left-4 top-1/2 -translate-y-1/2'>
+        <span className='absolute left-6 top-1/2 -translate-y-1/2'>
           <Image src='/icons/icon_search.svg' alt='검색 아이콘' width={24} height={24} />
         </span>
 
         {/* 검색 버튼 */}
         <button
+          aria-label='체험 검색 버튼'
+          type='button'
           onClick={handleSearch}
           className='absolute right-4 top-1/2 -translate-y-1/2 
                      w-[85px] h-[41px] md:w-[120px] md:h-[50px] 
@@ -42,17 +44,15 @@ const SearchBar = () => {
 
         {/* 인풋 필드 */}
         <input
+          aria-label='체험 검색 입력창'
           type='text'
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder='내가 원하는 체험은?'
           className='w-full h-53 rounded-[12px] bg-white
-                     pl-[30px] pr-[95px] md:pr-[130px] 
-                     text-gray-500 text-14-m md:h-70 focus:outline-none cursor-pointer'
-          style={{
-            boxShadow: '0px 6px 10px rgba(13, 153, 255, 0.05)',
-          }}
+                     pl-[48px] pr-[95px] md:pr-[130px] 
+                     text-gray-500 text-14-m md:h-70 focus:outline-none shadow-custom-5'
         />
       </div>
     </section>
