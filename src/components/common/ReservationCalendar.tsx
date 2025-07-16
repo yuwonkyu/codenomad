@@ -4,6 +4,7 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import Image from 'next/image';
 
 // 클래스 병합 유틸리티
 const cn = (...inputs: (string | undefined)[]) => twMerge(clsx(inputs));
@@ -20,8 +21,8 @@ function StatusBadge({ status, count }: { status: string; count: number }) {
   return (
     <span
       className={cn(
-        'w-full text-center rounded px-1 py-0.5 font-medium leading-tight',
-        'text-[8px] md:text-[9px] lg:text-[10px]',
+        'w-full text-center rounded px-1 py-px font-medium leading-tight',
+        'text-[10px] md:text-[11px] lg:text-xs',
         colorMap[status] || 'bg-gray-100 text-gray-600'
       )}
     >
@@ -84,17 +85,31 @@ export default function ReservationCalendar({
   return (
     <div className='shadow-custom-5 mx-auto flex w-full max-w-2xl flex-col gap-4 rounded-2xl bg-white p-4 md:p-8'>
       {/* 체험 선택 드롭다운 */}
-      <select 
-        className='shadow-custom-5 mb-5 h-14 w-full rounded-xl border border-gray-200 px-4 py-2 text-base focus:border-blue-500 focus:outline-none'
-        value={selectedExperienceId}
-        onChange={(e) => onExperienceChange?.(e.target.value)}
-      >
-        {experiences.map((experience) => (
-          <option key={experience.id} value={experience.id}>
-            {experience.title}
-          </option>
-        ))}
-      </select>
+      <div className="relative mb-5">
+        <select 
+          className={cn(
+            'h-12 w-full rounded-lg border border-gray-300 px-4 py-2 text-sm',
+            'bg-white focus:border-blue-500 focus:outline-none',
+            'appearance-none'
+          )}
+          value={selectedExperienceId}
+          onChange={(e) => onExperienceChange?.(e.target.value)}
+        >
+          {experiences.map((experience) => (
+            <option key={experience.id} value={experience.id}>
+              {experience.title}
+            </option>
+          ))}
+        </select>
+        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+          <Image 
+            src="/icons/icon_alt arrow_down.svg" 
+            alt="dropdown" 
+            width={24} 
+            height={24}
+          />
+        </div>
+      </div>
 
       {/* 캘린더 - Tailwind CSS 클래스 사용 */}
       <div className="w-full">
@@ -109,8 +124,8 @@ export default function ReservationCalendar({
             
             // 네비게이션 스타일
             "[&_.react-calendar__navigation]:!flex [&_.react-calendar__navigation]:!justify-center",
-            "[&_.react-calendar__navigation]:!items-center [&_.react-calendar__navigation]:!gap-7",
-            "[&_.react-calendar__navigation]:!mb-2 [&_.react-calendar__navigation]:!h-11",
+            "[&_.react-calendar__navigation]:!items-center [&_.react-calendar__navigation]:!gap-16",
+            "[&_.react-calendar__navigation]:!mb-4 [&_.react-calendar__navigation]:!h-12",
             
             // 네비게이션 화살표
             "[&_.react-calendar__navigation__arrow]:!text-2xl [&_.react-calendar__navigation__arrow]:!font-semibold",
@@ -121,29 +136,29 @@ export default function ReservationCalendar({
             "[&_.react-calendar__navigation__arrow]:!justify-center",
             
             // 요일 헤더
-            "[&_.react-calendar__month-view__weekdays]:!border-b-2 [&_.react-calendar__month-view__weekdays]:!border-gray-200",
-            "[&_.react-calendar__month-view__weekdays]:!mb-2.5 [&_.react-calendar__month-view__weekdays]:!flex",
-            "[&_.react-calendar__month-view__weekdays]:!justify-between [&_.react-calendar__month-view__weekdays]:!pb-3",
+            "[&_.react-calendar__month-view__weekdays]:!border-b [&_.react-calendar__month-view__weekdays]:!border-gray-300",
+            "[&_.react-calendar__month-view__weekdays]:!mb-3 [&_.react-calendar__month-view__weekdays]:!flex",
+            "[&_.react-calendar__month-view__weekdays]:!justify-between [&_.react-calendar__month-view__weekdays]:!pb-2",
             
             // 개별 요일
             "[&_.react-calendar__month-view__weekdays__weekday]:!flex-1 [&_.react-calendar__month-view__weekdays__weekday]:!min-w-12",
-            "[&_.react-calendar__month-view__weekdays__weekday]:!text-base [&_.react-calendar__month-view__weekdays__weekday]:!font-bold",
-            "[&_.react-calendar__month-view__weekdays__weekday]:!text-gray-800 [&_.react-calendar__month-view__weekdays__weekday]:!text-center",
-            "[&_.react-calendar__month-view__weekdays__weekday]:!py-2 [&_.react-calendar__month-view__weekdays__weekday]:!font-['Pretendard',sans-serif]",
+            "[&_.react-calendar__month-view__weekdays__weekday]:!text-sm [&_.react-calendar__month-view__weekdays__weekday]:!font-semibold",
+            "[&_.react-calendar__month-view__weekdays__weekday]:!text-gray-700 [&_.react-calendar__month-view__weekdays__weekday]:!text-center",
+            "[&_.react-calendar__month-view__weekdays__weekday]:!py-1 [&_.react-calendar__month-view__weekdays__weekday]:!font-['Pretendard',sans-serif]",
             
             // 일요일, 토요일 색상
             "[&_.react-calendar__month-view__weekdays__weekday:first-child_abbr]:!text-red-500",
             "[&_.react-calendar__month-view__weekdays__weekday:last-child_abbr]:!text-blue-500"
           )}
           tileClassName={cn(
-            // 기본 타일 스타일
-            "!w-14 !h-30 !min-w-12 !p-0 !flex !flex-col !items-center !justify-start",
-            "!border !border-gray-100 !bg-white !rounded-2xl !relative !m-0.5 !box-border !gap-1",
+            // 기본 타일 스타일 - 피그마에 맞게 조정
+            "!w-16 !h-20 !min-w-12 !p-1 !flex !flex-col !items-center !justify-start",
+            "!border !border-gray-200 !bg-white !rounded-lg !relative !m-px !box-border",
             
             // 반응형 크기
-            "md:!w-17 md:!h-31 lg:!w-23",
-            "max-[744px]:!w-14 max-[744px]:!h-24 max-[744px]:!rounded-xl",
-            "max-[744px]:!gap-0.5 max-[744px]:!px-0.5",
+            "md:!w-20 md:!h-24 lg:!w-24 lg:!h-28",
+            "max-[744px]:!w-12 max-[744px]:!h-16 max-[744px]:!rounded-md",
+            "max-[744px]:!p-0.5",
             
             // abbr 숨기기
             "[&_abbr]:!hidden"
@@ -158,8 +173,24 @@ export default function ReservationCalendar({
           )}
           prev2Label={null}
           next2Label={null}
+          prevLabel={
+            <Image 
+              src="/icons/icon_alt arrow_left.svg" 
+              alt="previous month" 
+              width={24} 
+              height={24}
+            />
+          }
+          nextLabel={
+            <Image 
+              src="/icons/icon_alt arrow_right.svg" 
+              alt="next month" 
+              width={24} 
+              height={24}
+            />
+          }
           formatShortWeekday={(_, date) => {
-            const week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const week = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
             return week[date.getDay()];
           }}
           tileContent={({ date }: { date: Date }) => {
@@ -169,16 +200,19 @@ export default function ReservationCalendar({
             const statusList = ['예약', '승인', '거절', '완료'];
             
             return (
-              <div className='flex flex-col items-center w-full h-full'>
-                <div className='flex items-center justify-center relative w-full'>
-                  <span className="text-xs font-medium text-gray-600 absolute top-1 left-1">
+              <div className='flex flex-col items-center w-full h-full relative'>
+                {/* 날짜 숫자 */}
+                <div className='w-full flex justify-start pt-1 pl-1'>
+                  <span className="text-xs font-medium text-gray-700">
                     {date.getDate()}
                   </span>
                   {hasStatus && (
-                    <div className="w-1.5 h-1.5 bg-red-500 rounded-full absolute top-0.5 right-1" />
+                    <div className="w-1 h-1 bg-red-500 rounded-full ml-auto mr-1" />
                   )}
                 </div>
-                <div className="flex flex-col gap-0.5 mt-4 w-full px-1">
+                
+                {/* 예약 상태 뱃지들 */}
+                <div className="flex flex-col gap-px mt-1 w-full px-1">
                   {statusList.map((status) => {
                     const count = reservations.filter((r) => r.status === status).length;
                     return count > 0 ? (
