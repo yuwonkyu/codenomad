@@ -56,6 +56,12 @@ const ReservationContent = () => {
   if (!isClient) return null; // or return fallback
   if (breakpoint === null) return null;
 
+  // 공통 상태 초기화 함수
+  const resetReservationState = () => {
+    setHeadCount(1);
+    setScheduleId(null);
+  };
+
   const handleReservationConfirm = (data: { scheduleId: number; headCount: number }) => {
     console.log('예약 확정:', data);
     // ConfirmModal 띄우기
@@ -64,6 +70,7 @@ const ReservationContent = () => {
 
   const handleConfirmModalClose = () => {
     setIsConfirmModalOpen(false);
+    resetReservationState();
     // 여기서 실제 예약 API 호출 가능
   };
 
@@ -96,6 +103,7 @@ const ReservationContent = () => {
       setScheduleId={setScheduleId}
       headCount={headCount}
       setHeadCount={setHeadCount}
+      onReservationComplete={resetReservationState}
     />
   );
 };
