@@ -3,7 +3,7 @@ import { useResponsive } from '@/hooks/useResponsive';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import TabletModal from './TabletModal';
 import MobileModal from './MobileModal';
-import { Schedule, ModalTriggerProps, ReservationData } from './types';
+import { Schedule, ModalTriggerProps } from './types';
 
 const ModalTrigger = ({
   activity,
@@ -11,6 +11,7 @@ const ModalTrigger = ({
   setScheduleId,
   headCount,
   setHeadCount,
+  onReservationComplete,
 }: ModalTriggerProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -31,11 +32,12 @@ const ModalTrigger = ({
 
   const handleCloseModal = () => {
     setIsOpen(false);
+    // 모달을 중간에 닫을 때 상태 초기화
+    onReservationComplete?.();
   };
 
-  const handleModalReservationConfirm = (data: ReservationData) => {
-    console.log('모달 내부 예약 확정:', data);
-    // 모달 내부에서는 그냥 모달만 닫기
+  const handleModalConfirm = () => {
+    // 확인 버튼으로 모달 닫을 때는 상태 유지
     setIsOpen(false);
   };
 
@@ -54,6 +56,7 @@ const ModalTrigger = ({
 
   const handleConfirmModalClose = () => {
     setIsConfirmModalOpen(false);
+    onReservationComplete?.(); // 상태 초기화
     // 실제 예약 처리 (나중에 API 호출로 대체)
     if (selectedSchedule) {
       console.log('예약 완료:', {
@@ -101,24 +104,24 @@ const ModalTrigger = ({
         <TabletModal
           isOpen={isOpen}
           onClose={handleCloseModal}
+          onConfirm={handleModalConfirm}
           schedules={activity.schedules}
           scheduleId={scheduleId}
           setScheduleId={setScheduleId}
           headCount={headCount}
           setHeadCount={setHeadCount}
-          onReservationConfirm={handleModalReservationConfirm}
         />
       ) : (
         /* 모바일용 모달 */
         <MobileModal
           isOpen={isOpen}
           onClose={handleCloseModal}
+          onConfirm={handleModalConfirm}
           schedules={activity.schedules}
           scheduleId={scheduleId}
           setScheduleId={setScheduleId}
           headCount={headCount}
           setHeadCount={setHeadCount}
-          onReservationConfirm={handleModalReservationConfirm}
         />
       )}
 
