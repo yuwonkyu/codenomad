@@ -19,8 +19,7 @@ const ReviewModal = ({
   startTime,
   endTime,
   headCount,
-  reservationId,
-}: ReviewModalType) => {
+}: Omit<ReviewModalType, 'reservationId'>) => {
   const [rating, setRating] = useState<number>(1);
   const [letterCount, setLetterCount] = useState(0);
   const [activeSubmit, setActiveSubmit] = useState(true);

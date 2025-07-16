@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, MouseEventHandler, ReactNode, Children } from 'react';
+import { useContext, MouseEventHandler, ReactNode } from 'react';
 import { DropdownContext } from './Dropdown';
 
 interface ItemProps {

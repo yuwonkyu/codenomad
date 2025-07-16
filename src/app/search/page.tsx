@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import axios from '@/lib/api/axios';
 import type { Activity } from '@/components/landing/LandingCard';
 import LandingCard from '@/components/landing/LandingCard';
@@ -10,7 +10,7 @@ import NoResult from '@/components/search/NoResult';
 import Banner from '@/components/landing/Banner';
 import SearchBar from '@/components/landing/SearchBar';
 
-const SearchPage = () => {
+const SearchContent = () => {
   const searchParams = useSearchParams();
   const keyword = searchParams.get('keyword') || '';
   const page = Number(searchParams.get('page')) || 1;
@@ -45,8 +45,8 @@ const SearchPage = () => {
   const totalPages = Math.ceil(totalCount / size);
 
   return (
-    <main className='w-full min-h-screen px-20'>
-      <div className='max-w-screen-xl mx-auto'>
+    <main className='min-h-screen w-full px-20'>
+      <div className='mx-auto max-w-screen-xl'>
         {/* 배너 & 검색바 */}
         <Banner />
         <SearchBar />
@@ -59,7 +59,7 @@ const SearchPage = () => {
           <NoResult />
         ) : (
           <>
-            <section className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-20'>
+            <section className='grid grid-cols-2 gap-20 md:grid-cols-2 lg:grid-cols-4'>
               {activities.map((activity) => (
                 <LandingCard key={activity.id} activity={activity} />
               ))}
@@ -82,6 +82,14 @@ const SearchPage = () => {
         )}
       </div>
     </main>
+  );
+};
+
+const SearchPage = () => {
+  return (
+    <Suspense fallback={<div>로딩 중...</div>}>
+      <SearchContent />
+    </Suspense>
   );
 };
 

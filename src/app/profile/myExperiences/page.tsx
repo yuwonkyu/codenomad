@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import ExperienceCard from '@/components/profile/ExperienceCard';
 
 const INITIAL_DATA = [
@@ -116,7 +116,7 @@ const MORE_DATA = [
 
 export default function MyExperiencesPage() {
   const [experiences, setExperiences] = useState<typeof INITIAL_DATA>([]);
-  const [page, setPage] = useState(1);
+  const [, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const loader = useRef<HTMLDivElement>(null);
@@ -136,18 +136,19 @@ export default function MyExperiencesPage() {
       { threshold: 0.1 },
     );
 
-    if (loader.current) {
-      observer.observe(loader.current);
+    const currentLoader = loader.current;
+    if (currentLoader) {
+      observer.observe(currentLoader);
     }
 
     return () => {
-      if (loader.current) {
-        observer.unobserve(loader.current);
+      if (currentLoader) {
+        observer.unobserve(currentLoader);
       }
     };
   }, [hasMore, loading]);
 
-  function fetchMoreData() {
+  const fetchMoreData = useCallback(() => {
     if (loading || !hasMore) return;
 
     setLoading(true);
@@ -168,7 +169,7 @@ export default function MyExperiencesPage() {
 
       setLoading(false);
     }, 1000);
-  }
+  }, [loading, hasMore, experiences.length]);
 
   return (
     <div className='flex flex-col items-center gap-6 py-6'>
@@ -178,8 +179,8 @@ export default function MyExperiencesPage() {
 
       {/* 로딩 인디케이터 */}
       {loading && (
-        <div className='flex justify-center items-center py-4'>
-          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900'></div>
+        <div className='flex items-center justify-center py-4'>
+          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900'></div>
         </div>
       )}
 
