@@ -83,12 +83,12 @@ export default function ReservationCalendar({
   };
 
   return (
-    <div className='shadow-custom-5 mx-auto flex w-full max-w-2xl flex-col gap-4 rounded-2xl bg-white p-4 md:p-8'>
+    <div className='shadow-custom-5 mx-auto flex w-375 lg:w-640 flex-col gap-30 rounded-2xl bg-white '>
       {/* 체험 선택 드롭다운 */}
-      <div className="relative mb-5">
+      <div className="relative">
         <select 
           className={cn(
-            'h-12 w-full rounded-lg border border-gray-300 px-4 py-2 text-sm',
+            'h-54 w-full rounded-[16px] border border-gray-100 py-17.5 px-20 text-16-m text-gray-950',
             'bg-white focus:border-blue-500 focus:outline-none',
             'appearance-none'
           )}
@@ -101,7 +101,7 @@ export default function ReservationCalendar({
             </option>
           ))}
         </select>
-        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+        <div className="absolute right-20 top-1/2 transform -translate-y-1/2 pointer-events-none">
           <Image 
             src="/icons/icon_alt arrow_down.svg" 
             alt="dropdown" 
