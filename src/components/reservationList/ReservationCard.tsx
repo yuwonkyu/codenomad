@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import StatusBadge, { StatusType } from './StatusBadge';
 import { useResponsive } from '@/hooks/useResponsive';
+import { useRouter } from 'next/navigation';
 
 interface ReservationCardType {
   status: StatusType;
@@ -22,44 +23,50 @@ const ReservationCard = ({
   headCount,
 }: ReservationCardType) => {
   const breakpoint = useResponsive();
+  const router = useRouter();
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
   }, []);
-
+  const openReviewModal = () => {
+    router.push('/profile/reservations/review');
+  };
   return (
-    <div className='static md:w-640 mb-20 '>
-      <h1 className='text-16-b text-gray-800 mb-12 lg:hidden'>{date}</h1>
-      <div className='h-136 lg:h-181 shadow-card'>
-        <div className='bg-white inline-block absolute h-136 rounded-3xl p-20 w-229 md:w-360 lg:w-485 lg:h-181 shadow-card'>
+    <div className='static mb-20 md:w-640'>
+      <h1 className='text-16-b mb-12 text-gray-800 lg:hidden'>{date}</h1>
+      <div className='shadow-card h-136 lg:h-181'>
+        <div className='shadow-card absolute inline-block h-136 w-229 rounded-3xl bg-white p-20 md:w-360 lg:h-181 lg:w-485'>
           <StatusBadge status={status} />
-          <h2 className='text-shadow-gray-950 text-14-b mt-8 mb-4 lg:mt-12 lg:mb-10 lg:text-18-b'>
+          <h2 className='text-14-b lg:text-18-b mt-8 mb-4 text-shadow-gray-950 lg:mt-12 lg:mb-10'>
             {title}
           </h2>
           <div>
-            <span className='text-gray-500 text-13-m lg:text-16-m hidden lg:inline'>{date} • </span>
-            <span className='text-gray-500 text-13-m lg:text-16-m'>
+            <span className='text-13-m lg:text-16-m hidden text-gray-500 lg:inline'>{date} • </span>
+            <span className='text-13-m lg:text-16-m text-gray-500'>
               {startTime} - {endTime}
             </span>
           </div>
           <div className='flex justify-between'>
-            <p className='text-14-m text-gray-400 lg:text-16-m'>
-              <strong className='text-16-b text-gray-950 lg:text-18-b '>&#8361; {price}</strong>{' '}
+            <p className='text-14-m lg:text-16-m text-gray-400'>
+              <strong className='text-16-b lg:text-18-b text-gray-950'>&#8361; {price}</strong>{' '}
               {headCount}명
             </p>
             <div className='hidden lg:block'>
               {status === 'completed' && (
-                <button className='bg-primary-500 text-white text-14-m py-6 px-10 rounded-lg'>
+                <button
+                  onClick={openReviewModal}
+                  className='bg-primary-500 text-14-m rounded-lg px-10 py-6 text-white'
+                >
                   후기 작성
                 </button>
               )}
 
               {status === 'confirmed' && (
-                <div className='flex gap-8 w-160'>
-                  <button className='text-14-m bg-white border-1 border-gray-50 rounded-lg w-full py-6 px-10 text-gray-600'>
+                <div className='flex w-160 gap-8'>
+                  <button className='text-14-m w-full rounded-lg border-1 border-gray-50 bg-white px-10 py-6 text-gray-600'>
                     예약 변경
                   </button>
-                  <button className='text-14-m rounded-lg w-full py-6 px-10 text-gray-600 bg-gray-50'>
+                  <button className='text-14-m w-full rounded-lg bg-gray-50 px-10 py-6 text-gray-600'>
                     예약 취소
                   </button>
                 </div>
@@ -67,29 +74,29 @@ const ReservationCard = ({
             </div>
           </div>
         </div>
-        <div className='bg-gray-400 h-full rounded-3xl'></div>
+        <div className='h-full rounded-3xl bg-gray-400'></div>
       </div>
       {isClient && breakpoint !== 'lg' && breakpoint !== null && (
         <div className='mt-12'>
           {status === 'completed' && (
-            <button className='w-full bg-primary-500 p-10 rounded-lg text-white text-14-m'>
+            <button className='bg-primary-500 text-14-m w-full rounded-lg p-10 text-white'>
               후기 작성
             </button>
           )}
 
           {status === 'confirmed' && (
             <div className='flex gap-8'>
-              <button className='bg-white border-1 border-gray-50 rounded-lg w-full py-10 text-gray-600'>
+              <button className='w-full rounded-lg border-1 border-gray-50 bg-white py-10 text-gray-600'>
                 예약 변경
               </button>
-              <button className='rounded-lg w-full py-10 text-gray-600 bg-gray-50'>
+              <button className='w-full rounded-lg bg-gray-50 py-10 text-gray-600'>
                 예약 취소
               </button>
             </div>
           )}
         </div>
       )}
-      <hr className='border-t border-gray-50 border-1 mt-30'></hr>
+      <hr className='mt-30 border-1 border-t border-gray-50'></hr>
     </div>
   );
 };

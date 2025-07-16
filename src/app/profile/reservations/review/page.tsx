@@ -1,8 +1,8 @@
 'use client';
+import RatingStar from '@/components/reservationList/RatingStar';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import RatingStar from './RatingStar';
 
 interface ReviewModalType {
   title: string;
@@ -34,9 +34,6 @@ const ReviewModal = ({
   function onDismiss() {
     router.back();
   }
-  const goCancelModal = () => {
-    router.push('/profile/reservations/exit');
-  };
 
   return (
     <div className='fixed top-0 left-0 z-50 h-screen w-screen bg-black/50' onClick={onDismiss}>
@@ -47,7 +44,7 @@ const ReviewModal = ({
         onClick={(e) => e.stopPropagation()}
       >
         <div className='text-right'>
-          <button onClick={goCancelModal} className='close-button'>
+          <button onClick={() => router.push('/')} className='close-button'>
             <Image src='/icons/icon_delete.svg' width={24} height={24} alt='exit_icon'></Image>
           </button>
         </div>
