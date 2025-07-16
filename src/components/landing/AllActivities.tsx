@@ -95,7 +95,7 @@ const AllActivities = () => {
       {/* 카드 목록 */}
       <div className='grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-16 sm:gap-24 no-scrollbar'>
         {mockActivities.map((item) => (
-          <LandingCard key={item.id} {...item} />
+          <LandingCard key={item.id} activity={item} />
         ))}
       </div>
       {/* 페이지네이션 */}

@@ -227,3 +227,12 @@ input[type='date']::placeholder {
 .bg-gradient-main {
   background: linear-gradient(to bottom, #bbddff, #f7fbff, #ffffff);
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
