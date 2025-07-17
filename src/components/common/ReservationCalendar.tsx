@@ -101,7 +101,6 @@ const ReservationCalendar = ({
           const navigationLabel = calendarRef.current.querySelector('.react-calendar__navigation__label');
           if (navigationLabel) {
             const element = navigationLabel as HTMLElement;
-            element.style.flex = '1';
             element.style.display = 'flex';
             element.style.justifyContent = 'center';
             element.style.alignItems = 'center';
@@ -138,7 +137,7 @@ const ReservationCalendar = ({
   return (
     <div className='shadow-custom-5 mx-0 flex w-375 md:w-full flex-col gap-30 rounded-2xl bg-white'>
       {/* 체험 선택 드롭다운 */}
-      <div className="relative md:px-0 px-24 pt-30">
+      <div className="relative md:px-0 px-24 ">
         <select 
           className={cn(
             'h-54 w-327 md:w-full rounded-[16px] border border-gray-100 px-20 text-16-m text-gray-950',
@@ -191,20 +190,19 @@ const ReservationCalendar = ({
             "[&_.react-calendar__navigation]:!flex",
             "[&_.react-calendar__navigation]:!justify-center",
             "[&_.react-calendar__navigation]:!items-center",
+            "[&_.react-calendar__navigation]:!mx-auto",
             "[&_.react-calendar__navigation]:!mb-4 [&_.react-calendar__navigation]:!h-12",
             "[&_.react-calendar__navigation]:!px-10 sm:[&_.react-calendar__navigation]:!px-30",
 
             // 네비게이션 라벨 (년월) 스타일
-            "[&_.react-calendar__navigation__label]:!flex-1",
             "[&_.react-calendar__navigation__label]:!text-center",
             "[&_.react-calendar__navigation__label]:!flex",
             "[&_.react-calendar__navigation__label]:!justify-center",
-            "[&_.react-calendar__navigation__label]:!items-center",
-                        "[&_.react-calendar__navigation__label]:!w-auto",
+            "[&_.react-calendar__navigation__label]:!items-center",            
             "[&_.react-calendar__navigation__label]:!h-auto",
             "[&_.react-calendar__navigation__label]:!p-0",
             "[&_.react-calendar__navigation__label]:!m-0",
-            
+
             // 네비게이션 화살표
             "[&_.react-calendar__navigation__arrow]:!text-2xl [&_.react-calendar__navigation__arrow]:!font-semibold",
             "[&_.react-calendar__navigation__arrow]:!bg-none [&_.react-calendar__navigation__arrow]:!border-none",
@@ -249,8 +247,8 @@ const ReservationCalendar = ({
           )}
           navigationLabel={({ date }) => (
             <span className={cn(
-              "text-16-b md:text-20-b text-center text-black",
-              "font-['Pretendard',sans-serif] inline-block"
+              "text-16-b md:text-20-b text-center text-black w-79 md:w-99 tracking-tight",
+              "font-['Pretendard',sans-serif] flex"
             )}>
               {date.getFullYear()}년 {date.getMonth() + 1}월
             </span>
