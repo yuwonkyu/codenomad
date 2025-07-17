@@ -70,46 +70,54 @@ export default function MyExperiencesPage() {
   };
 
   return (
-    <section className='w-full max-w-2xl mx-auto'>
+    <section className='mx-auto w-full max-w-2xl'>
       {/* 상단 타이틀/설명 */}
-      <div className='w-full mb-8 flex justify-between items-center'>
+      <div className='relative mb-8 w-full'>
+        {/* PC/태블릿: 타이틀+설명 세로 정렬 */}
+        <div className='hidden md:flex md:flex-col'>
+          <h1 className='mb-1 text-xl font-bold'>내 체험 관리</h1>
+          <p className='mb-4 text-sm text-gray-500'>
+            내 체험에 예약된 내역들을 한 눈에 확인할 수 있습니다.
+          </p>
+        </div>
+        {/* PC/태블릿: 등록하기 버튼 */}
+        <Link
+          href='/experiences/add'
+          className='absolute top-0 right-0 flex hidden h-[48px] w-[138px] items-center justify-center rounded-lg bg-blue-500 text-center text-base whitespace-nowrap text-white transition-colors hover:bg-blue-600 md:block'
+        >
+          <span className='flex h-full w-full items-center justify-center'>체험 등록하기</span>
+        </Link>
         {/* 모바일: 아이콘+텍스트, 클릭 시 onCancel */}
         <button
           type='button'
-          className='flex items-center gap-2 mb-1 block md:hidden'
+          className='mb-1 block flex items-center gap-2 md:hidden'
           onClick={mobileContext?.onCancel}
           style={{ cursor: 'pointer' }}
         >
           <img src='/icons/Vector.png' alt='vector' width={20} height={20} />
           <span className='text-xl font-bold'>내 체험 관리</span>
+          <p className='mb-4 text-sm text-gray-500'>
+            내 체험에 예약된 내역들을 한 눈에 확인할 수 있습니다.
+          </p>
         </button>
-        {/* PC/테블릿: 텍스트만 */}
-        <h1 className='text-xl font-bold mb-1 hidden md:block'>내 체험 관리</h1>
-        {/* PC/테블릿: 등록하기 버튼 */}
-        <Link
-          href='/experiences/add'
-          className='w-[138px] h-[48px] flex items-center justify-center bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-base text-center whitespace-nowrap hidden md:block'
-        >
-          <span className='w-full h-full flex items-center justify-center'>체험 등록하기</span>
-        </Link>
       </div>
       {/* 중앙 카드 스타일 콘텐츠 */}
       {activities.length === 0 && !isLoading ? (
-        <div className='bg-white rounded-2xl shadow-custom-5 p-4 md:p-8 w-full max-w-2xl mx-auto flex flex-col items-center justify-center min-h-[40vh]'>
+        <div className='shadow-custom-5 mx-auto flex min-h-[40vh] w-full max-w-2xl flex-col items-center justify-center rounded-2xl bg-white p-4 md:p-8'>
           <img src='/icons/empty.svg' alt='empty' width={120} height={120} className='mb-6' />
-          <p className='text-lg text-gray-500 mb-4'>아직 등록한 체험이 없어요</p>
+          <p className='mb-4 text-lg text-gray-500'>아직 등록한 체험이 없어요</p>
           <Link
             href='/experiences/add'
-            className='w-[138px] h-[48px] flex items-center justify-center bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-base text-center whitespace-nowrap block md:hidden'
+            className='block flex h-[48px] w-[138px] items-center justify-center rounded-lg bg-blue-500 text-center text-base whitespace-nowrap text-white transition-colors hover:bg-blue-600 md:hidden'
           >
-            <span className='w-full h-full flex items-center justify-center'>체험 등록하기</span>
+            <span className='flex h-full w-full items-center justify-center'>체험 등록하기</span>
           </Link>
         </div>
       ) : null}
 
       {/* 체험이 있을 때 ExperienceCard로 목록 렌더링 */}
       {activities.length > 0 && (
-        <div className='flex flex-col gap-6 w-full'>
+        <div className='flex w-full flex-col gap-6'>
           {activities.map((activity) => (
             <ExperienceCard
               key={activity.id}
