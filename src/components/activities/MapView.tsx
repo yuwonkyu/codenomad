@@ -1,6 +1,7 @@
 'use client';
 import { Map, MapMarker, CustomOverlayMap } from 'react-kakao-maps-sdk';
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 import Link from 'next/link';
 
 interface MapViewProps {
@@ -25,13 +26,29 @@ const MapView = ({ address = DEFAULT_ADDRESS }: MapViewProps) => {
   });
 
   useEffect(() => {
-    // 실제 API는 아직 안 붙고, 서울시청 정보만 하드코딩해서 상태 주입
-    setPlace({
-      lat: 37.5665,
-      lng: 126.978,
-      title: '서울시청',
-      url: 'https://map.kakao.com/',
-    });
+    const fetchData = async (query: string) => {
+      const KEY = process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY;
+      const URL = `https://dapi.kakao.com/v2/local/search/keyword.json?page=1&size=1&query=${query}`;
+      try {
+        const response = await axios.get(URL, {
+          headers: {
+            Authorization: `KakaoAK ${KEY}`,
+          },
+        });
+
+        const found = response.data.documents[0];
+        setPlace({
+          lat: Number(found.y),
+          lng: Number(found.x),
+          title: found.place_name,
+          url: found.place_url,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData(address);
   }, [address]);
 
   return (
