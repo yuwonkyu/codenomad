@@ -154,7 +154,7 @@ const ReservationCalendar = ({
             </option>
           ))}
         </select>
-        <div className="absolute right-50 top-1/2 transform -translate-y-1/2 pointer-events-none">
+        <div className="absolute right-40 md:right-20 lg:right-25 top-1/2 transform pointer-events-none">
           <Image 
             src="/icons/icon_alt arrow_down.svg" 
             alt="dropdown" 
