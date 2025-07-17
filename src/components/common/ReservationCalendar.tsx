@@ -68,15 +68,22 @@ const ReservationCalendar = ({
 
   // 캘린더 스타일 적용을 위한 useEffect
   useEffect(() => {
-    if (calendarRef.current) {
-      const weekdaysElement = calendarRef.current.querySelector('.react-calendar__month-view__weekdays');
-      if (weekdaysElement) {
-        const element = weekdaysElement as HTMLElement;
-        element.style.borderBottom = '1px solid #d1d5db';
-        element.style.marginBottom = '12px';
-        // element.style.paddingBottom = window.innerWidth >= 640 ? '48px' : '16px';
-      }
-    }
+    const applyStyles = () => {
+      // 약간의 지연을 두어 DOM이 완전히 렌더링된 후 적용
+      setTimeout(() => {
+        if (calendarRef.current) {
+          // 요일 헤더 border 적용
+          const weekdaysElement = calendarRef.current.querySelector('.react-calendar__month-view__weekdays');
+          if (weekdaysElement) {
+            const element = weekdaysElement as HTMLElement;
+            element.style.borderBottom = '1px solid #d1d5db';
+            element.style.marginBottom = '12px';
+          }
+        }
+      }, 100);
+    };
+
+    applyStyles();
   }, [date]); // date가 변경될 때마다 다시 적용
 
   // 날짜를 yyyy-mm-dd 문자열로 변환
@@ -145,8 +152,13 @@ const ReservationCalendar = ({
             // 네비게이션 스타일
             "[&_.react-calendar__navigation]:!flex",
             "[&_.react-calendar__navigation]:!justify-center",
-            "[&_.react-calendar__navigation]:!items-center [&_.react-calendar__navigation]:!gap-10",
+            "[&_.react-calendar__navigation]:!items-center",
             "[&_.react-calendar__navigation]:!mb-4 [&_.react-calendar__navigation]:!h-12",
+            "[&_.react-calendar__navigation]:!px-[10px] sm:[&_.react-calendar__navigation]:!px-[30px]",
+            
+            // 네비게이션 라벨 (년월) 스타일
+            "[&_.react-calendar__navigation__label]:!flex-1",
+            "[&_.react-calendar__navigation__label]:!text-center",
             
             // 네비게이션 화살표
             "[&_.react-calendar__navigation__arrow]:!text-2xl [&_.react-calendar__navigation__arrow]:!font-semibold",
@@ -189,7 +201,7 @@ const ReservationCalendar = ({
           navigationLabel={({ date }) => (
             <span className={cn(
               "text-16-b md:text-20-b text-center w-full inline-block text-black",
-              "font-['Pretendard',sans-serif] max-[744px]:text-base"
+              "font-['Pretendard',sans-serif] flex justify-center items-center"
             )}>
               {date.getFullYear()}년 {date.getMonth() + 1}월
             </span>
@@ -216,6 +228,7 @@ const ReservationCalendar = ({
             const week = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
             return week[date.getDay()];
           }}
+          formatDay={() => ''} // 기본 날짜 텍스트 숨기기
           tileContent={({ date }: { date: Date }) => {
             const key = formatDate(date);
             const reservations = reservationData[key] || [];
