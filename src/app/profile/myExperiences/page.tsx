@@ -20,7 +20,11 @@ export default function MyExperiencesPage() {
     setIsLoading(true);
     try {
       const data = await getMyActivities(cursorId ?? undefined, 5);
-      setActivities((prev) => [...prev, ...data.activities]);
+      setActivities((prev) => {
+        const ids = new Set(prev.map((a) => a.id));
+        const newActivities = data.activities.filter((a) => !ids.has(a.id));
+        return [...prev, ...newActivities];
+      });
       setCursorId(
         data.activities.length > 0 ? data.activities[data.activities.length - 1].id : null,
       );

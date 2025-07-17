@@ -51,7 +51,7 @@ export default function ExperienceCard({
         </div>
       </div>
       {/* 썸네일 */}
-      <div className='h-[80px] w-[80px] flex-shrink-0 overflow-hidden rounded-xl md:h-[100px] md:w-[100px] lg:h-[120px] lg:w-[120px]'>
+      <div className='mr-30 h-[80px] w-[80px] flex-shrink-0 overflow-hidden rounded-xl md:h-[100px] md:w-[100px] lg:h-[120px] lg:w-[120px]'>
         <Image
           src={image}
           alt='썸네일'
