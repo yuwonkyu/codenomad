@@ -3,8 +3,10 @@
 import CommonModal from '@/components/common/CancelModal';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 const Page = () => {
+  const [isModalOpen, setisModalOpen] = useState(true);
   const router = useRouter();
   const onDismiss = () => {
     router.back();
@@ -12,7 +14,7 @@ const Page = () => {
 
   return (
     <CommonModal
-      open={true}
+      open={isModalOpen}
       icon={
         <Image
           src='/icons/icon_alert.svg'
@@ -26,7 +28,11 @@ const Page = () => {
       cancelText='아니오'
       confirmText='네'
       onCancel={onDismiss}
-      onConfirm={() => console.log(confirm)}
+      onConfirm={() => {
+        setisModalOpen(false);
+        document.body.style.overflow = 'auto';
+        router.push('/profile/reservations');
+      }}
     />
   );
 };
