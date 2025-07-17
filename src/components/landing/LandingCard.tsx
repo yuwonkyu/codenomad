@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 export interface Activity {
-  id?: number;
+  id: number;
   bannerImageUrl?: string;
   title: string;
   rating: number;
@@ -23,7 +23,7 @@ const LandingCard = ({ activity }: { activity: Activity }) => {
       <div className='relative h-[132px] sm:h-[290px] lg:h-[240px] rounded-t-4xl overflow-hidden'>
         <Image
           src={bannerImageUrl || '/imgs/thumbnail.jpg'}
-          alt='카드 이미지'
+          alt={bannerImageUrl ? `${title} 썸네일있음` : '썸네일 이미지 없음'}
           fill
           className='object-cover'
         />

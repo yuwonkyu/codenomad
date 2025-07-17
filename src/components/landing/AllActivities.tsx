@@ -11,7 +11,7 @@ import Pagination from '../common/Pagination';
 
 const AllActivities = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedSort, setSelectedSort] = useState<string | null>(null);
+  const [selectedSort, setSelectedSort] = useState<string>('latest');
   const [currentPage, setCurrentPage] = useState(1);
 
   const[activities, setActivities] = useState<Activity[]>([]);
@@ -25,8 +25,8 @@ const AllActivities = () => {
         page: currentPage,
         size: pageSize,
       };
-if (selectedCategory) params.category = selectedCategory;
-if (selectedSort) params.sort = selectedSort;
+    if (selectedCategory) params.category = selectedCategory;
+    if (selectedSort) params.sort = selectedSort;
 
       const response = await axios.get('/activities', { params });
       setActivities(response.data.activities);
