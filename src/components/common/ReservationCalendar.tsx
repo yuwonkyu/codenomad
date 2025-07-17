@@ -21,8 +21,8 @@ const StatusBadge = ({ status, count }: { status: string; count: number }) => {
   return (
     <span
       className={cn(
-        'w-full text-center rounded px-1 py-px font-medium leading-tight',
-        'text-[10px] md:text-[11px] lg:text-xs',
+        'w-45.57 md:w-50 lg:w-67 h-16 md:h-21 text-center rounded px-1 py-px font-medium leading-tight',
+        'text-11-m md:text-14-m',
         colorMap[status] || 'bg-gray-100 text-gray-600'
       )}
     >
@@ -136,12 +136,12 @@ const ReservationCalendar = ({
   };
 
   return (
-    <div className='shadow-custom-5 mx-0 flex w-375 lg:w-full flex-col gap-30 rounded-2xl bg-white'>
+    <div className='shadow-custom-5 mx-0 flex w-375 md:w-full flex-col gap-30 rounded-2xl bg-white'>
       {/* 체험 선택 드롭다운 */}
       <div className="relative md:px-0 px-24 pt-30">
         <select 
           className={cn(
-            'h-54 lg:w-full md:w-375 w-327 rounded-[16px] border border-gray-100 px-20 text-16-m text-gray-950',
+            'h-54 w-327 md:w-full rounded-[16px] border border-gray-100 px-20 text-16-m text-gray-950',
             'bg-white focus:border-blue-500 focus:outline-none',
             'appearance-none'
           )}
@@ -192,8 +192,8 @@ const ReservationCalendar = ({
             "[&_.react-calendar__navigation]:!justify-center",
             "[&_.react-calendar__navigation]:!items-center",
             "[&_.react-calendar__navigation]:!mb-4 [&_.react-calendar__navigation]:!h-12",
-            "[&_.react-calendar__navigation]:!px-[10px] sm:[&_.react-calendar__navigation]:!px-[30px]",
-            
+            "[&_.react-calendar__navigation]:!px-10 sm:[&_.react-calendar__navigation]:!px-30",
+
             // 네비게이션 라벨 (년월) 스타일
             "[&_.react-calendar__navigation__label]:!flex-1",
             "[&_.react-calendar__navigation__label]:!text-center",
@@ -297,7 +297,7 @@ const ReservationCalendar = ({
                 </div>
                 
                 {/* 예약 상태 뱃지들 */}
-                <div className="flex flex-col gap-px mt-1 w-full px-1">
+                <div className="flex flex-col items-center gap-5 mt-1 w-full flex-1 overflow-y-auto overflow-x-hidden">
                   {statusList.map((status) => {
                     const count = reservations.filter((r) => r.status === status).length;
                     return count > 0 ? (
