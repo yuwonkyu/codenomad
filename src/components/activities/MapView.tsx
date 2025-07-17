@@ -36,6 +36,20 @@ const MapView = ({ address = DEFAULT_ADDRESS }: MapViewProps) => {
           },
         });
 
+        // 주소는 넘어오지만 인식 하지 못한 경우
+        if (Array.isArray(response.data.documents) && response.data.documents.length === 0) {
+          // Kakao API가 번지 포함 도로명 주소를 인식하지 못하는 경우가 있어 번지 제거 후 재시도
+          const partialAddress = address.replace(/\s\d+(-\d+)?$/g, '').trim();
+          console.log(partialAddress);
+          if (partialAddress !== query) {
+            fetchData(partialAddress); // 재귀로 partialAddress 검색
+          } else {
+            console.log('주소를 가져오는데 실패하였습니다.');
+            fetchData(DEFAULT_ADDRESS); // 여기서 DEFAULT_ADDRESS 직접 사용
+          }
+          return;
+        }
+
         const found = response.data.documents[0];
         setPlace({
           lat: Number(found.y),
