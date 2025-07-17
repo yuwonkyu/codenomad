@@ -1,4 +1,3 @@
-'use client';
 import ReviewModal from '@/components/reservationList/ReviewModal';
 
 export default function Page() {
