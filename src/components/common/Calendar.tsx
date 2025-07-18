@@ -34,9 +34,9 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
       /* 캘린더 컨테이너 기본 스타일 리셋 */
       .react-calendar {
         background: white !important;
-        border: 1px solid #e5e7eb !important;
+        border: none !important;
         border-radius: 8px !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: none !important;
         font-family: inherit !important;
         line-height: 1.125em !important;
         width: 410px !important;
@@ -68,15 +68,16 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
       }
       
       .react-calendar__navigation button:hover {
-        background-color: #f3f4f6 !important;
+        background-color: #ffffff !important;
       }
       
       .react-calendar__navigation__label {
         flex-grow: 1 !important;
-        text-align: center !important;
+        text-align: left !important;
         font-weight: 600 !important;
         color: #000000 !important;
         font-size: 16px !important;
+        margin-left: 12px !important;
       }
       
       /* 월/연 뷰 스타일 */
@@ -97,6 +98,7 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
         font-size: 0.75em !important;
         margin-bottom: 8px !important;
         padding: 0 !important;
+        border-bottom: none !important;
       }
       
       .react-calendar__month-view__weekdays__weekday {
@@ -104,6 +106,8 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
         color: #6b7280 !important;
         background: transparent !important;
         border: none !important;
+        text-decoration: none !important;
+        border-bottom: none !important;
       }
       
       /* 날짜 타일 컨테이너 */
@@ -213,8 +217,8 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
         selectRange={false}
         returnValue="start"
         navigationLabel={({ date }) => (
-          <span className="font-semibold text-center text-black text-lg">
-            {date.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' })}
+          <span className="font-semibold text-left text-black text-lg">
+            {date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}
           </span>
         )}
         prev2Label={null}
@@ -238,6 +242,9 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
         formatShortWeekday={(_, date) => {
           const week = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
           return week[date.getDay()];
+        }}
+        formatDay={(_, date) => {
+          return date.getDate().toString();
         }}
       />
     </div>

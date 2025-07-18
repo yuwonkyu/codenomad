@@ -55,10 +55,25 @@ const ReserveTimesInput = ({
               />
               {/* 달력 아이콘 클릭 시 CalendarModal 노출 */}
               {calendarOpenIdx === idx && idx === 0 && (
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50">
-                  <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4 relative z-[10000]">
-                    <div className="mb-4">
-                      <h3 className="text-lg font-semibold text-center">날짜 선택</h3>
+                <div 
+                  className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50"
+                  onClick={(e) => {
+                    // 배경 클릭 시 모달 닫기
+                    if (e.target === e.currentTarget) {
+                      console.log('배경 클릭으로 모달 닫힘');
+                      setCalendarOpenIdx(null);
+                    }
+                  }}
+                >
+                  <div 
+                    className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4 relative z-[10000]"
+                    onClick={(e) => {
+                      // 모달 내부 클릭 시 이벤트 전파 중단
+                      e.stopPropagation();
+                    }}
+                  >
+                    <div className="mb-24">
+                      <h3 className="text-20-b font-semibold text-left">날짜</h3>
                     </div>
                     <CalendarComponent
                       selectedDate={rt.date ? new Date(rt.date) : null}
