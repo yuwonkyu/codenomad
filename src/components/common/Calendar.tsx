@@ -65,6 +65,7 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
         justify-content: center !important;
         border-radius: 4px !important;
         transition: background-color 0.2s !important;
+        order: 3 !important; /* 화살표들을 오른쪽으로 */
       }
       
       .react-calendar__navigation button:hover {
@@ -72,12 +73,25 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
       }
       
       .react-calendar__navigation__label {
-        flex-grow: 1 !important;
+        flex-grow: 0 !important;
         text-align: left !important;
         font-weight: 600 !important;
         color: #000000 !important;
         font-size: 16px !important;
-        margin-left: 12px !important;
+        margin: 0 !important;
+        order: 1 !important; /* 월/년을 왼쪽으로 */
+        margin-right: auto !important;
+      }
+      
+      /* 이전 버튼 */
+      .react-calendar__navigation__prev-button {
+        order: 2 !important;
+        margin-right: 8px !important;
+      }
+      
+      /* 다음 버튼 */
+      .react-calendar__navigation__next-button {
+        order: 3 !important;
       }
       
       /* 월/연 뷰 스타일 */
