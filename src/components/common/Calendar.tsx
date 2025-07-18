@@ -152,8 +152,9 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
       
       /* 선택된 날짜 스타일 */
       .react-calendar__tile--active {
-        background-color: #3b82f6 !important;
-        color: white !important;
+        background-color: #60a5fa !important;
+        color: #ffffff !important;
+        border-radius: 6px !important;
       }
       
       .react-calendar__tile--active:hover {
@@ -171,13 +172,28 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
         background-color: #dbeafe !important;
       }
       
-      /* 다른 월의 날짜 스타일 */
+      /* 다른 월의 날짜 스타일 - 가장 높은 우선순위로 설정 */
       .react-calendar__month-view__days__day--neighboringMonth {
         color: #d1d5db !important;
       }
       
-      /* 주말 스타일 제거 - 모든 날짜 같은 색상 */
-      .react-calendar__month-view__days__day--weekend {
+      /* 이전/다음 달 날짜는 항상 회색으로 (주말이어도) */
+      .react-calendar__tile--neighboringMonth {
+        color: #d1d5db !important;
+      }
+      
+      .react-calendar__tile--neighboringMonth:hover {
+        background-color: #f9fafb !important;
+        color: #d1d5db !important;
+      }
+      
+      /* 이전/다음 달 주말 날짜도 강제로 회색 */
+      .react-calendar__month-view__days__day--neighboringMonth.react-calendar__month-view__days__day--weekend {
+        color: #d1d5db !important;
+      }
+      
+      /* 현재 달의 주말 스타일 제거 - 모든 날짜 같은 색상 */
+      .react-calendar__month-view__days__day--weekend:not(.react-calendar__month-view__days__day--neighboringMonth) {
         color: #374151 !important;
       }
       
