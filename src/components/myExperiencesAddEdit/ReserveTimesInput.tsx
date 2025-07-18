@@ -66,31 +66,33 @@ const ReserveTimesInput = ({
                   }}
                 >
                   <div 
-                    className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4 relative z-[10000]"
+                    className=" bg-white rounded-lg shadow-lg p-24 w-375 md:w-407 lg:w-398 relative z-[10000] flex flex-col items-center"
                     onClick={(e) => {
                       // 모달 내부 클릭 시 이벤트 전파 중단
                       e.stopPropagation();
                     }}
                   >
-                    <div className="mb-24">
-                      <h3 className="text-20-b font-semibold text-left">날짜</h3>
+                    <div className="mb-8 w-full">
+                      <h3 className="text-18-b text-left">날짜</h3>
                     </div>
-                    <CalendarComponent
-                      selectedDate={rt.date ? new Date(rt.date) : null}
-                      onChange={(date: Date | null) => {
-                        console.log('날짜 선택됨:', date);
-                        if (date) {
-                          // YYYY-MM-DD 형식으로 변환
-                          const year = date.getFullYear();
-                          const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                          const day = date.getDate().toString().padStart(2, '0');
-                          const dateString = `${year}-${month}-${day}`;
-                          console.log('변환된 날짜:', dateString);
-                          onChange(idx, 'date', dateString);
-                          setCalendarOpenIdx(null); // 날짜 선택 후 모달 닫기
-                        }
-                      }}
-                    />
+                    <div className="flex justify-center w-full">
+                      <CalendarComponent
+                        selectedDate={rt.date ? new Date(rt.date) : null}
+                        onChange={(date: Date | null) => {
+                          console.log('날짜 선택됨:', date);
+                          if (date) {
+                            // YYYY-MM-DD 형식으로 변환
+                            const year = date.getFullYear();
+                            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                            const day = date.getDate().toString().padStart(2, '0');
+                            const dateString = `${year}-${month}-${day}`;
+                            console.log('변환된 날짜:', dateString);
+                            onChange(idx, 'date', dateString);
+                            setCalendarOpenIdx(null); // 날짜 선택 후 모달 닫기
+                          }
+                        }}
+                      />
+                    </div>
                     <button
                       onClick={() => {
                         console.log('취소 버튼 클릭됨');

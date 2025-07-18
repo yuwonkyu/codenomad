@@ -35,23 +35,26 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
       .react-calendar {
         background: white !important;
         border: none !important;
-        border-radius: 8px !important;
+        border-radius: none !important;
         box-shadow: none !important;
         font-family: inherit !important;
         line-height: 1.125em !important;
-        width: 410px !important;
+        width: 100% !important; /* 모바일 기본 */
       }
+      
       
       /* 네비게이션 스타일 */
       .react-calendar__navigation {
-        display: flex !important;
-        height: 44px !important;
+        display: grid !important;
+        grid-template-columns: auto 1fr auto auto !important;
+        grid-template-areas: "label . prev next" !important;
+        height: 24px !important;
         margin-bottom: 1em !important;
-        padding: 0 12px !important;
+        padding: 0 !important;
         align-items: center !important;
-        justify-content: space-between !important;
         background: transparent !important;
         border: none !important;
+        gap: 12px !important;
       }
       
       .react-calendar__navigation button {
@@ -65,7 +68,6 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
         justify-content: center !important;
         border-radius: 4px !important;
         transition: background-color 0.2s !important;
-        order: 3 !important; /* 화살표들을 오른쪽으로 */
       }
       
       .react-calendar__navigation button:hover {
@@ -73,30 +75,27 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
       }
       
       .react-calendar__navigation__label {
-        flex-grow: 0 !important;
+        grid-area: label !important;
         text-align: left !important;
-        font-weight: 600 !important;
+        font-weight: 500 !important;
         color: #000000 !important;
         font-size: 16px !important;
         margin: 0 !important;
-        order: 1 !important; /* 월/년을 왼쪽으로 */
-        margin-right: auto !important;
       }
       
       /* 이전 버튼 */
       .react-calendar__navigation__prev-button {
-        order: 2 !important;
-        margin-right: 8px !important;
+        grid-area: prev !important;
       }
       
       /* 다음 버튼 */
       .react-calendar__navigation__next-button {
-        order: 3 !important;
+        grid-area: next !important;
       }
       
       /* 월/연 뷰 스타일 */
       .react-calendar__viewContainer {
-        padding: 0 12px 12px 12px !important;
+        padding: 0 !important;
       }
       
       /* 월 뷰 스타일 */
@@ -105,11 +104,11 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
       }
       
       /* 요일 헤더 스타일 */
-      .react-calendar__month-view__weekdays {
+      .react-calendar__month-view__weekdays {        
         text-align: center !important;
         text-transform: uppercase !important;
-        font-weight: bold !important;
-        font-size: 0.75em !important;
+        font-weight: 600 !important;
+        font-size: 16px !important;
         margin-bottom: 8px !important;
         padding: 0 !important;
         border-bottom: none !important;
@@ -119,7 +118,7 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
       
       .react-calendar__month-view__weekdays__weekday {
         padding: 8px 0 !important;
-        color: #6b7280 !important;
+        color: #49494C !important;
         background: transparent !important;
         border: none !important;
         text-decoration: none !important;
@@ -138,13 +137,29 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
       .react-calendar__month-view__days {
         display: grid !important;
         grid-template-columns: repeat(7, 1fr) !important;
-        gap: 2px !important;
+        row-gap: 4px !important; /* 모바일 기본 */
+        column-gap: 0px !important;
+      }
+      
+      /* 태블릿 사이즈 */
+      @media (min-width: 768px) and (max-width: 1023px) {
+        .react-calendar__month-view__days {
+          row-gap: 17.67px !important;
+        }
+      }
+      
+      /* PC 사이즈 */
+      @media (min-width: 1024px) {
+        .react-calendar__month-view__days {
+          row-gap: 8px !important;
+        }
       }
       
       /* 날짜 타일 기본 스타일 */
       .react-calendar__tile {
-        max-width: 100% !important;
-        padding: 12px 0 !important;
+        width: 46px !important;
+        height: 46px !important;
+        padding: 0 !important;
         background: none !important;
         border: none !important;
         text-align: center !important;
@@ -152,11 +167,12 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        border-radius: 6px !important;
+        border-radius: 100% !important;
         transition: all 0.2s !important;
         color: #374151 !important;
-        font-size: 14px !important;
-        height: 40px !important;
+        font-size: 16px !important;
+        font-weight: 500 !important;
+
       }
       
       /* 날짜 타일 호버 효과 */
@@ -168,7 +184,7 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
       .react-calendar__tile--active {
         background-color: #60a5fa !important;
         color: #ffffff !important;
-        border-radius: 6px !important;
+        border-radius: 100% !important;
       }
       
       .react-calendar__tile--active:hover {
@@ -257,7 +273,7 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
         selectRange={false}
         returnValue="start"
         navigationLabel={({ date }) => (
-          <span className="font-semibold text-left text-black text-lg">
+          <span className="text-left text-black text-16-m">
             {date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}
           </span>
         )}
@@ -267,16 +283,16 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
           <Image 
             src="/icons/icon_alt arrow_left.svg" 
             alt="previous month" 
-            width={20} 
-            height={20}
+            width={24} 
+            height={24}
           />
         }
         nextLabel={
           <Image 
             src="/icons/icon_alt arrow_right.svg" 
             alt="next month" 
-            width={20} 
-            height={20}
+            width={24} 
+            height={24}
           />
         }
         formatShortWeekday={(_, date) => {
