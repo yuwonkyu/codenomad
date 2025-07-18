@@ -1,5 +1,6 @@
 'use client';
 import { Map, MapMarker, CustomOverlayMap } from 'react-kakao-maps-sdk';
+import useKakaoLoader from '@/hooks/useKakaoLoder';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
@@ -18,6 +19,7 @@ interface Place {
 const DEFAULT_ADDRESS = '서울 중구 세종대로 110'; // 서울시청
 
 const MapView = ({ address = DEFAULT_ADDRESS }: MapViewProps) => {
+  useKakaoLoader();
   const [place, setPlace] = useState<Place>({
     lat: 0,
     lng: 0,

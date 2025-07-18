@@ -156,3 +156,7 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+.bg-gradient-main {
+  background: linear-gradient(to bottom, #bbddff, #f7fbff, #ffffff);
+}

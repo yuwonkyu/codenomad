@@ -23,7 +23,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) 
   };
 
   return (
-    <div className='flex items-center justify-center gap-12 mt-40'>
+    <div className='flex items-center justify-center gap-12 mt-40 mb-40'>
       {/* 왼쪽 화살표 */}
       <button
         onClick={() => onPageChange(currentPage - 1)}
