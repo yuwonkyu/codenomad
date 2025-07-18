@@ -3,6 +3,7 @@ import PhotoSection from '@/components/activities/PhotoSection';
 import ReviewCard from '@/components/activities/ReviewCard';
 import DropdownMenu from '@/components/activities/ActivitesDropdown';
 import ReservationContent from '@/components/activities/ReservationFlow/ReservationContent';
+import MapView from '@/components/activities/MapView';
 import Image from 'next/image';
 
 const mock = {
@@ -111,9 +112,7 @@ const ActivityPage = async ({ params }: Props) => {
           <div className='flex flex-col gap-8 border-b-1 border-gray-100'>
             <h3 className='text-18-b text-gray-950'>오시는 길</h3>
             <p className='text-[14px] font-semibold text-gray-950'>{mock.address}</p>
-            <div className='mb-20 h-180 w-auto rounded-2xl bg-gray-100 text-center md:h-400'>
-              임시 지도
-            </div>
+            <MapView address={mock.address} />
           </div>
 
           {/* 체험 후기 */}
@@ -164,9 +163,7 @@ const ActivityPage = async ({ params }: Props) => {
             <div className='flex flex-col gap-8 border-b-1 border-gray-100'>
               <h3 className='text-18-b text-gray-950'>오시는 길</h3>
               <p className='text-[14px] font-semibold text-gray-950'>{mock.address}</p>
-              <div className='mb-20 h-180 w-auto rounded-2xl bg-gray-100 text-center md:h-400'>
-                임시 지도
-              </div>
+              <MapView address={mock.address} />
             </div>
 
             {/* 체험 후기 */}

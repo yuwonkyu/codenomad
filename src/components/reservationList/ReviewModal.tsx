@@ -32,6 +32,7 @@ const ReviewModal = ({
 
   function onDismiss() {
     router.back();
+    document.body.style.overflow = 'auto';
   }
   const goCancelModal = () => {
     router.push('/profile/reservations/exit');
