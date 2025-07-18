@@ -38,7 +38,7 @@ const PriceSortDropdown = ({ selectedSort, onSelectSort }: SortDropdownProps) =>
   }, [isOpen]);
 
   return (
-    <div className='relative' >
+    <div className='relative' ref={dropdownRef} >
       <button
         onClick={() => setIsOpen((prev) => !prev)}
         className='text-14-m flex items-center gap-4 text-gray-700'
