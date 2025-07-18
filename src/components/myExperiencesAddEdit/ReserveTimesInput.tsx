@@ -1,6 +1,6 @@
 import Input from '@/components/common/Input';
 import Image from 'next/image';
-import CalendarModal from '@/components/common/Calendar';
+import CalendarComponent from '@/components/common/Calendar';
 import { useState } from 'react';
 
 const TIME_OPTIONS = Array.from({ length: 25 }, (_, i) => {
@@ -31,6 +31,8 @@ const ReserveTimesInput = ({
 }: ReserveTimesInputProps) => {
   const [calendarOpenIdx, setCalendarOpenIdx] = useState<number | null>(null);
 
+  console.log('현재 calendarOpenIdx:', calendarOpenIdx);
+
   return (
     <div className='mb-30'>
       <div className='text-16-b mb-18'>예약 가능한 시간대</div>
@@ -46,18 +48,45 @@ const ReserveTimesInput = ({
                 value={rt.date}
                 readOnly
                 dateIcon={idx === 0}
-                onDateIconClick={idx === 0 ? () => setCalendarOpenIdx(idx) : undefined}
+                onDateIconClick={idx === 0 ? () => {
+                  console.log('달력 아이콘 클릭됨', idx);
+                  setCalendarOpenIdx(idx);
+                } : undefined}
               />
               {/* 달력 아이콘 클릭 시 CalendarModal 노출 */}
               {calendarOpenIdx === idx && idx === 0 && (
-                <CalendarModal
-                  open={true}
-                  value={rt.date ? new Date(rt.date) : null}
-                  onChange={(date) => onChange(idx, 'date', date.toISOString().slice(0, 10))}
-                  onClose={() => setCalendarOpenIdx(null)}
-                  position={{ top: 50, left: 0 }}
-                  type='default' // 디폴트 타입으로 지정
-                />
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50">
+                  <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4 relative z-[10000]">
+                    <div className="mb-4">
+                      <h3 className="text-lg font-semibold text-center">날짜 선택</h3>
+                    </div>
+                    <CalendarComponent
+                      selectedDate={rt.date ? new Date(rt.date) : null}
+                      onChange={(date: Date | null) => {
+                        console.log('날짜 선택됨:', date);
+                        if (date) {
+                          // YYYY-MM-DD 형식으로 변환
+                          const year = date.getFullYear();
+                          const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                          const day = date.getDate().toString().padStart(2, '0');
+                          const dateString = `${year}-${month}-${day}`;
+                          console.log('변환된 날짜:', dateString);
+                          onChange(idx, 'date', dateString);
+                          setCalendarOpenIdx(null); // 날짜 선택 후 모달 닫기
+                        }
+                      }}
+                    />
+                    <button
+                      onClick={() => {
+                        console.log('취소 버튼 클릭됨');
+                        setCalendarOpenIdx(null);
+                      }}
+                      className="w-full mt-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                    >
+                      취소
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
             {/* 시간 인풋/버튼 */}
