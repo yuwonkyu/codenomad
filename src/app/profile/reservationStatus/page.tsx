@@ -1,29 +1,8 @@
 'use client';
-import styles from '@/styles/reservationStatus.module.css';
-import { useState, useContext, useRef, useEffect } from 'react';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
+import { useState, useContext, useEffect } from 'react';
 import { ProfileMobileContext } from '../layout';
+import ReservationCalendar from '@/components/common/ReservationCalendar';
 // import axios from '@/lib/api/axios'; // axios.ts가 default export라면 그대로, 아니면 { axios }로 변경 필요
-
-// 예약 상태 뱃지 컴포넌트
-function StatusBadge({ status, count }: { status: string; count: number }) {
-  const colorMap: Record<string, string> = {
-    완료: 'bg-gray-100 text-gray-500',
-    예약: 'bg-blue-100 text-blue-500',
-    승인: 'bg-yellow-100 text-yellow-600',
-    거절: 'bg-red-100 text-red-500',
-  };
-  return (
-    <span
-      className={`w-fill h-21 px-2 py-0.5 rounded text-xs font-semibold mr-1 mb-3 ${
-        colorMap[status] || ''
-      }`}
-    >
-      {status} {count}
-    </span>
-  );
-}
 
 // 하드코딩 예약 데이터 (예시)
 const reservationData: Record<string, { status: string; count: number; nickname: string }[]> = {
@@ -65,9 +44,8 @@ export default function ReservationStatusPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTab, setSelectedTab] = useState<'신청' | '승인' | '거절'>('신청');
   const [selectedTime, setSelectedTime] = useState('14:00 - 15:00');
-  const [visibleCount, setVisibleCount] = useState(2);
+  const [, setVisibleCount] = useState(2);
   const mobileContext = useContext(ProfileMobileContext);
-  const loaderRef = useRef<HTMLDivElement | null>(null);
   const [calendarCellRect, setCalendarCellRect] = useState<{
     top: number;
     left: number;
@@ -116,13 +94,13 @@ export default function ReservationStatusPage() {
   const filteredReservations = allReservations.filter((r) => r.status === tabMap[selectedTab]);
 
   return (
-    <section className='w-full max-w-2xl mx-auto'>
+    <section className='mx-auto w-full max-w-2xl'>
       {/* 상단 타이틀/설명 */}
-      <div className='w-full mb-30'>
+      <div className='mb-30 w-full'>
         {/* 모바일: 아이콘+텍스트, 클릭 시 onCancel */}
         <button
           type='button'
-          className='flex items-center gap-2 mb-1 block md:hidden'
+          className='mb-1 flex items-center gap-2 md:hidden'
           onClick={mobileContext?.onCancel}
           style={{ cursor: 'pointer' }}
         >
@@ -130,89 +108,47 @@ export default function ReservationStatusPage() {
           <span className='text-xl font-bold'>예약 현황</span>
         </button>
         {/* PC/테블릿: 텍스트만 */}
-        <h1 className='text-xl font-bold mb-1 hidden md:block'>예약 현황</h1>
-        <p className='text-gray-500 text-sm mb-4'>
+        <h1 className='mb-1 hidden text-xl font-bold md:block'>예약 현황</h1>
+        <p className='mb-4 text-sm text-gray-500'>
           내 체험에 예약된 내역들을 한 눈에 확인할 수 있습니다.
         </p>
       </div>
       {/* 드롭다운 + 캘린더를 같은 컨테이너로 묶고, w-full/max-w-2xl 적용 */}
-      <div className='bg-white rounded-2xl shadow-custom-5 p-4 md:p-8 w-full max-w-2xl mx-auto flex flex-col gap-4'>
-        <select className='w-full h-54 border rounded px-10 py-2 shadow-custom-5 mb-20'>
-          <option>함께 배우면 즐거운 스트릿 댄스</option>
-          {/* 추후 체험 목록 동적 렌더링 */}
-        </select>
-        <Calendar
-          value={date}
-          onChange={(value) => setDate(value as Date)}
-          calendarType='gregory'
-          className={styles.reactCalendar}
-          tileClassName={styles.reactCalendarTile}
-          navigationLabel={({ date }) => (
-            <span className={styles.reactCalendarNavigationLabel}>
-              {date.getFullYear()}년 {date.getMonth() + 1}월
-            </span>
-          )}
-          prev2Label={null}
-          next2Label={null}
-          formatShortWeekday={(_, date) => {
-            const week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            return week[date.getDay()];
-          }}
-          tileContent={({ date, view }: { date: Date; view: string }) => {
-            if (view === 'month') {
-              const key = formatDate(date);
-              const reservations = reservationData[key] || [];
-              const hasStatus = reservations.length > 0;
-              const statusList = ['예약', '승인', '거절', '완료'];
-              return (
-                <div className='flex flex-col items-center mt-1 calendar-badge-scroll'>
-                  <div className='flex items-center justify-center'>
-                    <span>{date.getDate()}</span>
-                    {hasStatus && <div className={styles.calendarDot} />}
-                  </div>
-                  {statusList.map((status) => {
-                    const count = reservations.filter((r) => r.status === status).length;
-                    return count > 0 ? (
-                      <StatusBadge key={status} status={status} count={count} />
-                    ) : null;
-                  })}
-                </div>
-              );
-            }
-            return null;
-          }}
-          onClickDay={(date, event) => handleDayClick(date, event)}
-        />
-      </div>
+      <ReservationCalendar
+        selectedDate={date}
+        onDateChange={setDate}
+        onDayClick={handleDayClick}
+        reservationData={reservationData}
+      />
       {/* 모바일 바텀시트 모달 (이미지 시안 스타일) */}
       {selectedDate && (
         <>
           {/* 모바일 모달 */}
           <div
-            className='fixed inset-0 z-50 flex items-end justify-center bg-black/40 block md:hidden'
+            className='fixed inset-0 z-50 flex items-end justify-center bg-black/40 md:hidden'
             onClick={closeModal}
           >
             <div
-              className='w-full rounded-t-3xl bg-white max-h-[90vh] overflow-y-auto shadow-xl transition-transform duration-300 translate-y-0 flex flex-col items-center p-[20px]'
+              className='flex max-h-[90vh] w-full translate-y-0 flex-col items-center overflow-y-auto rounded-t-3xl bg-white p-[20px] shadow-xl transition-transform duration-300'
               style={{ boxShadow: '0 -4px 32px rgba(0,0,0,0.10)' }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* 상단 드래그바 */}
-              <div className='w-12 h-1.5 bg-gray-200 rounded-full mb-4 mx-auto' />
+              <div className='mx-auto mb-4 h-1.5 w-12 rounded-full bg-gray-200' />
               {/* 상단 날짜 */}
-              <div className='text-lg font-bold mb-6 w-full text-center'>
+              <div className='mb-6 w-full text-center text-lg font-bold'>
                 {selectedDate.getFullYear().toString().slice(2)}년 {selectedDate.getMonth() + 1}월{' '}
                 {selectedDate.getDate()}일
               </div>
               {/* 탭 */}
-              <div className='flex border-b mb-6 w-full'>
+              <div className='mb-6 flex w-full border-b'>
                 {(['신청', '승인', '거절'] as const).map((tab) => (
                   <button
                     key={tab}
-                    className={`flex-1 py-2 text-center font-semibold border-b-2 transition-colors ${
+                    className={`flex-1 border-b-2 py-2 text-center font-semibold transition-colors ${
                       selectedTab === tab
-                        ? 'text-blue-500 border-blue-500'
-                        : 'text-gray-400 border-transparent'
+                        ? 'border-blue-500 text-blue-500'
+                        : 'border-transparent text-gray-400'
                     }`}
                     onClick={() => setSelectedTab(tab)}
                   >
@@ -221,9 +157,9 @@ export default function ReservationStatusPage() {
                 ))}
               </div>
               {/* 예약 시간 드롭다운 */}
-              <div className='w-full mb-6'>
-                <label className='block text-sm font-semibold mb-2'>예약 시간</label>
-                <select className='w-full border rounded-xl text-base bg-white h-[54px] px-10'>
+              <div className='mb-6 w-full'>
+                <label className='mb-2 block text-sm font-semibold'>예약 시간</label>
+                <select className='h-[54px] w-full rounded-xl border bg-white px-10 text-base'>
                   {timeOptions.map((t) => (
                     <option key={t} value={t}>
                       {t}
@@ -232,43 +168,43 @@ export default function ReservationStatusPage() {
                 </select>
               </div>
               {/* 예약 내역 */}
-              <div className='w-full mb-6'>
-                <label className='block text-sm font-semibold mb-2'>예약 내역</label>
-                <div className='flex flex-col gap-4 max-h-[260px] overflow-y-auto'>
+              <div className='mb-6 w-full'>
+                <label className='mb-2 block text-sm font-semibold'>예약 내역</label>
+                <div className='flex max-h-[260px] flex-col gap-4 overflow-y-auto'>
                   {filteredReservations.length > 0 ? (
                     filteredReservations.map((r, i) => (
                       <div
                         key={i}
-                        className='bg-white rounded-xl flex flex-row justify-between items-center border border-gray-200 shadow-sm h-[94px] min-h-[94px] max-h-[94px] overflow-hidden px-20'
+                        className='flex h-[94px] max-h-[94px] min-h-[94px] flex-row items-center justify-between overflow-hidden rounded-xl border border-gray-200 bg-white px-20 shadow-sm'
                       >
                         {/* 왼쪽: 닉네임/인원 */}
                         <div className='flex flex-col gap-2'>
-                          <div className='flex gap-2 items-center'>
-                            <span className='text-gray-500 text-sm'>닉네임</span>
-                            <span className='text-gray-900 font-semibold'>{r.nickname}</span>
+                          <div className='flex items-center gap-2'>
+                            <span className='text-sm text-gray-500'>닉네임</span>
+                            <span className='font-semibold text-gray-900'>{r.nickname}</span>
                           </div>
-                          <div className='flex gap-2 items-center'>
-                            <span className='text-gray-500 text-sm'>인원</span>
-                            <span className='text-gray-900 font-semibold'>{r.count}명</span>
+                          <div className='flex items-center gap-2'>
+                            <span className='text-sm text-gray-500'>인원</span>
+                            <span className='font-semibold text-gray-900'>{r.count}명</span>
                           </div>
                         </div>
                         {/* 오른쪽: 신청탭은 버튼, 승인/거절탭은 뱃지 */}
-                        <div className='flex flex-col gap-2 ml-4 items-end'>
+                        <div className='ml-4 flex flex-col items-end gap-2'>
                           {selectedTab === '신청' ? (
                             <>
-                              <button className='flex-1 px-[20px] py-[8px] rounded-lg border text-gray-500 bg-white border-gray-300 font-semibold text-sm hover:bg-gray-50 transition-colors'>
+                              <button className='flex-1 rounded-lg border border-gray-300 bg-white px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-50'>
                                 승인하기
                               </button>
-                              <button className='flex-1 px-[20px] py-[8px] rounded-lg border text-gray-500 bg-gray-100 border-gray-300 font-semibold text-sm hover:bg-gray-200 transition-colors mt-2'>
+                              <button className='mt-2 flex-1 rounded-lg border border-gray-300 bg-gray-100 px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-200'>
                                 거절하기
                               </button>
                             </>
                           ) : selectedTab === '승인' ? (
-                            <span className='px-[20px] py-[8px] rounded-lg bg-blue-50 text-blue-500 font-semibold text-sm'>
+                            <span className='rounded-lg bg-blue-50 px-[20px] py-[8px] text-sm font-semibold text-blue-500'>
                               예약 승인
                             </span>
                           ) : selectedTab === '거절' ? (
-                            <span className='px-[20px] py-[8px] rounded-lg bg-red-50 text-red-500 font-semibold text-sm'>
+                            <span className='rounded-lg bg-red-50 px-[20px] py-[8px] text-sm font-semibold text-red-500'>
                               예약 거절
                             </span>
                           ) : null}
@@ -276,13 +212,13 @@ export default function ReservationStatusPage() {
                       </div>
                     ))
                   ) : (
-                    <div className='text-gray-400 text-center py-4'>예약 내역이 없습니다.</div>
+                    <div className='py-4 text-center text-gray-400'>예약 내역이 없습니다.</div>
                   )}
                 </div>
               </div>
               {/* 닫기 버튼 */}
               <button
-                className='mt-10 w-full py-3 rounded-xl bg-gray-100 text-gray-700 font-semibold'
+                className='mt-10 w-full rounded-xl bg-gray-100 py-3 font-semibold text-gray-700'
                 onClick={closeModal}
               >
                 닫기
@@ -293,7 +229,7 @@ export default function ReservationStatusPage() {
           <div className='hidden lg:block'>
             {calendarCellRect && (
               <div
-                className='fixed z-50 rounded-3xl bg-white shadow-xl flex flex-col items-center transition-transform duration-300 p-[20px]'
+                className='fixed z-50 flex flex-col items-center rounded-3xl bg-white p-[20px] shadow-xl transition-transform duration-300'
                 style={{
                   top: `${calendarCellRect.top + window.scrollY}px`,
                   left: `${calendarCellRect.left + calendarCellRect.width + 16}px`, // 16px 오른쪽 여백
@@ -303,7 +239,7 @@ export default function ReservationStatusPage() {
               >
                 {/* 닫기(X) 버튼 */}
                 <button
-                  className='absolute right-6 top-6 text-gray-400 hover:text-gray-700 text-2xl font-bold'
+                  className='absolute top-6 right-6 text-2xl font-bold text-gray-400 hover:text-gray-700'
                   onClick={closeModal}
                   aria-label='닫기'
                   type='button'
@@ -311,19 +247,19 @@ export default function ReservationStatusPage() {
                   ×
                 </button>
                 {/* 상단 날짜 */}
-                <div className='text-lg font-bold mb-4 w-full text-left'>
+                <div className='mb-4 w-full text-left text-lg font-bold'>
                   {selectedDate.getFullYear().toString().slice(2)}년 {selectedDate.getMonth() + 1}월{' '}
                   {selectedDate.getDate()}일
                 </div>
                 {/* 탭 */}
-                <div className='flex border-b mb-4 w-full'>
+                <div className='mb-4 flex w-full border-b'>
                   {(['신청', '승인', '거절'] as const).map((tab) => (
                     <button
                       key={tab}
-                      className={`flex-1 py-2 text-center font-semibold border-b-2 transition-colors ${
+                      className={`flex-1 border-b-2 py-2 text-center font-semibold transition-colors ${
                         selectedTab === tab
-                          ? 'text-blue-500 border-blue-500'
-                          : 'text-gray-400 border-transparent'
+                          ? 'border-blue-500 text-blue-500'
+                          : 'border-transparent text-gray-400'
                       }`}
                       onClick={() => setSelectedTab(tab)}
                     >
@@ -332,9 +268,9 @@ export default function ReservationStatusPage() {
                   ))}
                 </div>
                 {/* 예약 시간 드롭다운 */}
-                <div className='w-full mb-4'>
-                  <label className='block text-sm font-semibold mb-2'>예약 시간</label>
-                  <select className='w-full border rounded px-10 py-3 text-base bg-white h-[54px]'>
+                <div className='mb-4 w-full'>
+                  <label className='mb-2 block text-sm font-semibold'>예약 시간</label>
+                  <select className='h-[54px] w-full rounded border bg-white px-10 py-3 text-base'>
                     {timeOptions.map((t) => (
                       <option key={t} value={t}>
                         {t}
@@ -343,43 +279,43 @@ export default function ReservationStatusPage() {
                   </select>
                 </div>
                 {/* 예약 내역 */}
-                <div className='w-full mb-4'>
-                  <label className='block text-sm font-semibold mb-2'>예약 내역</label>
-                  <div className='flex flex-col gap-4 max-h-[260px] overflow-y-auto'>
+                <div className='mb-4 w-full'>
+                  <label className='mb-2 block text-sm font-semibold'>예약 내역</label>
+                  <div className='flex max-h-[260px] flex-col gap-4 overflow-y-auto'>
                     {filteredReservations.length > 0 ? (
                       filteredReservations.map((r, i) => (
                         <div
                           key={i}
-                          className='bg-white rounded-xl p-4 flex flex-row justify-between items-center border border-gray-200 shadow-sm h-[94px] min-h-[94px] max-h-[94px] overflow-hidden px-20'
+                          className='flex h-[94px] max-h-[94px] min-h-[94px] flex-row items-center justify-between overflow-hidden rounded-xl border border-gray-200 bg-white p-4 px-20 shadow-sm'
                         >
                           {/* 왼쪽: 닉네임/인원 */}
                           <div className='flex flex-col gap-2'>
-                            <div className='flex gap-2 items-center'>
-                              <span className='text-gray-500 text-sm'>닉네임</span>
-                              <span className='text-gray-900 font-semibold'>{r.nickname}</span>
+                            <div className='flex items-center gap-2'>
+                              <span className='text-sm text-gray-500'>닉네임</span>
+                              <span className='font-semibold text-gray-900'>{r.nickname}</span>
                             </div>
-                            <div className='flex gap-2 items-center'>
-                              <span className='text-gray-500 text-sm'>인원</span>
-                              <span className='text-gray-900 font-semibold'>{r.count}명</span>
+                            <div className='flex items-center gap-2'>
+                              <span className='text-sm text-gray-500'>인원</span>
+                              <span className='font-semibold text-gray-900'>{r.count}명</span>
                             </div>
                           </div>
                           {/* 오른쪽: 신청탭은 버튼, 승인/거절탭은 뱃지 */}
-                          <div className='flex flex-col gap-2 ml-4 items-end'>
+                          <div className='ml-4 flex flex-col items-end gap-2'>
                             {selectedTab === '신청' ? (
                               <>
-                                <button className='flex-1 px-[20px] py-[8px] rounded-lg border text-gray-500 bg-white border-gray-300 font-semibold text-sm hover:bg-gray-50 transition-colors'>
+                                <button className='flex-1 rounded-lg border border-gray-300 bg-white px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-50'>
                                   승인하기
                                 </button>
-                                <button className='flex-1 px-[20px] py-[8px] rounded-lg border text-gray-500 bg-gray-100 border-gray-300 font-semibold text-sm hover:bg-gray-200 transition-colors mt-2'>
+                                <button className='mt-2 flex-1 rounded-lg border border-gray-300 bg-gray-100 px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-200'>
                                   거절하기
                                 </button>
                               </>
                             ) : selectedTab === '승인' ? (
-                              <span className='px-[20px] py-[8px] rounded-lg bg-blue-50 text-blue-500 font-semibold text-sm'>
+                              <span className='rounded-lg bg-blue-50 px-[20px] py-[8px] text-sm font-semibold text-blue-500'>
                                 예약 승인
                               </span>
                             ) : selectedTab === '거절' ? (
-                              <span className='px-[20px] py-[8px] rounded-lg bg-red-50 text-red-500 font-semibold text-sm'>
+                              <span className='rounded-lg bg-red-50 px-[20px] py-[8px] text-sm font-semibold text-red-500'>
                                 예약 거절
                               </span>
                             ) : null}
@@ -387,117 +323,19 @@ export default function ReservationStatusPage() {
                         </div>
                       ))
                     ) : (
-                      <div className='text-gray-400 text-center py-4'>예약 내역이 없습니다.</div>
+                      <div className='py-4 text-center text-gray-400'>예약 내역이 없습니다.</div>
                     )}
                   </div>
                 </div>
+                {/* 닫기 버튼 */}
+                <button
+                  className='mt-10 w-full rounded-xl bg-gray-100 py-3 font-semibold text-gray-700'
+                  onClick={closeModal}
+                >
+                  닫기
+                </button>
               </div>
             )}
-          </div>
-          {/* 테블릿 모달: 중앙/하단에 꽉 찬 스타일 */}
-          <div
-            className='hidden md:flex lg:hidden fixed inset-0 z-50 items-end justify-center bg-black/40'
-            onClick={closeModal}
-          >
-            <div
-              className='w-full md:w-full rounded-t-3xl bg-white max-h-[80vh] overflow-y-auto shadow-xl transition-transform duration-300 translate-y-0 flex flex-col items-center p-[20px]'
-              style={{ boxShadow: '0 -4px 32px rgba(0,0,0,0.10)' }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* 닫기(X) 버튼 */}
-              <button
-                className='absolute right-6 top-6 text-gray-400 hover:text-gray-700 text-2xl font-bold'
-                onClick={closeModal}
-                aria-label='닫기'
-                type='button'
-              >
-                ×
-              </button>
-              {/* 상단 날짜 */}
-              <div className='text-lg font-bold mb-4 w-full text-left'>
-                {selectedDate.getFullYear().toString().slice(2)}년 {selectedDate.getMonth() + 1}월{' '}
-                {selectedDate.getDate()}일
-              </div>
-              {/* 탭 */}
-              <div className='flex border-b mb-4 w-full'>
-                {(['신청', '승인', '거절'] as const).map((tab) => (
-                  <button
-                    key={tab}
-                    className={`flex-1 py-2 text-center font-semibold border-b-2 transition-colors ${
-                      selectedTab === tab
-                        ? 'text-blue-500 border-blue-500'
-                        : 'text-gray-400 border-transparent'
-                    }`}
-                    onClick={() => setSelectedTab(tab)}
-                  >
-                    {tab} {allReservations.filter((r) => r.status === tabMap[tab]).length}
-                  </button>
-                ))}
-              </div>
-              {/* 예약 시간 + 예약 내역: 테블릿에서 가로 배치 */}
-              <div className='w-full flex flex-col md:flex-row gap-4 md:gap-6'>
-                {/* 예약 시간 */}
-                <div className='w-full md:w-1/2 mb-4 md:mb-0'>
-                  <label className='block text-sm font-semibold mb-2'>예약 시간</label>
-                  <select className='w-full border rounded px-10 py-3 text-base bg-white h-[54px]'>
-                    {timeOptions.map((t) => (
-                      <option key={t} value={t}>
-                        {t}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                {/* 예약 내역 */}
-                <div className='w-full md:w-1/2 flex flex-col'>
-                  <label className='block text-sm font-semibold mb-2'>예약 내역</label>
-                  <div className='flex flex-col gap-4 max-h-[260px] overflow-y-auto'>
-                    {filteredReservations.length > 0 ? (
-                      filteredReservations.map((r, i) => (
-                        <div
-                          key={i}
-                          className='bg-white rounded-xl p-4 flex flex-row justify-between items-center border border-gray-200 shadow-sm h-[94px] min-h-[94px] max-h-[94px] overflow-hidden px-20'
-                        >
-                          {/* 왼쪽: 닉네임/인원 */}
-                          <div className='flex flex-col gap-2'>
-                            <div className='flex gap-2 items-center'>
-                              <span className='text-gray-500 text-sm'>닉네임</span>
-                              <span className='text-gray-900 font-semibold'>{r.nickname}</span>
-                            </div>
-                            <div className='flex gap-2 items-center'>
-                              <span className='text-gray-500 text-sm'>인원</span>
-                              <span className='text-gray-900 font-semibold'>{r.count}명</span>
-                            </div>
-                          </div>
-                          {/* 오른쪽: 신청탭은 버튼, 승인/거절탭은 뱃지 */}
-                          <div className='flex flex-col gap-2 ml-4 items-end'>
-                            {selectedTab === '신청' ? (
-                              <>
-                                <button className='flex-1 px-[20px] py-[8px] rounded-lg border text-gray-500 bg-white border-gray-300 font-semibold text-sm hover:bg-gray-50 transition-colors'>
-                                  승인하기
-                                </button>
-                                <button className='flex-1 px-[20px] py-[8px] rounded-lg border text-gray-500 bg-gray-100 border-gray-300 font-semibold text-sm hover:bg-gray-200 transition-colors mt-2'>
-                                  거절하기
-                                </button>
-                              </>
-                            ) : selectedTab === '승인' ? (
-                              <span className='px-[20px] py-[8px] rounded-lg bg-blue-50 text-blue-500 font-semibold text-sm'>
-                                예약 승인
-                              </span>
-                            ) : selectedTab === '거절' ? (
-                              <span className='px-[20px] py-[8px] rounded-lg bg-red-50 text-red-500 font-semibold text-sm'>
-                                예약 거절
-                              </span>
-                            ) : null}
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className='text-gray-400 text-center py-4'>예약 내역이 없습니다.</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </>
       )}

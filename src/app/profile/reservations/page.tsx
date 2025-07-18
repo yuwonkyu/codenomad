@@ -1,11 +1,10 @@
 'use client';
 import Badge from '@/components/reservationList/Badge';
 import ReservationCard from '@/components/reservationList/ReservationCard';
-import ReviewModal from '@/components/reservationList/ReviewModal';
 import { StatusType } from '@/components/reservationList/StatusBadge';
 import { useState } from 'react';
 
-const page = () => {
+const Page = () => {
   const [filter, setFilter] = useState<StatusType | null>(null);
   const statusList: { text: string; value: StatusType }[] = [
     { text: '예약 신청', value: 'pending' },
@@ -64,4 +63,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

@@ -49,7 +49,7 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
         : '/icons/profile_default.svg';
       setImageUrl(updatedUrl);
       alert('프로필 이미지가 변경되었습니다!');
-    } catch (err) {
+    } catch {
       alert('이미지 업로드에 실패했습니다.');
     } finally {
       setIsUploading(false);
@@ -58,19 +58,10 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
   };
 
   return (
-    <div
-      className='
-      bg-white rounded-2xl shadow-custom-5 flex flex-col items-center
-        w-[327px]
-        md:w-[178px]
-        lg:w-[290px]
-        mx-auto
-        px-6 py-8 md:px-4 md:py-6 lg:px-8 lg:py-10
-      '
-    >
+    <div className='shadow-custom-5 mx-auto flex w-[327px] flex-col items-center rounded-2xl bg-white px-6 py-8 md:w-[178px] md:px-4 md:py-6 lg:w-[290px] lg:px-8 lg:py-10'>
       {/* 프로필 이미지 */}
       <div className='relative mb-8'>
-        <div className='w-[120px] h-[120px] rounded-full bg-blue-100 flex items-center justify-center overflow-hidden'>
+        <div className='flex h-[120px] w-[120px] items-center justify-center overflow-hidden rounded-full bg-blue-100'>
           <Image
             src={imageUrl}
             alt='프로필'
@@ -82,7 +73,7 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
         </div>
         {/* 연필 아이콘 */}
         <button
-          className='absolute bottom-2 right-2 bg-gray-300 rounded-full p-1 shadow-custom-5 border border-gray-200'
+          className='shadow-custom-5 absolute right-2 bottom-2 rounded-full border border-gray-200 bg-gray-300 p-1'
           aria-label='프로필 수정'
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}
@@ -108,13 +99,13 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
         />
         {/* 업로드 중 오버레이 */}
         {isUploading && (
-          <div className='absolute inset-0 bg-white/60 flex items-center justify-center rounded-full'>
-            <span className='text-blue-500 font-bold'>업로드 중...</span>
+          <div className='absolute inset-0 flex items-center justify-center rounded-full bg-white/60'>
+            <span className='font-bold text-blue-500'>업로드 중...</span>
           </div>
         )}
       </div>
       {/* 메뉴 리스트 */}
-      <ul className='w-full flex flex-col gap-6'>
+      <ul className='flex w-full flex-col gap-6'>
         {menuItems.map((item) => {
           const isActive = pathname === item.href;
           if (onMenuClick) {
@@ -127,12 +118,7 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
                     onMenuClick();
                     router.push(item.href);
                   }}
-                  className={`
-                    flex items-center gap-3 w-full rounded-xl md:px-30
-                    px-3 h-[54px] cursor-pointer transition-colors
-                    ${isActive ? 'bg-blue-100 text-blue-500' : 'text-gray-600'}
-                    hover:bg-blue-100 hover:text-blue-500
-                  `}
+                  className={`flex h-[54px] w-full cursor-pointer items-center gap-3 rounded-xl px-3 transition-colors md:px-30 ${isActive ? 'bg-blue-100 text-blue-500' : 'text-gray-600'} hover:bg-blue-100 hover:text-blue-500`}
                   style={{ boxSizing: 'border-box' }}
                 >
                   {/* 내 정보 메뉴에 Vector.png 아이콘 제거 (info/page.tsx에서만 보임) */}
@@ -157,12 +143,7 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
             <li key={item.label} className='w-full'>
               <Link
                 href={item.href}
-                className={`
-                  flex items-center gap-3 w-full rounded-xl md:px-30
-                  px-3 h-[54px] cursor-pointer transition-colors
-                  ${isActive ? 'bg-blue-100 text-blue-500' : 'text-gray-600'}
-                  hover:bg-blue-100 hover:text-blue-500
-                `}
+                className={`flex h-[54px] w-full cursor-pointer items-center gap-3 rounded-xl px-3 transition-colors md:px-30 ${isActive ? 'bg-blue-100 text-blue-500' : 'text-gray-600'} hover:bg-blue-100 hover:text-blue-500`}
                 style={{ boxSizing: 'border-box' }}
               >
                 <Image

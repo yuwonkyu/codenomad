@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect, useContext } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useContext, useCallback } from 'react';
 import Input from '@/components/common/Input';
 import { ProfileMobileContext } from '../layout';
-import { getUserProfile, updateUserProfile, UserProfile } from '@/lib/api/profile';
+import { getUserProfile, updateUserProfile } from '@/lib/api/profile';
 
 const InformationPage = () => {
   const [email, setEmail] = useState('');
@@ -18,7 +17,6 @@ const InformationPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [error, setError] = useState('');
-  const router = useRouter();
 
   // Context에서 onCancel 가져오기
   const mobileContext = useContext(ProfileMobileContext);
@@ -58,16 +56,19 @@ const InformationPage = () => {
     setPasswordError(value.length >= 8 ? '' : '8자 이상 입력해주세요.');
   };
 
-  const validateConfirm = (value: string) => {
-    setConfirmError(value === password ? '' : '비밀번호가 일치하지 않습니다.');
-  };
+  const validateConfirm = useCallback(
+    (value: string) => {
+      setConfirmError(value === password ? '' : '비밀번호가 일치하지 않습니다.');
+    },
+    [password],
+  );
 
   // 비밀번호 변경하면 다시 확인되게
   useEffect(() => {
     if (confirmPassword) {
       validateConfirm(confirmPassword);
     }
-  }, [password]);
+  }, [password, confirmPassword, validateConfirm]);
 
   // 폼 유효성 상태
   const isFormValid =
@@ -88,8 +89,11 @@ const InformationPage = () => {
       setIsLoading(true);
       setError('');
 
-      // 2. 나머지 정보 업데이트
-      const updateData: any = {
+      const updateData: {
+        nickname: string;
+        email: string;
+        password?: string;
+      } = {
         nickname,
         email,
       };
@@ -106,13 +110,20 @@ const InformationPage = () => {
       // 비밀번호 필드 초기화
       setPassword('');
       setConfirmPassword('');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('회원정보 수정 실패:', err);
 
-      if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else if (err.response?.status === 409) {
-        setEmailError('중복된 이메일입니다.');
+      if (err && typeof err === 'object' && 'response' in err) {
+        const errorResponse = err as {
+          response?: { data?: { message?: string }; status?: number };
+        };
+        if (errorResponse.response?.data?.message) {
+          setError(errorResponse.response.data.message);
+        } else if (errorResponse.response?.status === 409) {
+          setEmailError('중복된 이메일입니다.');
+        } else {
+          setError('회원정보 수정에 실패했습니다. 다시 시도해주세요.');
+        }
       } else {
         setError('회원정보 수정에 실패했습니다. 다시 시도해주세요.');
       }
@@ -123,8 +134,8 @@ const InformationPage = () => {
 
   if (isLoadingProfile) {
     return (
-      <div className='w-full max-w-376 md:max-w-640 space-y-24 p-24 md:p-32 bg-white rounded-16'>
-        <div className='flex justify-center items-center h-32'>
+      <div className='rounded-16 w-full max-w-376 space-y-24 bg-white p-24 md:max-w-640 md:p-32'>
+        <div className='flex h-32 items-center justify-center'>
           <div className='text-gray-500'>로딩 중...</div>
         </div>
       </div>
@@ -134,11 +145,11 @@ const InformationPage = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className='w-full max-w-376 md:max-w-640 space-y-24 p-24 md:p-32 bg-white rounded-16'
+      className='rounded-16 w-full max-w-376 space-y-24 bg-white p-24 md:max-w-640 md:p-32'
     >
       {/* 모바일: 상단에 Vector.png + 내 정보 (클릭 시 onCancel) */}
       <div
-        className='flex items-center gap-2 mb-4 block md:hidden'
+        className='mb-4 block flex items-center gap-2 md:hidden'
         onClick={mobileContext?.onCancel}
         style={{ cursor: 'pointer' }}
       >
@@ -150,7 +161,7 @@ const InformationPage = () => {
       <p>닉네임과 비밀번호를 수정하실 수 있습니다.</p>
 
       {/* 에러 메시지 */}
-      {error && <div className='text-red-500 text-sm bg-red-50 p-3 rounded-lg'>{error}</div>}
+      {error && <div className='rounded-lg bg-red-50 p-3 text-sm text-red-500'>{error}</div>}
 
       <Input
         label='닉네임'
@@ -197,10 +208,10 @@ const InformationPage = () => {
       />
 
       {/* 저장/취소 버튼 (모바일에서만 보임) */}
-      <div className='flex justify-center gap-3 block md:hidden'>
+      <div className='block flex justify-center gap-3 md:hidden'>
         <button
           type='button'
-          className='flex-1 h-[41px] py-3 px-[10px] rounded-[12px] border border-gray-300 text-gray-700 text-16-m bg-white'
+          className='text-16-m h-[41px] flex-1 rounded-[12px] border border-gray-300 bg-white px-[10px] py-3 text-gray-700'
           onClick={mobileContext?.onCancel}
           disabled={isLoading}
         >
@@ -208,7 +219,7 @@ const InformationPage = () => {
         </button>
         <button
           type='submit'
-          className='flex-1 h-[41px] py-3 px-[10px] rounded-[12px] text-white text-16-m bg-blue-500 cursor-pointer hover:shadow-md hover:shadow-brand-blue/60 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed'
+          className='text-16-m hover:shadow-brand-blue/60 h-[41px] flex-1 cursor-pointer rounded-[12px] bg-blue-500 px-[10px] py-3 text-white transition-all duration-200 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50'
           disabled={isLoading || !isFormValid}
         >
           {isLoading ? '저장 중...' : '저장하기'}
@@ -216,10 +227,10 @@ const InformationPage = () => {
       </div>
 
       {/* 저장 버튼 (PC에서만 보임) */}
-      <div className='flex justify-center hidden md:flex'>
+      <div className='flex hidden justify-center md:flex'>
         <button
           type='submit'
-          className='w-[120px] h-[41px] py-3 rounded-[12px] text-white text-16-m bg-blue-500 cursor-pointer hover:shadow-md hover:shadow-brand-blue/60 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed'
+          className='text-16-m hover:shadow-brand-blue/60 h-[41px] w-[120px] cursor-pointer rounded-[12px] bg-blue-500 py-3 text-white transition-all duration-200 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50'
           disabled={isLoading || !isFormValid}
         >
           {isLoading ? '저장 중...' : '저장하기'}
