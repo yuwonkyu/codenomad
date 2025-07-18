@@ -184,7 +184,7 @@ const ExperienceAddPage = () => {
               reserveTimes.map((item, i) => (i === idx ? { ...item, [key]: value } : item)),
             )
           }
-          onAdd={() => setReserveTimes([...reserveTimes, { date: '', start: '', end: '' }])}
+          onAdd={() => setReserveTimes([{ date: '', start: '', end: '' }, ...reserveTimes])}
           onRemove={(idx) => setReserveTimes(reserveTimes.filter((_, i) => i !== idx))}
           isDuplicateTime={isDuplicateTime}
         />
