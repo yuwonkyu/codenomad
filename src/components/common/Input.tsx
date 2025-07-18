@@ -67,7 +67,8 @@ const Input = ({
       )}
 
       <div
-        className={`w-full px-20 py-16 bg-white rounded-[16px] shadow-custom-5 flex justify-between items-center ${baseOutline} ${outlineColor}`}
+        className={`w-full px-20 py-16 bg-white rounded-[16px] shadow-custom-5 flex justify-between items-center ${baseOutline} ${outlineColor} ${props.onClick ? 'cursor-pointer' : ''}`}
+        onClick={props.onClick}
       >
         {/* textarea 타입 */}
         {as === 'textarea' ? (
