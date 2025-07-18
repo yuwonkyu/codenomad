@@ -3,7 +3,7 @@
 import CommonModal from '@/components/common/CancelModal';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const Page = () => {
   const [isModalOpen, setisModalOpen] = useState(true);
