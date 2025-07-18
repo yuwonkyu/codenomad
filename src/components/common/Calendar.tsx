@@ -99,6 +99,8 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
         margin-bottom: 8px !important;
         padding: 0 !important;
         border-bottom: none !important;
+        border: none !important;
+        box-shadow: none !important;
       }
       
       .react-calendar__month-view__weekdays__weekday {
@@ -108,6 +110,14 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
         border: none !important;
         text-decoration: none !important;
         border-bottom: none !important;
+        box-shadow: none !important;
+      }
+      
+      /* abbr 태그의 기본 스타일 제거 */
+      .react-calendar abbr {
+        text-decoration: none !important;
+        border-bottom: none !important;
+        border: none !important;
       }
       
       /* 날짜 타일 컨테이너 */
@@ -166,9 +176,9 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
         color: #d1d5db !important;
       }
       
-      /* 주말 스타일 */
+      /* 주말 스타일 제거 - 모든 날짜 같은 색상 */
       .react-calendar__month-view__days__day--weekend {
-        color: #dc2626 !important;
+        color: #374151 !important;
       }
       
       /* 비활성화된 날짜 */
