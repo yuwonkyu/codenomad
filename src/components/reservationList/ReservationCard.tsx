@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react';
 import StatusBadge, { StatusType } from './StatusBadge';
-import { useResponsive } from '@/hooks/useResponsive';
 import { useRouter } from 'next/navigation';
 
 interface ReservationCardType {
@@ -22,12 +20,7 @@ const ReservationCard = ({
   price,
   headCount,
 }: ReservationCardType) => {
-  const breakpoint = useResponsive();
   const router = useRouter();
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
   const openReviewModal = () => {
     router.push('/profile/reservations/review');
   };
@@ -76,26 +69,25 @@ const ReservationCard = ({
         </div>
         <div className='h-full rounded-3xl bg-gray-400'></div>
       </div>
-      {isClient && breakpoint !== 'lg' && breakpoint !== null && (
-        <div className='mt-12'>
-          {status === 'completed' && (
-            <button className='bg-primary-500 text-14-m w-full rounded-lg p-10 text-white'>
-              후기 작성
-            </button>
-          )}
+      <div className='mt-12 lg:hidden'>
+        {status === 'completed' && (
+          <button
+            onClick={openReviewModal}
+            className='bg-primary-500 text-14-m w-full rounded-lg p-10 text-white'
+          >
+            후기 작성
+          </button>
+        )}
 
-          {status === 'confirmed' && (
-            <div className='flex gap-8'>
-              <button className='w-full rounded-lg border-1 border-gray-50 bg-white py-10 text-gray-600'>
-                예약 변경
-              </button>
-              <button className='w-full rounded-lg bg-gray-50 py-10 text-gray-600'>
-                예약 취소
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+        {status === 'confirmed' && (
+          <div className='flex gap-8'>
+            <button className='w-full rounded-lg border-1 border-gray-50 bg-white py-10 text-gray-600'>
+              예약 변경
+            </button>
+            <button className='w-full rounded-lg bg-gray-50 py-10 text-gray-600'>예약 취소</button>
+          </div>
+        )}
+      </div>
       <hr className='mt-30 border-1 border-t border-gray-50'></hr>
     </div>
   );
