@@ -1,59 +1,63 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface ExperienceCardProps {
+  id: number;
   title: string;
   rating: number;
   reviews: number;
   price: number;
   image: string;
+  onDelete?: (id: number) => void; // 추가
 }
 
 export default function ExperienceCard({
+  id,
   title,
   rating,
   reviews,
   price,
   image,
+  onDelete,
 }: ExperienceCardProps) {
   return (
-    <div
-      className='bg-white rounded-[20px] shadow-custom-5 flex items-center
-      w-[327px] h-[178px]
-      md:w-[476px] md:h-[159px]
-      lg:w-[640px] lg:h-[202px]
-      mx-auto p-5 gap-5'
-    >
+    <div className='shadow-custom-5 mx-auto flex h-[178px] w-[327px] items-center gap-5 rounded-[20px] bg-white p-5 md:h-[159px] md:w-[476px] lg:h-[202px] lg:w-[640px]'>
       {/* 내용 */}
-      <div className='flex flex-col flex-1 justify-between h-full'>
+      <div className='mt-40 ml-30 flex h-full flex-1 flex-col justify-between'>
         <div>
-          <div className='text-16-b mb-1 leading-tight break-keep'>{title}</div>
-          <div className='flex items-center text-14-m text-gray-500 mb-1 gap-1'>
-            <span className='text-yellow-400 text-[16px]'>★</span>
+          <div className='mb-5 text-xl leading-tight font-bold break-keep'>{title}</div>
+          <div className='text-14-m mb-5 flex items-center gap-1 text-gray-500'>
+            <span className='text-[16px] text-yellow-400'>★</span>
             <span>{rating}</span>
-            <span className='text-gray-400 text-12-m'>({reviews})</span>
+            <span className='text-12-m mb-5 text-gray-400'>({reviews})</span>
           </div>
-          <div className='text-16-b mt-1'>
-            <span className='text-black'>₩{price.toLocaleString()}</span>
-            <span className='text-gray-400 text-14-m ml-1'>/ 인</span>
+          <div className='mt-1'>
+            <span className='text-xl font-bold text-black'>₩{price.toLocaleString()}</span>
+            <span className='text-14-m ml-1 text-gray-400'>/ 인</span>
           </div>
         </div>
-        <div className='flex gap-2 mt-3'>
-          <button className='w-68 h-29 px-3 py-1 rounded-lg bg-gray-100 text-gray-600 text-14-m border border-gray-300'>
-            수정하기
-          </button>
-          <button className='w-68 h-29 px-3 py-1 rounded-lg bg-gray-200 text-gray-600 text-14-m border border-gray-300'>
+        <div className='mb-40 flex gap-8'>
+          <Link href={`/experiences/edit?id=${id}`}>
+            <button className='text-14-m h-30 w-70 rounded-lg border border-gray-300 bg-white text-black'>
+              수정하기
+            </button>
+          </Link>
+          <button
+            className='text-14-m h-30 w-70 rounded-lg border border-gray-300 bg-gray-100 text-black'
+            onClick={() => onDelete && onDelete(id)}
+          >
             삭제하기
           </button>
         </div>
       </div>
       {/* 썸네일 */}
-      <div className='flex-shrink-0 w-[80px] h-[80px] md:w-[100px] md:h-[100px] lg:w-[120px] lg:h-[120px] rounded-xl overflow-hidden'>
+      <div className='mr-30 h-[80px] w-[80px] flex-shrink-0 overflow-hidden rounded-xl md:h-[100px] md:w-[100px] lg:h-[120px] lg:w-[120px]'>
         <Image
           src={image}
           alt='썸네일'
           width={120}
           height={120}
-          className='object-cover w-full h-full'
+          className='h-full w-full object-cover'
         />
       </div>
     </div>

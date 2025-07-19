@@ -1,191 +1,141 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import Link from 'next/link';
 import ExperienceCard from '@/components/profile/ExperienceCard';
-
-const INITIAL_DATA = [
-  {
-    title: '함께 배우면 즐거운 스트릿 댄스',
-    rating: 4.9,
-    reviews: 293,
-    price: 10000,
-    image: '/imgs/thumbnail.jpg',
-  },
-  {
-    title: '서울 야경 투어 가이드',
-    rating: 4.8,
-    reviews: 156,
-    price: 25000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '한국 전통 요리 클래스',
-    rating: 4.7,
-    reviews: 89,
-    price: 35000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '한강 래프팅 체험',
-    rating: 4.6,
-    reviews: 234,
-    price: 45000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '전통 한복 체험',
-    rating: 4.5,
-    reviews: 178,
-    price: 20000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '서울 타워 전망대 투어',
-    rating: 4.4,
-    reviews: 312,
-    price: 30000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '강남 쇼핑 가이드',
-    rating: 4.3,
-    reviews: 145,
-    price: 18000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '한국 전통 차 문화 체험',
-    rating: 4.2,
-    reviews: 98,
-    price: 22000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '서울 지하철 투어',
-    rating: 4.1,
-    reviews: 267,
-    price: 15000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '한국 전통 공예 체험',
-    rating: 4.0,
-    reviews: 134,
-    price: 28000,
-    image: '/icons/profile_default.svg',
-  },
-];
-
-const MORE_DATA = [
-  {
-    title: '새로운 체험 1',
-    rating: 4.8,
-    reviews: 120,
-    price: 15000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '새로운 체험 2',
-    rating: 4.7,
-    reviews: 95,
-    price: 22000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '새로운 체험 3',
-    rating: 4.6,
-    reviews: 88,
-    price: 18000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '새로운 체험 4',
-    rating: 4.5,
-    reviews: 156,
-    price: 32000,
-    image: '/icons/profile_default.svg',
-  },
-  {
-    title: '새로운 체험 5',
-    rating: 4.4,
-    reviews: 203,
-    price: 25000,
-    image: '/icons/profile_default.svg',
-  },
-];
+import { getMyActivities, MyActivity, deleteMyActivity } from '@/lib/api/profile/my-activities';
+import { ProfileMobileContext } from '../layout';
+import { useContext } from 'react';
 
 export default function MyExperiencesPage() {
-  const [experiences, setExperiences] = useState<typeof INITIAL_DATA>([]);
-  const [, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [activities, setActivities] = useState<MyActivity[]>([]);
+  const [cursorId, setCursorId] = useState<number | null>(null);
   const [hasMore, setHasMore] = useState(true);
-  const loader = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const loaderRef = useRef<HTMLDivElement | null>(null);
+  const mobileContext = useContext(ProfileMobileContext);
 
-  // 초기 데이터 로드 (처음 5개만)
+  const fetchActivities = useCallback(async () => {
+    if (!hasMore || isLoading) return;
+    setIsLoading(true);
+    try {
+      const data = await getMyActivities(cursorId ?? undefined, 5);
+      setActivities((prev) => {
+        const ids = new Set(prev.map((a) => a.id));
+        const newActivities = data.activities.filter((a) => !ids.has(a.id));
+        return [...prev, ...newActivities];
+      });
+      setCursorId(
+        data.activities.length > 0 ? data.activities[data.activities.length - 1].id : null,
+      );
+      setHasMore(data.activities.length > 0);
+    } catch (err) {
+      console.error('체험 목록을 가져오는데 실패했습니다:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [cursorId, hasMore]);
+
   useEffect(() => {
-    setExperiences(INITIAL_DATA.slice(0, 5));
-  }, []);
+    fetchActivities();
+  }, []); // 초기 한 번만 호출
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading) {
-          fetchMoreData();
+        if (entries[0].isIntersecting) {
+          fetchActivities();
         }
       },
-      { threshold: 0.1 },
+      { threshold: 1.0 },
     );
 
-    const currentLoader = loader.current;
-    if (currentLoader) {
-      observer.observe(currentLoader);
+    const loader = loaderRef.current;
+    if (loader) {
+      observer.observe(loader);
     }
 
     return () => {
-      if (currentLoader) {
-        observer.unobserve(currentLoader);
+      if (loader) {
+        observer.unobserve(loader);
       }
     };
-  }, [hasMore, loading]);
+  }, [cursorId, hasMore]);
 
-  const fetchMoreData = useCallback(() => {
-    if (loading || !hasMore) return;
-
-    setLoading(true);
-
-    // 실제 API 호출 또는 더미 데이터 추가
-    setTimeout(() => {
-      const currentLength = experiences.length;
-      const remainingData = INITIAL_DATA.slice(currentLength, currentLength + 5);
-
-      if (remainingData.length > 0) {
-        setExperiences((prev) => [...prev, ...remainingData]);
-        setPage((p) => p + 1);
-      } else {
-        // 초기 데이터가 모두 로드되면 추가 데이터 로드
-        setExperiences((prev) => [...prev, ...MORE_DATA]);
-        setHasMore(false); // 더 이상 로드할 데이터가 없음을 표시
-      }
-
-      setLoading(false);
-    }, 1000);
-  }, [loading, hasMore, experiences.length]);
+  // 삭제 핸들러
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('정말 삭제하시겠습니까?')) return;
+    try {
+      await deleteMyActivity(id);
+      setActivities((prev) => prev.filter((a) => a.id !== id));
+    } catch (err) {
+      alert('삭제에 실패했습니다.');
+    }
+  };
 
   return (
-    <div className='flex flex-col items-center gap-6 py-6'>
-      {experiences.map((exp, idx) => (
-        <ExperienceCard key={`${exp.title}-${idx}`} {...exp} />
-      ))}
+    <section className='mx-auto w-full max-w-2xl'>
+      {/* 상단 타이틀/설명 */}
+      <div className='relative mb-8 w-full'>
+        {/* PC/태블릿: 타이틀+설명 세로 정렬 */}
+        <div className='hidden md:flex md:flex-col'>
+          <h1 className='mb-1 text-xl font-bold'>내 체험 관리</h1>
+          <p className='mb-4 text-sm text-gray-500'>
+            내 체험에 예약된 내역들을 한 눈에 확인할 수 있습니다.
+          </p>
+        </div>
+        {/* PC/태블릿: 등록하기 버튼 */}
+        <Link
+          href='/experiences/add'
+          className='absolute top-0 right-0 flex hidden h-[48px] w-[138px] items-center justify-center rounded-lg bg-blue-500 text-center text-base whitespace-nowrap text-white transition-colors hover:bg-blue-600 md:block'
+        >
+          <span className='flex h-full w-full items-center justify-center'>체험 등록하기</span>
+        </Link>
+        {/* 모바일: 아이콘+텍스트, 클릭 시 onCancel */}
+        <button
+          type='button'
+          className='mb-1 block flex items-center gap-2 md:hidden'
+          onClick={mobileContext?.onCancel}
+          style={{ cursor: 'pointer' }}
+        >
+          <img src='/icons/Vector.png' alt='vector' width={20} height={20} />
+          <span className='text-xl font-bold'>내 체험 관리</span>
+          <p className='mb-4 text-sm text-gray-500'>
+            내 체험에 예약된 내역들을 한 눈에 확인할 수 있습니다.
+          </p>
+        </button>
+      </div>
+      {/* 중앙 카드 스타일 콘텐츠 */}
+      {activities.length === 0 && !isLoading ? (
+        <div className='shadow-custom-5 mx-auto flex min-h-[40vh] w-full max-w-2xl flex-col items-center justify-center rounded-2xl bg-white p-4 md:p-8'>
+          <img src='/icons/empty.svg' alt='empty' width={120} height={120} className='mb-6' />
+          <p className='mb-4 text-lg text-gray-500'>아직 등록한 체험이 없어요</p>
+          <Link
+            href='/experiences/add'
+            className='block flex h-[48px] w-[138px] items-center justify-center rounded-lg bg-blue-500 text-center text-base whitespace-nowrap text-white transition-colors hover:bg-blue-600 md:hidden'
+          >
+            <span className='flex h-full w-full items-center justify-center'>체험 등록하기</span>
+          </Link>
+        </div>
+      ) : null}
 
-      {/* 로딩 인디케이터 */}
-      {loading && (
-        <div className='flex items-center justify-center py-4'>
-          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900'></div>
+      {/* 체험이 있을 때 ExperienceCard로 목록 렌더링 */}
+      {activities.length > 0 && (
+        <div className='flex w-full flex-col gap-6'>
+          {activities.map((activity) => (
+            <ExperienceCard
+              key={activity.id}
+              id={activity.id}
+              title={activity.title}
+              rating={activity.rating}
+              reviews={activity.reviewCount}
+              price={activity.price}
+              image={activity.bannerImageUrl}
+              onDelete={handleDelete}
+            />
+          ))}
         </div>
       )}
-
-      {/* 무한 스크롤 트리거 */}
-      {hasMore && <div ref={loader} className='h-4' />}
-    </div>
+    </section>
   );
 }
