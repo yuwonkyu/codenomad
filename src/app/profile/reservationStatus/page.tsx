@@ -337,9 +337,113 @@ export default function ReservationStatusPage() {
               </div>
             )}
           </div>
+          {/* 테블릿 모달: 중앙/하단에 꽉 찬 스타일 */}
+          <div
+            className='fixed inset-0 z-50 hidden items-end justify-center bg-black/40 md:flex lg:hidden'
+            onClick={closeModal}
+          >
+            <div
+              className='flex max-h-[80vh] w-full translate-y-0 flex-col items-center overflow-y-auto rounded-t-3xl bg-white p-[20px] shadow-xl transition-transform duration-300 md:w-full'
+              style={{ boxShadow: '0 -4px 32px rgba(0,0,0,0.10)' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* 닫기(X) 버튼 */}
+              <button
+                className='absolute top-6 right-6 text-2xl font-bold text-gray-400 hover:text-gray-700'
+                onClick={closeModal}
+                aria-label='닫기'
+                type='button'
+              >
+                ×
+              </button>
+              {/* 상단 날짜 */}
+              <div className='mb-4 w-full text-left text-lg font-bold'>
+                {selectedDate.getFullYear().toString().slice(2)}년 {selectedDate.getMonth() + 1}월{' '}
+                {selectedDate.getDate()}일
+              </div>
+              {/* 탭 */}
+              <div className='mb-4 flex w-full border-b'>
+                {(['신청', '승인', '거절'] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    className={`flex-1 border-b-2 py-2 text-center font-semibold transition-colors ${
+                      selectedTab === tab
+                        ? 'border-blue-500 text-blue-500'
+                        : 'border-transparent text-gray-400'
+                    }`}
+                    onClick={() => setSelectedTab(tab)}
+                  >
+                    {tab} {allReservations.filter((r) => r.status === tabMap[tab]).length}
+                  </button>
+                ))}
+              </div>
+              {/* 예약 시간 + 예약 내역: 테블릿에서 가로 배치 */}
+              <div className='flex w-full flex-col gap-4 md:flex-row md:gap-6'>
+                {/* 예약 시간 */}
+                <div className='mb-4 w-full md:mb-0 md:w-1/2'>
+                  <label className='mb-2 block text-sm font-semibold'>예약 시간</label>
+                  <select className='h-[54px] w-full rounded border bg-white px-10 py-3 text-base'>
+                    {timeOptions.map((t) => (
+                      <option key={t} value={t}>
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {/* 예약 내역 */}
+                <div className='flex w-full flex-col md:w-1/2'>
+                  <label className='mb-2 block text-sm font-semibold'>예약 내역</label>
+                  <div className='flex max-h-[260px] flex-col gap-4 overflow-y-auto'>
+                    {filteredReservations.length > 0 ? (
+                      filteredReservations.map((r, i) => (
+                        <div
+                          key={i}
+                          className='flex h-[94px] max-h-[94px] min-h-[94px] flex-row items-center justify-between overflow-hidden rounded-xl border border-gray-200 bg-white p-4 px-20 shadow-sm'
+                        >
+                          {/* 왼쪽: 닉네임/인원 */}
+                          <div className='flex flex-col gap-2'>
+                            <div className='flex items-center gap-2'>
+                              <span className='text-sm text-gray-500'>닉네임</span>
+                              <span className='font-semibold text-gray-900'>{r.nickname}</span>
+                            </div>
+                            <div className='flex items-center gap-2'>
+                              <span className='text-sm text-gray-500'>인원</span>
+                              <span className='font-semibold text-gray-900'>{r.count}명</span>
+                            </div>
+                          </div>
+                          {/* 오른쪽: 신청탭은 버튼, 승인/거절탭은 뱃지 */}
+                          <div className='ml-4 flex flex-col items-end gap-2'>
+                            {selectedTab === '신청' ? (
+                              <>
+                                <button className='flex-1 rounded-lg border border-gray-300 bg-white px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-50'>
+                                  승인하기
+                                </button>
+                                <button className='mt-2 flex-1 rounded-lg border border-gray-300 bg-gray-100 px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-200'>
+                                  거절하기
+                                </button>
+                              </>
+                            ) : selectedTab === '승인' ? (
+                              <span className='rounded-lg bg-blue-50 px-[20px] py-[8px] text-sm font-semibold text-blue-500'>
+                                예약 승인
+                              </span>
+                            ) : selectedTab === '거절' ? (
+                              <span className='rounded-lg bg-red-50 px-[20px] py-[8px] text-sm font-semibold text-red-500'>
+                                예약 거절
+                              </span>
+                            ) : null}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className='py-4 text-center text-gray-400'>예약 내역이 없습니다.</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </>
       )}
     </section>
   );
 }
-                                   
