@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import Input from '@/components/common/Input';
 
@@ -40,22 +40,35 @@ declare global {
 const AddressInput = ({ value, onChange }: AddressInputProps) => {
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const scriptRef = useRef<HTMLScriptElement | null>(null);
 
   // 다음 우편번호 서비스 스크립트 로드
   useEffect(() => {
+    // 이미 로드된 스크립트가 있는지 확인
+    const existingScript = document.querySelector('script[src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"]');
+    if (existingScript) {
+      setIsScriptLoaded(true);
+      return;
+    }
+
     const script = document.createElement('script');
     script.src = 'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
     script.async = true;
     script.onload = () => {
       setIsScriptLoaded(true);
     };
+    script.onerror = () => {
+      console.error('Daum 우편번호 서비스 스크립트 로드 실패');
+    };
+    
+    scriptRef.current = script;
     document.head.appendChild(script);
 
     return () => {
       // 컴포넌트 언마운트 시 스크립트 제거
-      const existingScript = document.querySelector('script[src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"]');
-      if (existingScript) {
-        document.head.removeChild(existingScript);
+      if (scriptRef.current && scriptRef.current.parentNode) {
+        scriptRef.current.parentNode.removeChild(scriptRef.current);
+        scriptRef.current = null;
       }
     };
   }, []);
@@ -63,8 +76,7 @@ const AddressInput = ({ value, onChange }: AddressInputProps) => {
   // 주소 검색 모달 열기
   const handleAddressSearch = () => {
     if (!isScriptLoaded || !window.daum) {
-      alert('주소 검색 서비스를 로딩 중입니다. 잠시 후 다시 시도해주세요.');
-      return;
+      return; // 스크립트가 로딩되지 않았으면 아무것도 하지 않음
     }
     setIsModalOpen(true);
   };
@@ -105,11 +117,11 @@ const AddressInput = ({ value, onChange }: AddressInputProps) => {
       <Input
         label='주소'
         labelClassName='text-16-b'
-        placeholder='주소를 입력해 주세요'
+        placeholder={isScriptLoaded ? '주소를 입력해 주세요' : '주소 검색 서비스 로딩 중...'}
         value={value}
         readOnly
-        onClick={handleAddressSearch}
-        className='cursor-pointer'
+        onClick={isScriptLoaded ? handleAddressSearch : undefined}
+        className={`cursor-pointer ${!isScriptLoaded ? 'opacity-50 cursor-not-allowed' : ''}`}
       />
       
       {/* 주소 검색 모달 - embed 방식 */}
