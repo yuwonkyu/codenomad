@@ -13,6 +13,7 @@ interface AddressInputProps {
 interface DaumPostcode {
   open: () => void;
   embed: (element: HTMLElement) => void;
+  close?: () => void;
 }
 
 interface PostcodeData {
@@ -37,8 +38,8 @@ declare global {
 }
 
 const AddressInput = ({ value, onChange }: AddressInputProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 다음 우편번호 서비스 스크립트 로드
   useEffect(() => {
@@ -61,7 +62,7 @@ const AddressInput = ({ value, onChange }: AddressInputProps) => {
 
   // 주소 검색 모달 열기
   const handleAddressSearch = () => {
-    if (!isScriptLoaded) {
+    if (!isScriptLoaded || !window.daum) {
       alert('주소 검색 서비스를 로딩 중입니다. 잠시 후 다시 시도해주세요.');
       return;
     }
@@ -78,15 +79,17 @@ const AddressInput = ({ value, onChange }: AddressInputProps) => {
     }
 
     onChange(fullAddress);
-    setIsModalOpen(false);
+    setIsModalOpen(false); // 우리가 만든 모달 닫기
   };
 
-  // 다음 우편번호 서비스 실행
+  // embed 방식으로 Daum 우편번호 서비스 실행
   useEffect(() => {
     if (isModalOpen && isScriptLoaded && window.daum) {
       const postcode = new window.daum.Postcode({
         oncomplete: handleAddressComplete,
-        onclose: () => setIsModalOpen(false),
+        onclose: () => {
+          setIsModalOpen(false);
+        },
       });
 
       // 모달 내부에 우편번호 서비스 임베드
@@ -109,30 +112,42 @@ const AddressInput = ({ value, onChange }: AddressInputProps) => {
         className='cursor-pointer'
       />
       
-      {/* 주소 검색 모달 */}
+      {/* 주소 검색 모달 - embed 방식 */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-18 shadow-custom-5 w-full max-w-343 md:max-w-500 h-500 md:h-600 relative">
-            <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="px-5 text-16-b md:text-18-b">주소 검색</h3>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-18 shadow-custom-5 w-full max-w-500 h-560 overflow-hidden">
+            <div className="p-4 border-b border-gray-200 flex justify-between items-center flex-shrink-0">
+              <h3 className="text-16-b md:text-18-b font-semibold">주소 검색</h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-gray-500 hover:text-gray-700 flex-shrink-0"
+                className="text-gray-500 hover:text-gray-700 transition-colors"
               >
                 <Image
-                  src="/icons/icon_X.svg"
+                  src="/icons/icon_delete.svg"
                   alt="닫기"
-                  width={20}
-                  height={20}
-                  className="md:size-24 cursor-pointer"
+                  width={24}
+                  height={24}
+                  
                 />
               </button>
             </div>
             <div 
               id="postcode-container" 
-              className="w-full h-[calc(100%-60px)]"
+              className="w-full h-[calc(100%-60px)] overflow-auto"
             />
           </div>
+        </div>
+      )}
+      
+      {/* 상세주소 입력 - 임시 사용 인풋*/}
+      {value && (
+        <div className='mt-8'>
+          <label className='pb-10 text-16-b block'>상세주소</label>
+          <input
+            type="text"
+            placeholder="상세주소를 입력해 주세요 (선택사항)"
+            className="w-full px-20 py-16 bg-white rounded-[16px] shadow-custom-5 border-none text-gray-950 text-16-m placeholder:text-gray-400 outline-1 outline-offset-[-1px] outline-gray-200 focus:outline-primary-500 focus:outline-[1.5px] transition-all duration-150"
+          />
         </div>
       )}
     </div>
