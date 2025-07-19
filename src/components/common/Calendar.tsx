@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Calendar from 'react-calendar';
 // 기본 스타일 제거 - 커스텀 스타일만 사용
 // import 'react-calendar/dist/Calendar.css';
@@ -21,15 +21,19 @@ export interface CalendarProps {
 
 const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps) => {
   const calendarRef = useRef<HTMLDivElement>(null);
+  const [styleId] = useState(() => `calendar-styles-${Math.random().toString(36).substr(2, 9)}`);
 
-  // 완전 커스텀 스타일링 적용
+  // 컴포넌트 범위 스타일링 적용
   useEffect(() => {
-    if (!calendarRef.current) return;
+    // 기존 스타일이 있다면 제거
+    const existingStyle = document.getElementById(styleId);
+    if (existingStyle) {
+      existingStyle.remove();
+    }
 
-    const calendarElement = calendarRef.current;
-
-    // 모든 react-calendar 요소에 대한 커스텀 스타일 적용
+    // 새로운 스타일 요소 생성
     const style = document.createElement('style');
+    style.id = styleId;
     style.textContent = `
       /* 캘린더 컨테이너 기본 스타일 리셋 */
       .react-calendar {
@@ -240,13 +244,15 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
     `;
     
     document.head.appendChild(style);
-    
+
+    // 컴포넌트 언마운트 시 스타일 정리
     return () => {
-      if (document.head.contains(style)) {
-        document.head.removeChild(style);
+      const styleElement = document.getElementById(styleId);
+      if (styleElement) {
+        styleElement.remove();
       }
     };
-  }, []);
+  }, [styleId]);
 
   const handleDateChange = (value: any) => {
     if (value instanceof Date) {

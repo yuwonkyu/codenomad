@@ -31,8 +31,6 @@ const ReserveTimesInput = ({
 }: ReserveTimesInputProps) => {
   const [calendarOpenIdx, setCalendarOpenIdx] = useState<number | null>(null);
 
-  console.log('현재 calendarOpenIdx:', calendarOpenIdx);
-
   return (
     <div className='mb-30'>
       <div className='text-16-b mb-18'>예약 가능한 시간대</div>
@@ -49,7 +47,6 @@ const ReserveTimesInput = ({
                 readOnly
                 dateIcon={idx === 0}
                 onDateIconClick={idx === 0 ? () => {
-                  console.log('달력 아이콘 클릭됨', idx);
                   setCalendarOpenIdx(idx);
                 } : undefined}
               />
@@ -60,7 +57,6 @@ const ReserveTimesInput = ({
                   onClick={(e) => {
                     // 배경 클릭 시 모달 닫기
                     if (e.target === e.currentTarget) {
-                      console.log('배경 클릭으로 모달 닫힘');
                       setCalendarOpenIdx(null);
                     }
                   }}
@@ -79,14 +75,12 @@ const ReserveTimesInput = ({
                       <CalendarComponent
                         selectedDate={rt.date ? new Date(rt.date) : null}
                         onChange={(date: Date | null) => {
-                          console.log('날짜 선택됨:', date);
                           if (date) {
                             // YYYY-MM-DD 형식으로 변환
                             const year = date.getFullYear();
                             const month = (date.getMonth() + 1).toString().padStart(2, '0');
                             const day = date.getDate().toString().padStart(2, '0');
                             const dateString = `${year}-${month}-${day}`;
-                            console.log('변환된 날짜:', dateString);
                             onChange(idx, 'date', dateString);
                             setCalendarOpenIdx(null); // 날짜 선택 후 모달 닫기
                           }
@@ -95,7 +89,6 @@ const ReserveTimesInput = ({
                     </div>
                     <button
                       onClick={() => {
-                        console.log('취소 버튼 클릭됨');
                         setCalendarOpenIdx(null);
                       }}
                       className="w-full mt-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
