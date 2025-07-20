@@ -7,6 +7,7 @@ import ReservationContent from '@/components/activities/ReservationFlow/Reservat
 import MapView from '@/components/activities/MapView';
 import Image from 'next/image';
 import { useResponsive } from '@/hooks/useResponsive';
+import { useState, useEffect } from 'react';
 
 type ActivityDetail = {
   id: number;
@@ -100,19 +101,26 @@ interface Props {
 
 const ClientActivitesPage = ({ id }: Props) => {
   const screenSize = useResponsive();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   const isDesktop = screenSize === 'lg';
 
   return (
-    <>
+    <main>
       {!isDesktop ? (
-        <div className='flex flex-col gap-20'>
+        <article className='flex flex-col gap-20'>
           <PhotoSection />
 
-          <div className='flex justify-between border-b-1 border-gray-100 pb-12'>
+          <header className='flex justify-between border-b-1 border-gray-100 pb-12'>
             <div className='flex flex-col'>
               <p className='text-13-m mb-4 text-gray-700'>{mock.category}</p>
-              <h2 className='text-18-b mb-16 text-gray-950'>{mock.title}</h2>
+              <h1 className='text-18-b mb-16 text-gray-950'>{mock.title}</h1>
               <div className='mb-10 flex gap-0.5'>
                 <Image src='/icons/icon_star_on.svg' alt='별' width={16} height={16} />
                 <p className='text-14-m text-gray-700'>
@@ -125,67 +133,63 @@ const ClientActivitesPage = ({ id }: Props) => {
               </div>
             </div>
             <DropdownMenu />
-          </div>
+          </header>
 
-          <div className='flex flex-col gap-20'>
-            <div className='flex flex-col gap-8 border-b-1 border-gray-100'>
-              <h3 className='text-18-b text-gray-950'>체험 설명</h3>
-              <p className='text-16-body-m mb-20 text-gray-950 md:mb-40'>{mock.description}</p>
-            </div>
+          <section className='flex flex-col gap-8 border-b-1 border-gray-100'>
+            <h2 className='text-18-b text-gray-950'>체험 설명</h2>
+            <p className='text-16-body-m mb-20 text-gray-950 md:mb-40'>{mock.description}</p>
+          </section>
 
-            <div className='flex flex-col gap-8 border-b-1 border-gray-100'>
-              <h3 className='text-18-b text-gray-950'>오시는 길</h3>
-              <p className='text-[14px] font-semibold text-gray-950'>{mock.address}</p>
-              <MapView address={mock.address} />
-            </div>
+          <section className='flex flex-col gap-8 border-b-1 border-gray-100'>
+            <h2 className='text-18-b text-gray-950'>오시는 길</h2>
+            <p className='text-[14px] font-semibold text-gray-950'>{mock.address}</p>
+            <MapView address={mock.address} />
+          </section>
 
-            <div className='flex flex-col items-center justify-center gap-8'>
-              <h3 className='text-18-b self-start text-gray-950'>
-                체험 후기{' '}
-                <span className='text-[14px] font-semibold text-[#79747E]'>
-                  {mock.reviewCount}개
-                </span>
-              </h3>
-              <p className='text-2xl font-semibold text-gray-950'>{mock.rating}</p>
-              <p className='text-lg font-bold text-gray-950'>매우 만족</p>
-              <div className='mb-10 flex items-center gap-0.5'>
-                <Image src='/icons/icon_star_on.svg' alt='별' width={16} height={16} />
-                <p className='text-14-body-m text-gray-700'>{mock.reviewCount}개 후기</p>
-              </div>
-              {mockReviews.reviews.map((review) => (
-                <ReviewCard
-                  key={review.id}
-                  nickname={review.user.nickname}
-                  rating={review.rating}
-                  content={review.content}
-                  createdAt={review.createdAt}
-                />
-              ))}
+          <section className='flex flex-col items-center justify-center gap-8'>
+            <h2 className='text-18-b self-start text-gray-950'>
+              체험 후기{' '}
+              <span className='text-[14px] font-semibold text-[#79747E]'>{mock.reviewCount}개</span>
+            </h2>
+            <p className='text-2xl font-semibold text-gray-950'>{mock.rating}</p>
+            <p className='text-lg font-bold text-gray-950'>매우 만족</p>
+            <div className='mb-10 flex items-center gap-0.5'>
+              <Image src='/icons/icon_star_on.svg' alt='별' width={16} height={16} />
+              <p className='text-14-body-m text-gray-700'>{mock.reviewCount}개 후기</p>
             </div>
-          </div>
+            {mockReviews.reviews.map((review) => (
+              <ReviewCard
+                key={review.id}
+                nickname={review.user.nickname}
+                rating={review.rating}
+                content={review.content}
+                createdAt={review.createdAt}
+              />
+            ))}
+          </section>
 
           <div>
             <ReservationContent />
           </div>
-        </div>
+        </article>
       ) : (
         <div className='flex gap-40'>
-          <div className='flex flex-1 flex-col gap-40'>
+          <article className='flex flex-1 flex-col gap-40'>
             <PhotoSection />
 
             <div className='flex flex-col gap-20'>
-              <div className='flex flex-col gap-8 border-b-1 border-gray-100'>
+              <section className='flex flex-col gap-8 border-b-1 border-gray-100'>
                 <h3 className='text-18-b text-gray-950'>체험 설명</h3>
                 <p className='text-16-body-m mb-20 text-gray-950 md:mb-40'>{mock.description}</p>
-              </div>
+              </section>
 
-              <div className='flex flex-col gap-8 border-b-1 border-gray-100'>
+              <section className='flex flex-col gap-8 border-b-1 border-gray-100'>
                 <h3 className='text-18-b text-gray-950'>오시는 길</h3>
                 <p className='text-[14px] font-semibold text-gray-950'>{mock.address}</p>
                 <MapView address={mock.address} />
-              </div>
+              </section>
 
-              <div className='flex flex-col items-center justify-center gap-8'>
+              <section className='flex flex-col items-center justify-center gap-8'>
                 <h3 className='text-18-b self-start text-gray-950'>
                   체험 후기{' '}
                   <span className='text-[14px] font-semibold text-[#79747E]'>
@@ -207,12 +211,12 @@ const ClientActivitesPage = ({ id }: Props) => {
                     createdAt={review.createdAt}
                   />
                 ))}
-              </div>
+              </section>
             </div>
-          </div>
+          </article>
 
-          <div className='flex flex-col gap-24'>
-            <div className='flex justify-between border-b-1 border-gray-100 pb-16'>
+          <section className='flex flex-col gap-24'>
+            <header className='flex justify-between border-b-1 border-gray-100 pb-16'>
               <div className='flex flex-col'>
                 <p className='text-13-m mb-4 text-gray-700'>{mock.category}</p>
                 <h2 className='text-18-b mb-16 text-gray-950'>{mock.title}</h2>
@@ -228,15 +232,15 @@ const ClientActivitesPage = ({ id }: Props) => {
                 </div>
               </div>
               <DropdownMenu />
-            </div>
+            </header>
 
             <div className='sticky top-20'>
               <ReservationContent />
             </div>
-          </div>
+          </section>
         </div>
       )}
-    </>
+    </main>
   );
 };
 
