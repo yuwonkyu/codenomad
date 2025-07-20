@@ -2,7 +2,8 @@
 import { useState, useContext, useEffect } from 'react';
 import { ProfileMobileContext } from '../layout';
 import ReservationCalendar from '@/components/common/ReservationCalendar';
-// import axios from '@/lib/api/axios'; // axios.ts가 default export라면 그대로, 아니면 { axios }로 변경 필요
+// API 연결 시 사용할 import (현재는 주석 처리)
+// import { getReservationDashboard, getReservedSchedule, getReservations, updateReservationStatus } from '@/lib/api/profile/myActivitiesStatus';
 
 // 하드코딩 예약 데이터 (예시)
 const reservationData: Record<string, { status: string; count: number; nickname: string }[]> = {
@@ -32,12 +33,27 @@ const reservationData: Record<string, { status: string; count: number; nickname:
   ],
 };
 
-// API 연동 예시 (axios)
-// import axios from '@/lib/api/axios'; // 만약 default export가 아니면 { axios }로 변경
-// async function fetchReservations() {
-//   const res = await axios.get('/api/reservations');
-//   return res.data;
-// }
+// API 연결 시 사용할 타입 정의 (현재는 주석 처리)
+/*
+interface ReservationData {
+  id: number;
+  status: 'pending' | 'confirmed' | 'declined' | 'completed';
+  count: number;
+  nickname: string;
+  scheduleId: number;
+  timeSlot: string;
+}
+
+interface ScheduleData {
+  id: number;
+  timeSlot: string;
+  reservations: ReservationData[];
+}
+
+interface DashboardData {
+  [date: string]: ScheduleData[];
+}
+*/
 
 export default function ReservationStatusPage() {
   const [date, setDate] = useState<Date | null>(new Date()); // 항상 오늘 날짜(현재 월)로 시작
@@ -53,8 +69,108 @@ export default function ReservationStatusPage() {
     height: number;
   } | null>(null);
 
+  // API 연결 시 사용할 상태들 (현재는 주석 처리)
+  /*
+  const [apiReservationData, setApiReservationData] = useState<DashboardData>({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [activityId, setActivityId] = useState<number>(1); // 실제로는 props나 context에서 받아올 예정
+  */
+
   // 날짜를 yyyy-mm-dd 문자열로 변환
   const formatDate = (date: Date | null) => (date ? date.toISOString().split('T')[0] : '');
+
+  // API 연결 시 사용할 함수들 (현재는 주석 처리)
+  /*
+  // 월별 예약 현황 데이터 로드
+  const loadReservationDashboard = async (activityId: number, year: number, month: number) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getReservationDashboard(activityId);
+      setApiReservationData(data);
+    } catch (err) {
+      setError('예약 현황을 불러오는데 실패했습니다.');
+      console.error('Failed to load reservation dashboard:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 날짜별 예약 스케줄 데이터 로드
+  const loadReservedSchedule = async (activityId: number, date: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getReservedSchedule(activityId);
+      // 데이터 처리 로직
+      console.log('Reserved schedule data:', data);
+    } catch (err) {
+      setError('예약 스케줄을 불러오는데 실패했습니다.');
+      console.error('Failed to load reserved schedule:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 시간대별 예약 내역 데이터 로드
+  const loadReservations = async (activityId: number, date: string, scheduleId: number) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getReservations(activityId, date, scheduleId);
+      // 데이터 처리 로직
+      console.log('Reservations data:', data);
+    } catch (err) {
+      setError('예약 내역을 불러오는데 실패했습니다.');
+      console.error('Failed to load reservations:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 예약 상태 변경 (승인/거절)
+  const handleReservationStatusUpdate = async (
+    activityId: number,
+    reservationId: number,
+    status: 'confirmed' | 'declined'
+  ) => {
+    try {
+      setLoading(true);
+      setError(null);
+      await updateReservationStatus(activityId, reservationId, status);
+      // 상태 변경 후 데이터 새로고침
+      if (selectedDate) {
+        const dateStr = formatDate(selectedDate);
+        // 선택된 날짜의 데이터를 다시 로드
+        // loadReservations(activityId, dateStr, selectedScheduleId);
+      }
+    } catch (err) {
+      setError('예약 상태 변경에 실패했습니다.');
+      console.error('Failed to update reservation status:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  */
+
+  // API 연결 시 사용할 useEffect (현재는 주석 처리)
+  /*
+  // 컴포넌트 마운트 시 월별 데이터 로드
+  useEffect(() => {
+    if (date) {
+      loadReservationDashboard(activityId, date.getFullYear(), date.getMonth() + 1);
+    }
+  }, [date, activityId]);
+
+  // 선택된 날짜 변경 시 해당 날짜의 스케줄 데이터 로드
+  useEffect(() => {
+    if (selectedDate) {
+      const dateStr = formatDate(selectedDate);
+      loadReservedSchedule(activityId, dateStr);
+    }
+  }, [selectedDate, activityId]);
+  */
 
   // 예약이 있는 날짜만 클릭 시 모달 오픈
   const handleDayClick = (clickedDate: Date, event?: React.MouseEvent) => {
@@ -63,6 +179,13 @@ export default function ReservationStatusPage() {
       setSelectedDate(clickedDate);
       setSelectedTab('신청');
       setSelectedTime('14:00 - 15:00');
+
+      // API 연결 시 사용할 코드 (현재는 주석 처리)
+      /*
+      // 선택된 날짜의 스케줄 데이터 로드
+      loadReservedSchedule(activityId, key);
+      */
+
       // PC: 달력 셀 위치 저장
       if (window.innerWidth >= 1024 && event?.target) {
         const rect = (event.target as HTMLElement).getBoundingClientRect();
@@ -84,6 +207,17 @@ export default function ReservationStatusPage() {
   // 모달 닫기
   const closeModal = () => setSelectedDate(null);
 
+  // API 연결 시 사용할 예약 승인/거절 핸들러 (현재는 주석 처리)
+  /*
+  const handleApproveReservation = (reservationId: number) => {
+    handleReservationStatusUpdate(activityId, reservationId, 'confirmed');
+  };
+
+  const handleDeclineReservation = (reservationId: number) => {
+    handleReservationStatusUpdate(activityId, reservationId, 'declined');
+  };
+  */
+
   // 모달 예약 정보 (예시)
   const selectedKey = formatDate(selectedDate);
   const allReservations = reservationData[selectedKey] || [];
@@ -92,6 +226,29 @@ export default function ReservationStatusPage() {
   // 상태별 분류
   const tabMap = { 완료: '완료', 신청: '예약', 승인: '승인', 거절: '거절' };
   const filteredReservations = allReservations.filter((r) => r.status === tabMap[selectedTab]);
+
+  // API 연결 시 사용할 로딩/에러 상태 렌더링 (현재는 주석 처리)
+  /*
+  if (loading) {
+    return (
+      <section className='mx-auto w-full max-w-2xl'>
+        <div className='flex items-center justify-center py-20'>
+          <div className='text-lg'>로딩 중...</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className='mx-auto w-full max-w-2xl'>
+        <div className='flex items-center justify-center py-20'>
+          <div className='text-lg text-red-500'>{error}</div>
+        </div>
+      </section>
+    );
+  }
+  */
 
   return (
     <section className='mx-auto w-full max-w-2xl'>
@@ -192,10 +349,28 @@ export default function ReservationStatusPage() {
                         <div className='ml-4 flex flex-col items-end gap-2'>
                           {selectedTab === '신청' ? (
                             <>
-                              <button className='flex-1 rounded-lg border border-gray-300 bg-white px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-50'>
+                              <button
+                                className='flex-1 rounded-lg border border-gray-300 bg-white px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-50'
+                                onClick={() => {
+                                  // API 연결 시 사용할 코드 (현재는 주석 처리)
+                                  /*
+                                  handleApproveReservation(r.id);
+                                  */
+                                  console.log('승인하기 클릭:', r.nickname);
+                                }}
+                              >
                                 승인하기
                               </button>
-                              <button className='mt-2 flex-1 rounded-lg border border-gray-300 bg-gray-100 px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-200'>
+                              <button
+                                className='mt-2 flex-1 rounded-lg border border-gray-300 bg-gray-100 px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-200'
+                                onClick={() => {
+                                  // API 연결 시 사용할 코드 (현재는 주석 처리)
+                                  /*
+                                  handleDeclineReservation(r.id);
+                                  */
+                                  console.log('거절하기 클릭:', r.nickname);
+                                }}
+                              >
                                 거절하기
                               </button>
                             </>
@@ -303,10 +478,28 @@ export default function ReservationStatusPage() {
                           <div className='ml-4 flex flex-col items-end gap-2'>
                             {selectedTab === '신청' ? (
                               <>
-                                <button className='flex-1 rounded-lg border border-gray-300 bg-white px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-50'>
+                                <button
+                                  className='flex-1 rounded-lg border border-gray-300 bg-white px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-50'
+                                  onClick={() => {
+                                    // API 연결 시 사용할 코드 (현재는 주석 처리)
+                                    /*
+                                    handleApproveReservation(r.id);
+                                    */
+                                    console.log('승인하기 클릭:', r.nickname);
+                                  }}
+                                >
                                   승인하기
                                 </button>
-                                <button className='mt-2 flex-1 rounded-lg border border-gray-300 bg-gray-100 px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-200'>
+                                <button
+                                  className='mt-2 flex-1 rounded-lg border border-gray-300 bg-gray-100 px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-200'
+                                  onClick={() => {
+                                    // API 연결 시 사용할 코드 (현재는 주석 처리)
+                                    /*
+                                    handleDeclineReservation(r.id);
+                                    */
+                                    console.log('거절하기 클릭:', r.nickname);
+                                  }}
+                                >
                                   거절하기
                                 </button>
                               </>
@@ -415,10 +608,28 @@ export default function ReservationStatusPage() {
                           <div className='ml-4 flex flex-col items-end gap-2'>
                             {selectedTab === '신청' ? (
                               <>
-                                <button className='flex-1 rounded-lg border border-gray-300 bg-white px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-50'>
+                                <button
+                                  className='flex-1 rounded-lg border border-gray-300 bg-white px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-50'
+                                  onClick={() => {
+                                    // API 연결 시 사용할 코드 (현재는 주석 처리)
+                                    /*
+                                    handleApproveReservation(r.id);
+                                    */
+                                    console.log('승인하기 클릭:', r.nickname);
+                                  }}
+                                >
                                   승인하기
                                 </button>
-                                <button className='mt-2 flex-1 rounded-lg border border-gray-300 bg-gray-100 px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-200'>
+                                <button
+                                  className='mt-2 flex-1 rounded-lg border border-gray-300 bg-gray-100 px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-200'
+                                  onClick={() => {
+                                    // API 연결 시 사용할 코드 (현재는 주석 처리)
+                                    /*
+                                    handleDeclineReservation(r.id);
+                                    */
+                                    console.log('거절하기 클릭:', r.nickname);
+                                  }}
+                                >
                                   거절하기
                                 </button>
                               </>
