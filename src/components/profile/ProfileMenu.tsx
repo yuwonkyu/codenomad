@@ -10,7 +10,7 @@ const menuItems = [
   { icon: '/icons/icon_user.svg', label: '내 정보', href: '/profile/info' },
   { icon: '/icons/icon_list.svg', label: '예약내역', href: '/profile/reservations' },
   { icon: '/icons/icon_setting.svg', label: '내 체험 관리', href: '/profile/myExperiences' },
-  { icon: '/icons/icon_calendar.svg', label: '예약 현황', href: '/profile/reservationStatus' },
+  { icon: '/icons/icon_calendar.svg', label: '예약 현황', href: '/profile/myActivitiesStatus' },
 ];
 
 interface ProfileMenuProps {
