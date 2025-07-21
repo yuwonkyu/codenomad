@@ -3,17 +3,13 @@ import { useResponsive } from '@/hooks/useResponsive';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import TabletModal from './TabletModal';
 import MobileModal from './MobileModal';
-import type { Schedule, ReservationControlProps, ActivityDetail } from '@/components/activities/Activities.types';
+import type { ModalTriggerProps } from '@/components/activities/Activities.types';
 import { createPortal } from 'react-dom';
-import { parse, format } from 'date-fns';
-
-interface ModalTriggerProps extends ReservationControlProps {
-  activity: ActivityDetail;
-  onReservationReset?: () => void;
-}
+import { formatPrice } from '@/utils/formatPrice';
+import { formatScheduleText, findScheduleById } from '@/utils/reservation';
 
 const ModalTrigger = ({
-  activity,
+  activityData,
   scheduleId,
   onChangeSchedule,
   headCount,
@@ -24,14 +20,8 @@ const ModalTrigger = ({
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const breakpoint = useResponsive();
 
-  const price = '\u20A9' + ' ' + String(activity.price).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  const selectedSchedule = activity.schedules.find((s) => s.id === scheduleId);
-
-  // date-fns로 날짜 포맷팅
-  const formatScheduleText = (schedule: Schedule) => {
-    const dateObj = parse(schedule.date, 'yyyy-MM-dd', new Date());
-    return `${format(dateObj, 'yy/MM/dd')} ${schedule.startTime} ~ ${schedule.endTime}`;
-  };
+  const price = formatPrice(activityData.price);
+  const selectedSchedule = findScheduleById(activityData.schedules, scheduleId);
 
   const handleOpenModal = () => {
     setIsOpen(true);
@@ -108,7 +98,7 @@ const ModalTrigger = ({
           isOpen={isOpen}
           onClose={handleCloseModal}
           onConfirm={handleModalConfirm}
-          schedules={activity.schedules}
+          schedules={activityData.schedules}
           scheduleId={scheduleId}
           onChangeSchedule={onChangeSchedule}
           headCount={headCount}
@@ -119,7 +109,7 @@ const ModalTrigger = ({
           isOpen={isOpen}
           onClose={handleCloseModal}
           onConfirm={handleModalConfirm}
-          schedules={activity.schedules}
+          schedules={activityData.schedules}
           scheduleId={scheduleId}
           onChangeSchedule={onChangeSchedule}
           headCount={headCount}

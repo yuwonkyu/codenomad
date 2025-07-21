@@ -78,6 +78,18 @@ export interface ReservationActivityData {
   title: string;
 }
 
+// DesktopCard Props
+export interface DesktopCardProps extends ReservationControlProps {
+  activityData: ReservationActivityData;
+  onReservationSubmit: (data: ConfirmedReservation) => void;
+}
+
+// ModalTrigger Props
+export interface ModalTriggerProps extends ReservationControlProps {
+  activityData: ReservationActivityData;
+  onReservationReset?: () => void;
+}
+
 // 모달 공통 Props
 export interface BaseModalProps extends ReservationControlProps {
   isOpen: boolean;

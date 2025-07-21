@@ -6,6 +6,7 @@ import { BaseModalProps } from '../Activities.types';
 import CalendarStep from './CalendarStep';
 import TimeSelectionStep from './TimeSelectionStep';
 import PersonStep from './PersonStep';
+import { getDateFromScheduleId } from '@/utils/reservation';
 
 type ModalStep = 'calendar' | 'person';
 
@@ -22,14 +23,8 @@ const TabletModal = ({
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   useEffect(() => {
-    if (scheduleId) {
-      const selectedSchedule = schedules.find((s) => s.id === scheduleId);
-      if (selectedSchedule) {
-        setSelectedDate(selectedSchedule.date);
-      }
-    } else {
-      setSelectedDate(null);
-    }
+    const date = getDateFromScheduleId(schedules, scheduleId);
+    setSelectedDate(date);
   }, [scheduleId, schedules]);
 
   useEffect(() => {

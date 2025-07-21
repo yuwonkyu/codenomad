@@ -6,6 +6,7 @@ import { BaseModalProps } from '../Activities.types';
 import CalendarStep from './CalendarStep';
 import TimeSelectionStep from './TimeSelectionStep';
 import PersonStep from './PersonStep';
+import { getDateFromScheduleId } from '@/utils/reservation';
 
 type ModalStep = 'calendar' | 'person';
 
@@ -23,12 +24,10 @@ const MobileModal = ({
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   useEffect(() => {
-    if (scheduleId) {
-      const selectedSchedule = schedules.find((s) => s.id === scheduleId);
-      if (selectedSchedule) {
-        setSelectedDate(selectedSchedule.date);
-        console.log('[MobileModal] scheduleId → selectedDate 세팅:', selectedSchedule.date);
-      }
+    const date = getDateFromScheduleId(schedules, scheduleId);
+    setSelectedDate(date);
+    if (date) {
+      console.log('[MobileModal] scheduleId → selectedDate 세팅:', date);
     }
   }, [scheduleId, schedules]);
 

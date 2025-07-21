@@ -54,8 +54,14 @@ const ReservationContent = ({ activity }: ReservationContentProps) => {
     setReservation((prev) => ({ ...prev, headCount: validCount }));
   };
 
-  const commonProps = {
-    activity,
+  // 필요한 데이터만 추출
+  const activityData = {
+    schedules: activity.schedules,
+    price: activity.price,
+    title: activity.title,
+  };
+
+  const reservationControlProps = {
     scheduleId: reservation.scheduleId,
     headCount: reservation.headCount,
     onChangeSchedule: handleChangeSchedule,
@@ -65,9 +71,17 @@ const ReservationContent = ({ activity }: ReservationContentProps) => {
   return (
     <>
       {breakpoint === 'lg' ? (
-        <DesktopCard {...commonProps} onReservationSubmit={handleReservationConfirm} />
+        <DesktopCard 
+          {...reservationControlProps} 
+          activityData={activityData}
+          onReservationSubmit={handleReservationConfirm} 
+        />
       ) : (
-        <ModalTrigger {...commonProps} onReservationReset={resetReservation} />
+        <ModalTrigger 
+          {...reservationControlProps} 
+          activityData={activityData}
+          onReservationReset={resetReservation} 
+        />
       )}
 
       <ConfirmModal

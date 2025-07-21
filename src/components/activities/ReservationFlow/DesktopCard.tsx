@@ -4,15 +4,12 @@ import { useState, useEffect } from 'react';
 import CalendarStep from './CalendarStep';
 import TimeSelectionStep from './TimeSelectionStep';
 import PersonStep from './PersonStep';
-import { ActivityDetail, ReservationControlProps, ConfirmedReservation } from '../Activities.types';
-
-interface DesktopCardProps extends ReservationControlProps {
-  activity: ActivityDetail;
-  onReservationSubmit: (data: ConfirmedReservation) => void;
-}
+import { DesktopCardProps } from '../Activities.types';
+import { formatPrice } from '@/utils/formatPrice';
+import { getDateFromScheduleId } from '@/utils/reservation';
 
 const DesktopCard = ({
-  activity,
+  activityData,
   scheduleId,
   onChangeSchedule,
   headCount,
@@ -23,15 +20,9 @@ const DesktopCard = ({
 
   // 선택된 스케줄 ID에 해당하는 날짜 찾기
   useEffect(() => {
-    if (scheduleId) {
-      const selectedSchedule = activity.schedules.find((s) => s.id === scheduleId);
-      if (selectedSchedule) {
-        setSelectedDate(selectedSchedule.date);
-      }
-    } else {
-      setSelectedDate(null);
-    }
-  }, [scheduleId, activity.schedules]);
+    const date = getDateFromScheduleId(activityData.schedules, scheduleId);
+    setSelectedDate(date);
+  }, [scheduleId, activityData.schedules]);
 
   const handleDateSelect = (date: string) => {
     setSelectedDate(date);
@@ -48,14 +39,9 @@ const DesktopCard = ({
     }
   };
 
-  // 가격 포맷팅 함수
-  const formatPrice = (amount: number): string => {
-    return '₩ ' + String(amount).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  };
-
   const isConfirmEnabled = scheduleId !== null;
-  const price = formatPrice(activity.price);
-  const totalAmount = formatPrice(activity.price * headCount);
+  const price = formatPrice(activityData.price);
+  const totalAmount = formatPrice(activityData.price * headCount);
 
   return (
     <div className='shadow-custom-5 sticky top-20 max-w-410 rounded-3xl bg-white p-30'>
@@ -69,7 +55,7 @@ const DesktopCard = ({
       <div className='mb-24'>
         <h4 className='text-16-b mb-8 text-gray-950'>날짜</h4>
         <CalendarStep
-          schedules={activity.schedules}
+          schedules={activityData.schedules}
           selectedDate={selectedDate}
           onDateSelect={handleDateSelect}
         />
@@ -88,7 +74,7 @@ const DesktopCard = ({
       <div className='mb-24 flex flex-col gap-16'>
         <TimeSelectionStep
           selectedDate={selectedDate}
-          schedules={activity.schedules}
+          schedules={activityData.schedules}
           scheduleId={scheduleId}
           onTimeSelect={handleTimeSelect}
         />
