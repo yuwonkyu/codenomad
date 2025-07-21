@@ -48,3 +48,40 @@ export interface ReviewResponse {
   totalCount: number;
   reviews: Review[];
 }
+
+// === 예약 관련 타입들 ===
+
+// 예약 상태
+export interface ReservationState {
+  scheduleId: number | null;
+  headCount: number;
+}
+
+// 예약 확정 데이터
+export interface ConfirmedReservation {
+  scheduleId: number;
+  headCount: number;
+}
+
+// 예약 컨트롤 Props (통일된 naming)
+export interface ReservationControlProps {
+  scheduleId: number | null;
+  onChangeSchedule: (id: number | null) => void;
+  headCount: number;
+  onChangeHeadCount: (count: number) => void;
+}
+
+// 예약에 필요한 최소 활동 데이터
+export interface ReservationActivityData {
+  schedules: Schedule[];
+  price: number;
+  title: string;
+}
+
+// 모달 공통 Props
+export interface BaseModalProps extends ReservationControlProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  schedules: Schedule[];
+}

@@ -4,16 +4,21 @@ import { useState, useEffect } from 'react';
 import CalendarStep from './CalendarStep';
 import TimeSelectionStep from './TimeSelectionStep';
 import PersonStep from './PersonStep';
-import { ReservationComponentProps } from './types';
+import { ActivityDetail, ReservationControlProps, ConfirmedReservation } from '../Activities.types';
+
+interface DesktopCardProps extends ReservationControlProps {
+  activity: ActivityDetail;
+  onReservationSubmit: (data: ConfirmedReservation) => void;
+}
 
 const DesktopCard = ({
   activity,
   scheduleId,
-  setScheduleId,
+  onChangeSchedule,
   headCount,
-  setHeadCount,
-  onReservationConfirm,
-}: ReservationComponentProps) => {
+  onChangeHeadCount,
+  onReservationSubmit,
+}: DesktopCardProps) => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   // 선택된 스케줄 ID에 해당하는 날짜 찾기
@@ -30,16 +35,16 @@ const DesktopCard = ({
 
   const handleDateSelect = (date: string) => {
     setSelectedDate(date);
-    setScheduleId(null); // 날짜 변경 시 선택된 시간 초기화
+    onChangeSchedule(null); // 날짜 변경 시 선택된 시간 초기화
   };
 
   const handleTimeSelect = (id: number) => {
-    setScheduleId(id);
+    onChangeSchedule(id);
   };
 
   const handleReservationConfirm = () => {
     if (scheduleId) {
-      onReservationConfirm({ scheduleId, headCount });
+      onReservationSubmit({ scheduleId, headCount });
     }
   };
 
@@ -53,7 +58,7 @@ const DesktopCard = ({
   const totalAmount = formatPrice(activity.price * headCount);
 
   return (
-    <div className='shadow-custom-5 max-w-410 rounded-3xl bg-white p-30'>
+    <div className='shadow-custom-5 sticky top-20 max-w-410 rounded-3xl bg-white p-30'>
       {/* 헤더 */}
 
       <p className='text-24-b mb-24 text-gray-950'>
@@ -74,7 +79,7 @@ const DesktopCard = ({
         <PersonStep
           variant='desktop'
           headCount={headCount}
-          setHeadCount={setHeadCount}
+          onChangeHeadCount={onChangeHeadCount}
           showConfirmButton={false}
         />
       </div>

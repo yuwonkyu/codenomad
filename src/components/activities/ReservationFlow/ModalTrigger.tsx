@@ -3,16 +3,22 @@ import { useResponsive } from '@/hooks/useResponsive';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import TabletModal from './TabletModal';
 import MobileModal from './MobileModal';
-import { Schedule, ModalTriggerProps } from './types';
+import type { Schedule, ReservationControlProps, ActivityDetail } from '@/components/activities/Activities.types';
 import { createPortal } from 'react-dom';
+import { parse, format } from 'date-fns';
+
+interface ModalTriggerProps extends ReservationControlProps {
+  activity: ActivityDetail;
+  onReservationReset?: () => void;
+}
 
 const ModalTrigger = ({
   activity,
   scheduleId,
-  setScheduleId,
+  onChangeSchedule,
   headCount,
-  setHeadCount,
-  onReservationComplete,
+  onChangeHeadCount,
+  onReservationReset,
 }: ModalTriggerProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -21,10 +27,10 @@ const ModalTrigger = ({
   const price = '\u20A9' + ' ' + String(activity.price).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   const selectedSchedule = activity.schedules.find((s) => s.id === scheduleId);
 
+  // date-fns로 날짜 포맷팅
   const formatScheduleText = (schedule: Schedule) => {
-    const [year, month, day] = schedule.date.split('-');
-    const shortYear = year.slice(2);
-    return `${shortYear}/${month}/${day} ${schedule.startTime} ~ ${schedule.endTime}`;
+    const dateObj = parse(schedule.date, 'yyyy-MM-dd', new Date());
+    return `${format(dateObj, 'yy/MM/dd')} ${schedule.startTime} ~ ${schedule.endTime}`;
   };
 
   const handleOpenModal = () => {
@@ -33,12 +39,12 @@ const ModalTrigger = ({
 
   const handleCloseModal = () => {
     setIsOpen(false);
-    // 모달을 중간에 닫을 때 상태 초기화
-    onReservationComplete?.();
+    // 모달 중간에 닫을 때 예약 상태 초기화
+    onReservationReset?.();
   };
 
   const handleModalConfirm = () => {
-    // 확인 버튼으로 모달 닫을 때는 상태 유지
+    // 모달 내 확인 버튼: 상태는 유지
     setIsOpen(false);
   };
 
@@ -48,7 +54,6 @@ const ModalTrigger = ({
         scheduleId: selectedSchedule.id,
         headCount: headCount,
       });
-      // ConfirmModal 띄우기
       setIsConfirmModalOpen(true);
     } else {
       handleOpenModal();
@@ -57,8 +62,7 @@ const ModalTrigger = ({
 
   const handleConfirmModalClose = () => {
     setIsConfirmModalOpen(false);
-    onReservationComplete?.(); // 상태 초기화
-    // 실제 예약 처리 (나중에 API 호출로 대체)
+    onReservationReset?.(); // 상태 초기화
     if (selectedSchedule) {
       console.log('예약 완료:', {
         scheduleId: selectedSchedule.id,
@@ -70,7 +74,6 @@ const ModalTrigger = ({
 
   if (breakpoint === null) return null;
 
-  // 태블릿인지 모바일인지 판단 (md 이상은 태블릿으로 간주)
   const isTablet = breakpoint === 'md' || breakpoint === 'lg';
 
   return createPortal(
@@ -100,7 +103,6 @@ const ModalTrigger = ({
         </button>
       </div>
 
-      {/* 태블릿용 모달 */}
       {isTablet ? (
         <TabletModal
           isOpen={isOpen}
@@ -108,25 +110,23 @@ const ModalTrigger = ({
           onConfirm={handleModalConfirm}
           schedules={activity.schedules}
           scheduleId={scheduleId}
-          setScheduleId={setScheduleId}
+          onChangeSchedule={onChangeSchedule}
           headCount={headCount}
-          setHeadCount={setHeadCount}
+          onChangeHeadCount={onChangeHeadCount}
         />
       ) : (
-        /* 모바일용 모달 */
         <MobileModal
           isOpen={isOpen}
           onClose={handleCloseModal}
           onConfirm={handleModalConfirm}
           schedules={activity.schedules}
           scheduleId={scheduleId}
-          setScheduleId={setScheduleId}
+          onChangeSchedule={onChangeSchedule}
           headCount={headCount}
-          setHeadCount={setHeadCount}
+          onChangeHeadCount={onChangeHeadCount}
         />
       )}
 
-      {/* ConfirmModal */}
       <ConfirmModal
         message='예약이 완료되었습니다!'
         isOpen={isConfirmModalOpen}

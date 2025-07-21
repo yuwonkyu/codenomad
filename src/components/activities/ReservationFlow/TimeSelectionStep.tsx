@@ -1,4 +1,4 @@
-import { Schedule } from './types';
+import { Schedule } from '../Activities.types';
 
 interface TimeSelectionStepProps {
   selectedDate: string | null;

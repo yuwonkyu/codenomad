@@ -1,6 +1,6 @@
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { Schedule } from './types';
+import { Schedule } from '../Activities.types';
 
 interface CalendarStepProps {
   schedules: Schedule[];
