@@ -8,6 +8,7 @@ import clsx from 'clsx';
 
 const NotiBell = () => {
   const [open, setOpen] = useState(false);
+  const [hasNewNotification, setHasNewNotification] = useState(false);
   const bellRef = useRef<HTMLDivElement>(null);
 
   return (
