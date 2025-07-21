@@ -8,6 +8,7 @@ import MapView from '@/components/activities/MapView';
 import Image from 'next/image';
 import { useResponsive } from '@/hooks/useResponsive';
 import { useState, useEffect } from 'react';
+import Pagination from '@/components/common/Pagination';
 
 type ActivityDetail = {
   id: number;
@@ -112,7 +113,7 @@ const ClientActivitesPage = ({ id }: Props) => {
   const isDesktop = screenSize === 'lg';
 
   return (
-    <main>
+    <>
       {!isDesktop ? (
         <article className='flex flex-col gap-20'>
           <PhotoSection />
@@ -166,6 +167,8 @@ const ClientActivitesPage = ({ id }: Props) => {
                 createdAt={review.createdAt}
               />
             ))}
+            {/* 임시 적용 */}
+            <Pagination currentPage={1} totalPages={1} onPageChange={(page) => console.log(page)} />
           </section>
 
           <div>
@@ -211,6 +214,12 @@ const ClientActivitesPage = ({ id }: Props) => {
                     createdAt={review.createdAt}
                   />
                 ))}
+                {/* 임시 적용 */}
+                <Pagination
+                  currentPage={1}
+                  totalPages={1}
+                  onPageChange={(page) => console.log(page)}
+                />
               </section>
             </div>
           </article>
@@ -240,7 +249,7 @@ const ClientActivitesPage = ({ id }: Props) => {
           </section>
         </div>
       )}
-    </main>
+    </>
   );
 };
 
