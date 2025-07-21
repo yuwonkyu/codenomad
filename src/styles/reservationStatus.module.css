@@ -1,7 +1,7 @@
 /* 캘린더 전체 */
-.reactCalendar {
-  width: 100% !important;
-  max-width: 100% !important;
+.calendarContainer .reactCalendar {
+  width: 100%;
+  max-width: 100%;
   font-size: 1.1rem;
 }
 .reactCalendarTile {

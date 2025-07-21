@@ -1,6 +1,6 @@
 import Input from '@/components/common/Input';
 import Image from 'next/image';
-import CalendarModal from '@/components/common/Calendar';
+import CalendarComponent from '@/components/common/Calendar';
 import { useState } from 'react';
 
 const TIME_OPTIONS = Array.from({ length: 25 }, (_, i) => {
@@ -46,18 +46,57 @@ const ReserveTimesInput = ({
                 value={rt.date}
                 readOnly
                 dateIcon={idx === 0}
-                onDateIconClick={idx === 0 ? () => setCalendarOpenIdx(idx) : undefined}
+                onDateIconClick={idx === 0 ? () => {
+                  setCalendarOpenIdx(idx);
+                } : undefined}
               />
               {/* 달력 아이콘 클릭 시 CalendarModal 노출 */}
               {calendarOpenIdx === idx && idx === 0 && (
-                <CalendarModal
-                  open={true}
-                  value={rt.date ? new Date(rt.date) : null}
-                  onChange={(date) => onChange(idx, 'date', date.toISOString().slice(0, 10))}
-                  onClose={() => setCalendarOpenIdx(null)}
-                  position={{ top: 50, left: 0 }}
-                  type='default' // 디폴트 타입으로 지정
-                />
+                <div 
+                  className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50"
+                  onClick={(e) => {
+                    // 배경 클릭 시 모달 닫기
+                    if (e.target === e.currentTarget) {
+                      setCalendarOpenIdx(null);
+                    }
+                  }}
+                >
+                  <div 
+                    className=" bg-white rounded-lg shadow-lg p-24 w-375 md:w-407 lg:w-398 relative z-[10000] flex flex-col items-center"
+                    onClick={(e) => {
+                      // 모달 내부 클릭 시 이벤트 전파 중단
+                      e.stopPropagation();
+                    }}
+                  >
+                    <div className="mb-8 w-full">
+                      <h3 className="text-18-b text-left">날짜</h3>
+                    </div>
+                    <div className="flex justify-center w-full">
+                      <CalendarComponent
+                        selectedDate={rt.date ? new Date(rt.date) : null}
+                        onChange={(date: Date | null) => {
+                          if (date) {
+                            // YYYY-MM-DD 형식으로 변환
+                            const year = date.getFullYear();
+                            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                            const day = date.getDate().toString().padStart(2, '0');
+                            const dateString = `${year}-${month}-${day}`;
+                            onChange(idx, 'date', dateString);
+                            setCalendarOpenIdx(null); // 날짜 선택 후 모달 닫기
+                          }
+                        }}
+                      />
+                    </div>
+                    <button
+                      onClick={() => {
+                        setCalendarOpenIdx(null);
+                      }}
+                      className="w-full mt-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                    >
+                      취소
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
             {/* 시간 인풋/버튼 */}
