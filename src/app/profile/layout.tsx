@@ -15,7 +15,9 @@ export default function MyLayout({ children }: { children: React.ReactNode }) {
           {!showContent ? <ProfileMenu onMenuClick={() => setShowContent(true)} /> : null}
         </div>
         <div className='hidden md:block'>
-          <ProfileMenu />
+          <div className='sticky top-10 ml-40 lg:ml-100'>
+            <ProfileMenu />
+          </div>
         </div>
       </aside>
       {/* 선택된 메뉴 컨텐츠 */}
