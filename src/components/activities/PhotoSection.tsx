@@ -1,71 +1,67 @@
 import Image from 'next/image';
-import type { ReactNode } from 'react';
+import { clsx } from 'clsx';
+import type { SubImage } from './Activities.types';
 
-const PhotoSection = () => {
-  // 임시로 작성한 함수 : 추후 API를 호출 시에 해당 subImages의 length에 따라서 나오게 바꿀 예정
-  const renderImageSection = (length: number): ReactNode => {
-    switch (length) {
-      case 1:
-        return (
-          <div className='relative h-full w-full rounded-3xl border border-black'>
-            <Image src='/icons/empty.svg' alt='text01' fill />
-          </div>
-        );
-      case 2:
-        return (
-          <>
-            <div className='relative h-full w-full rounded-l-3xl border border-black'>
-              <Image src='/icons/empty.svg' alt='text01' fill />
-            </div>
-            <div className='relative h-full w-full rounded-r-3xl border border-black'>
-              <Image src='/icons/empty.svg' alt='text01' fill />
-            </div>
-          </>
-        );
-      case 3:
-        return (
-          <>
-            <div className='relative h-full w-full rounded-l-3xl border border-black'>
-              <Image src='/icons/empty.svg' alt='text01' fill />
-            </div>
-            <div className='grid h-full w-full grid-rows-2 gap-12'>
-              <div className='relative h-full overflow-hidden rounded-tr-3xl border border-black'>
-                <Image src='/icons/empty.svg' alt='test02' fill className='object-cover' />
-              </div>
-              <div className='relative h-full rounded-br-3xl border border-black'>
-                <Image src='/icons/empty.svg' alt='test03' fill className='object-cover' />
-              </div>
-            </div>
-          </>
-        );
-      case 4:
-        return (
-          <>
-            <div className='relative h-full w-full rounded-l-3xl border border-black'>
-              <Image src='/icons/empty.svg' alt='text01' fill />
-            </div>
-            <div className='grid h-full w-full grid-cols-2 grid-rows-2 gap-12'>
-              <div className='relative grid h-full border border-black'>
-                <Image src='/icons/empty.svg' alt='test02' fill className='object-cover' />
-              </div>
-              <div className='relative h-full rounded-tr-3xl border border-black'>
-                <Image src='/icons/empty.svg' alt='test03' fill className='object-cover' />
-              </div>
-              <div className='relative col-span-2 h-full rounded-br-3xl border border-black'>
-                <Image src='/icons/empty.svg' alt='test03' fill className='object-cover' />
-              </div>
-            </div>
-          </>
-        );
-      default:
-        return <div>이미지를 불러오는데 실패했습니다.</div>;
+interface PhotoSectionProps {
+  bannerImages: string;
+  subImages: SubImage[];
+}
+
+const PhotoSection = ({ bannerImages, subImages }: PhotoSectionProps) => {
+  const renderImageSection = () => {
+    const images = subImages.slice(0, 4);
+    const length = images.length;
+
+    if (length === 0) return null;
+
+    if (length === 1) {
+      return (
+        <figure className='relative h-full w-full overflow-hidden rounded-r-3xl'>
+          <Image src={images[0].imageUrl} alt='서브 이미지 1' fill className='object-cover' />
+        </figure>
+      );
     }
+
+    const gridClass = clsx(
+      'grid h-full w-full gap-12',
+      length === 2 && 'grid-rows-2',
+      length >= 3 && 'grid-cols-2 grid-rows-2',
+    );
+
+    return (
+      <div className={gridClass}>
+        {images.map((img, index) => (
+          <figure
+            key={img.id}
+            className={clsx(
+              'relative h-full overflow-hidden',
+              length === 2 && index === 0 && 'rounded-tr-3xl',
+              length === 2 && index === 1 && 'rounded-br-3xl',
+              length === 3 && index === 1 && 'rounded-tr-3xl',
+              length === 3 && index === 2 && 'col-span-2 rounded-br-3xl',
+              length === 4 && index === 1 && 'rounded-tr-3xl',
+              length === 4 && index === 3 && 'rounded-br-3xl',
+            )}
+          >
+            <Image
+              src={img.imageUrl}
+              alt={`서브 이미지 ${index + 1}`}
+              fill
+              className='object-cover'
+            />
+          </figure>
+        ))}
+      </div>
+    );
   };
 
   return (
-    <div className='flex h-245 w-auto items-center justify-center gap-12 sm:h-400'>
-      {renderImageSection(4)}
-    </div>
+    <section className='flex h-245 w-auto items-center justify-center gap-12 sm:h-400'>
+      <figure className='relative h-full w-full overflow-hidden rounded-l-3xl'>
+        <Image className='object-cover' src={bannerImages} alt='메인 이미지' fill />
+      </figure>
+      {renderImageSection()}
+    </section>
   );
 };
 
