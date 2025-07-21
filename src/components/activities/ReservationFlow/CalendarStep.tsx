@@ -1,5 +1,4 @@
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
+import Calendar from '@/components/common/Calendar';
 import { Schedule } from '../Activities.types';
 
 interface CalendarStepProps {
@@ -24,23 +23,19 @@ const CalendarStep = ({ schedules, selectedDate, onDateSelect }: CalendarStepPro
 
   const availableDates = new Set(schedules.map((s) => s.date));
 
-  const handleDayClick = (value: Date) => {
-    const dateStr = dateToString(value);
-    if (availableDates.has(dateStr)) {
+  const handleDateChange = (date: Date | null) => {
+    if (date) {
+      const dateStr = dateToString(date);
       onDateSelect(dateStr);
     }
   };
 
   return (
     <>
-      {/* 임시 캘린더 UI 깨질 수 있음 */}
+      {/* 기존 캘린더에서 사용할 수 있는 속성이 누락 되어 있어서 누락된 부분 적용 X */}
       <Calendar
-        value={selectedDate ? stringToDate(selectedDate) : null}
-        onClickDay={handleDayClick}
-        tileDisabled={({ date }) => !availableDates.has(dateToString(date))}
-        tileClassName={({ date }) =>
-          dateToString(date) === selectedDate ? 'bg-blue-100 rounded-full' : ''
-        }
+        selectedDate={selectedDate ? stringToDate(selectedDate) : null}
+        onChange={handleDateChange}
       />
     </>
   );
