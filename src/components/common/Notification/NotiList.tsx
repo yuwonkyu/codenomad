@@ -12,6 +12,9 @@ interface NotificationType {
   content: string;
   createdAt: string;
 }
+interface NotiListProps {
+  setHasNewNotification?: (val: boolean) => void;
+}
 
 const fetchNotifications = async () => {
   const token = localStorage.getItem('accessToken');
@@ -26,7 +29,7 @@ const deleteNotification = async (notificationId: number) => {
   await axios.delete(`/my-notifications/${notificationId}`);
 };
 
-const NotiList = () => {
+const NotiList = ({ setHasNewNotification }: NotiListProps) => {
   const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const [totalCount, setTotalCount] = useState(0);
 
@@ -41,7 +44,13 @@ const NotiList = () => {
   const handleDelete = async (id: number) => {
     try {
       await deleteNotification(id);
-      setNotifications((prev) => prev.filter((item) => item.id !== id));
+      setNotifications((prev) => {
+        const newList = prev.filter((item) => item.id !== id);
+        if (newList.length === 0 && setHasNewNotification) {
+          setHasNewNotification(false);
+        }
+        return newList;
+      });
       setTotalCount((prev) => prev - 1);
     } catch (err: any) {
       const message = err?.response?.data?.message || '알림 삭제에 실패했습니다.';
@@ -56,9 +65,7 @@ const NotiList = () => {
   return (
     <div
       className={clsx(
-        'absolute top-full left-1/2 mt-12 -translate-x-1/2',
-        'sm:right-0 sm:left-auto sm:translate-x-0',
-        'z-50 w-[92vw] max-w-[360px] rounded-[12px] bg-white shadow-lg transition-all',
+        'w-[92vw] max-w-[320px] rounded-[12px] bg-white shadow-lg transition-all',
         'max-h-[360px] overflow-y-auto',
       )}
     >

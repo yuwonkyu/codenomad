@@ -38,7 +38,9 @@ const NotiBell = () => {
         alt='알림'
         width={24}
         height={24}
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={() => {
+          setOpen((prev) => !prev);
+        }}
         className={clsx(
           'cursor-pointer transition-opacity duration-200 hover:opacity-80',
           open && 'text-primary-500 brightness-0 saturate-100 filter',
@@ -50,8 +52,8 @@ const NotiBell = () => {
 
       {/* 알림 목록 드롭다운 */}
       {open && (
-        <div className='absolute z-50'>
-          <NotiList />
+        <div className='fixed top-[60px] left-1/2 z-50 -translate-x-1/2 sm:absolute sm:top-full sm:right-0 sm:left-auto sm:mt-12 sm:translate-x-0'>
+          <NotiList setHasNewNotification={setHasNewNotification} />
         </div>
       )}
     </div>
