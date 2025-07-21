@@ -1,0 +1,41 @@
+//알림 벨 아이콘 컴포넌트
+'use client';
+
+import { useState, useRef } from 'react';
+import Image from 'next/image';
+import NotiList from './NotiList';
+import clsx from 'clsx';
+
+const NotiBell = () => {
+  const [open, setOpen] = useState(false);
+  const bellRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <div ref={bellRef} className='relative'>
+      {/* 알림 아이콘 */}
+      <Image
+        src={hasNewNotification ? '/icons/icon_bell_on.svg' : '/icons/icon_bell_off.svg'}
+        alt='알림'
+        width={24}
+        height={24}
+        onClick={() => setOpen((prev) => !prev)}
+        className={clsx(
+          'cursor-pointer transition-opacity duration-200 hover:opacity-80',
+          open && 'text-primary-500',
+        )}
+      />
+
+      {/* 배경 오버레이 */}
+      {open && <div className='fixed inset-0 z-40 bg-black/10' onClick={() => setOpen(false)} />}
+
+      {/* 알림 목록 드롭다운 */}
+      {open && (
+        <div className='absolute z-50'>
+          <NotiList />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default NotiBell;
