@@ -56,7 +56,7 @@ const PhotoSection = ({ bannerImages, subImages }: PhotoSectionProps) => {
   };
 
   return (
-    <section className='flex h-245 w-auto items-center justify-center gap-12 sm:h-400'>
+    <section className='flex h-245 w-auto items-center justify-center gap-12 sm:h-400 lg:h-600'>
       <figure className='relative h-full w-full overflow-hidden rounded-l-3xl'>
         <Image className='object-cover' src={bannerImages} alt='메인 이미지' fill />
       </figure>

@@ -1,7 +1,7 @@
 'use client';
 
 import PhotoSection from '@/components/activities/PhotoSection';
-import ReviewCard from '@/components/activities/ReviewCard';
+import clsx from 'clsx';
 import DropdownMenu from '@/components/activities/ActivitesDropdown';
 import ReservationContent from '@/components/activities/ReservationFlow/ReservationContent';
 import MapView from '@/components/activities/MapView';
@@ -189,10 +189,12 @@ const ClientActivitesPage = ({ id }: ClientActivitesPageProps) => {
 
   return (
     <>
-      {!isDesktop ? (
-        <article className='flex flex-col gap-20'>
-          <PhotoSection bannerImages={mock.bannerImageUrl} subImages={mock.subImages} />
+      {/* 상단 공통 이미지 */}
+      <PhotoSection bannerImages={mock.bannerImageUrl} subImages={mock.subImages} />
 
+      <div className={clsx('w-full', isDesktop ? 'flex gap-40' : 'flex flex-col gap-20')}>
+        {/* 본문 */}
+        <article className='flex flex-1 flex-col gap-40'>
           <header className='flex justify-between border-b-1 border-gray-100 pb-12'>
             <div className='flex flex-col'>
               <p className='text-13-m mb-4 text-gray-700'>{mock.category}</p>
@@ -223,57 +225,15 @@ const ClientActivitesPage = ({ id }: ClientActivitesPageProps) => {
           </section>
 
           <ReviewSection reviewData={mockReviews} />
-
-          <div>
-            <ReservationContent />
-          </div>
         </article>
-      ) : (
-        <div className='flex gap-40'>
-          <article className='flex flex-1 flex-col gap-40'>
-            <PhotoSection bannerImages={mock.bannerImageUrl} subImages={mock.subImages} />
 
-            <div className='flex flex-col gap-20'>
-              <section className='flex flex-col gap-8 border-b-1 border-gray-100'>
-                <h3 className='text-18-b text-gray-950'>체험 설명</h3>
-                <p className='text-16-body-m mb-20 text-gray-950 md:mb-40'>{mock.description}</p>
-              </section>
-
-              <section className='flex flex-col gap-8 border-b-1 border-gray-100'>
-                <h3 className='text-18-b text-gray-950'>오시는 길</h3>
-                <p className='text-[14px] font-semibold text-gray-950'>{mock.address}</p>
-                <MapView address={mock.address} />
-              </section>
-
-              <ReviewSection reviewData={mockReviews} />
-            </div>
-          </article>
-
-          <section className='flex flex-col gap-24'>
-            <header className='flex justify-between border-b-1 border-gray-100 pb-16'>
-              <div className='flex flex-col'>
-                <p className='text-13-m mb-4 text-gray-700'>{mock.category}</p>
-                <h2 className='text-18-b mb-16 text-gray-950'>{mock.title}</h2>
-                <div className='mb-10 flex gap-0.5'>
-                  <Image src='/icons/icon_star_on.svg' alt='별' width={16} height={16} />
-                  <p className='text-14-m text-gray-700'>
-                    {mock.rating}({mock.reviewCount})
-                  </p>
-                </div>
-                <div className='flex gap-0.5'>
-                  <Image src='/icons/icon_map.svg' alt='지도 마크' width={16} height={16} />
-                  <p className='text-14-m text-gray-700'>{mock.address}</p>
-                </div>
-              </div>
-              <DropdownMenu activityId={id} />
-            </header>
-
-            <div className='sticky top-20'>
-              <ReservationContent />
-            </div>
-          </section>
-        </div>
-      )}
+        {/* 예약 영역 */}
+        <section
+          className={clsx('flex flex-col gap-24', isDesktop ? 'sticky top-20 w-[410px]' : 'mt-20')}
+        >
+          <ReservationContent activity={mock} />
+        </section>
+      </div>
     </>
   );
 };
