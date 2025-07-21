@@ -1,7 +1,8 @@
 //알림 벨 아이콘 컴포넌트
 'use client';
 
-import { useState, useRef } from 'react';
+import axios from '@/lib/api/axios';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import NotiList from './NotiList';
 import clsx from 'clsx';
@@ -10,6 +11,24 @@ const NotiBell = () => {
   const [open, setOpen] = useState(false);
   const [hasNewNotification, setHasNewNotification] = useState(false);
   const bellRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const checkNotifications = async () => {
+      try {
+        const token = localStorage.getItem('accessToken');
+        if (!token) return;
+
+        const res = await axios.get('/my-notifications');
+        if (res.data.totalCount > 0) {
+          setHasNewNotification(true);
+        }
+      } catch (err) {
+        console.error('알림 확인 실패:', err);
+      }
+    };
+
+    checkNotifications();
+  }, []);
 
   return (
     <div ref={bellRef} className='relative'>
@@ -22,7 +41,7 @@ const NotiBell = () => {
         onClick={() => setOpen((prev) => !prev)}
         className={clsx(
           'cursor-pointer transition-opacity duration-200 hover:opacity-80',
-          open && 'text-primary-500',
+          open && 'text-primary-500 brightness-0 saturate-100 filter',
         )}
       />
 
