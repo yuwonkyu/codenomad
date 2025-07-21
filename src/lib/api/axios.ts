@@ -1,13 +1,12 @@
-// Axios 인스턴스
-import axios from 'axios';
-import type { AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
+import { refreshAccessToken } from './auth';
 
 const instance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: false, // API 서버에서 쿠키 인증을 사용하지 않으므로 false 설정
+  withCredentials: false,
 });
 
 instance.interceptors.request.use(
@@ -25,17 +24,31 @@ instance.interceptors.request.use(
 );
 
 instance.interceptors.response.use(
-  (res) => {
-    return res;
-  },
-  (error: AxiosError) => {
+  (res) => res,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as any;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const newAccessToken = await refreshAccessToken();
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return instance(originalRequest);
+      } catch (err) {
+        console.error('토큰 재발급 실패, 로그아웃 처리');
+        localStorage.clear();
+        window.location.href = '/login';
+        return Promise.reject(err);
+      }
+    }
+
     if (error.response) {
       const { status, data, statusText } = error.response;
-
       console.error(`🩺 API Error ${status}:`, data);
-
-      throw new Response(JSON.stringify(data), { status, statusText });
     }
+
+    return Promise.reject(error);
   },
 );
 
