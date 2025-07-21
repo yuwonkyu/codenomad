@@ -15,9 +15,6 @@ const NotiBell = () => {
   useEffect(() => {
     const checkNotifications = async () => {
       try {
-        const token = localStorage.getItem('accessToken');
-        if (!token) return;
-
         const res = await axios.get('/my-notifications');
         if (res.data.totalCount > 0) {
           setHasNewNotification(true);

@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import NotiItem from './NotiItem';
-import clsx from 'clsx';
 import axios from '@/lib/api/axios';
+import { AxiosError } from 'axios';
 import NotiNull from './NotiNull';
 
 interface NotificationType {
@@ -52,8 +52,9 @@ const NotiList = ({ setHasNewNotification }: NotiListProps) => {
         return newList;
       });
       setTotalCount((prev) => prev - 1);
-    } catch (err: any) {
-      const message = err?.response?.data?.message || '알림 삭제에 실패했습니다.';
+    } catch (err: unknown) {
+      const axiosError = err as AxiosError<{ message: string }>;
+      const message = axiosError.response?.data?.message || '알림 삭제에 실패했습니다.';
       alert(message);
     }
   };
@@ -64,10 +65,9 @@ const NotiList = ({ setHasNewNotification }: NotiListProps) => {
 
   return (
     <div
-      className={clsx(
-        'w-[92vw] max-w-[320px] rounded-[12px] bg-white shadow-lg transition-all',
-        'max-h-[360px] overflow-y-auto',
-      )}
+      className={
+        'max-h-[360px] w-[92vw] max-w-[320px] overflow-y-auto rounded-[12px] bg-white shadow-lg transition-all'
+      }
     >
       <h3 className='text-16-b border-b border-gray-100 px-16 pt-16 pb-8 text-gray-950 sm:px-16'>
         알림 {totalCount}개
