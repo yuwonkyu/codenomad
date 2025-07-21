@@ -8,99 +8,174 @@ import MapView from '@/components/activities/MapView';
 import Image from 'next/image';
 import { useResponsive } from '@/hooks/useResponsive';
 import { useState, useEffect } from 'react';
-import Pagination from '@/components/common/Pagination';
-
-type ActivityDetail = {
-  id: number;
-  userId: number;
-  title: string;
-  description: string;
-  category: string;
-  price: number;
-  address: string;
-  bannerImageUrl: string;
-  rating: number;
-  reviewCount: number;
-  createdAt: string;
-  updatedAt: string;
-  subImages: SubImage[];
-  schedules: Schedule[];
-};
-
-type SubImage = {
-  id: number;
-  imageUrl: string;
-};
-
-type Schedule = {
-  id: number;
-  date: string;
-  startTime: string;
-  endTime: string;
-};
+import ReviewSection from '@/components/activities/ReviewSection';
 
 const mock = {
-  id: 7,
-  userId: 21,
-  title: '함께 배우면 즐거운 스트릿댄스',
-  description: '안녕하세요! 저희 스트릿 댄스 체험을 소개합니다. ...',
-  category: '투어',
-  price: 10000,
-  address: '서울특별시 강남구 테헤란로 427',
+  id: 5103,
+  userId: 2127,
+  title: '한지로 쓰는 시 한 편',
+  description:
+    '좋아하는 시 한 구절이나 직접 쓴 글귀를 한지에 붓으로 써보는 감성 체험. 간단한 붓글씨 기법을 배우고, 액자로 완성해 가져갈 수 있어요.',
+  category: '문화 · 예술',
+  price: 25900,
+  address: '강원도 강릉시 경강로 2037',
   bannerImageUrl:
-    'https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/globalnomad/activity_registration_image/a.png',
+    'https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/globalnomad/activity_registration_image/15-5_2127_1752908578854.png',
+  rating: 0,
+  reviewCount: 0,
+  createdAt: '2025-07-19T16:03:37.363Z',
+  updatedAt: '2025-07-19T16:03:37.363Z',
   subImages: [
     {
-      id: 1,
+      id: 10663,
       imageUrl:
-        'https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/globalnomad/activity_registration_image/b.png',
+        'https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/globalnomad/activity_registration_image/15-5_2127_1752908600021.jpeg',
+    },
+    {
+      id: 10664,
+      imageUrl:
+        'https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/globalnomad/activity_registration_image/15-5_2127_1752908600021.jpeg',
+    },
+    {
+      id: 10665,
+      imageUrl:
+        'https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/globalnomad/activity_registration_image/15-5_2127_1752908600021.jpeg',
+    },
+    {
+      id: 10666,
+      imageUrl:
+        'https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/globalnomad/activity_registration_image/15-5_2127_1752908600021.jpeg',
     },
   ],
   schedules: [
     {
-      id: 1,
-      date: '2023-12-01',
+      id: 21577,
+      date: '2025-07-21',
+      startTime: '13:00',
+      endTime: '14:00',
+    },
+    {
+      id: 21578,
+      date: '2025-08-02',
       startTime: '12:00',
       endTime: '13:00',
+    },
+    {
+      id: 21579,
+      date: '2025-08-05',
+      startTime: '13:00',
+      endTime: '14:00',
+    },
+    {
+      id: 21580,
+      date: '2025-08-05',
+      startTime: '14:00',
+      endTime: '15:00',
+    },
+  ],
+};
+const mockReviews = {
+  averageRating: 4.2,
+  totalCount: 10,
+  reviews: [
+    {
+      id: 1,
+      user: { profileImageUrl: 'string', nickname: '아무개1', id: 1 },
+      activityId: 1000,
+      rating: 5,
+      content: '정말 유익한 체험이었어요!',
+      createdAt: '2025-07-15T18:28:41.527Z',
+      updatedAt: '2025-07-15T18:28:41.527Z',
     },
     {
       id: 2,
-      date: '2023-12-05',
-      startTime: '12:00',
-      endTime: '13:00',
+      user: { profileImageUrl: 'string', nickname: '아무개2', id: 2 },
+      activityId: 1000,
+      rating: 4,
+      content: '재밌고 강사님이 친절했어요.',
+      createdAt: '2025-07-15T18:28:41.527Z',
+      updatedAt: '2025-07-15T18:28:41.527Z',
     },
-  ],
-  reviewCount: 1,
-  rating: 4.74,
-  createdAt: '2023-12-31T21:28:50.589Z',
-  updatedAt: '2023-12-31T21:28:50.589Z',
-};
-
-const mockReviews = {
-  averageRating: 0,
-  totalCount: 0,
-  reviews: [
     {
-      id: 0,
-      user: {
-        profileImageUrl: 'string',
-        nickname: '아무개',
-        id: 0,
-      },
-      activityId: 0,
+      id: 3,
+      user: { profileImageUrl: 'string', nickname: '아무개3', id: 3 },
+      activityId: 1000,
       rating: 3,
-      content: '"저는 저희 스트릿 댄서 체험에 참가하게 된 지 얼마 안됐지만 ..."',
+      content: '기대보다 평범했지만 괜찮았어요.',
+      createdAt: '2025-07-15T18:28:41.527Z',
+      updatedAt: '2025-07-15T18:28:41.527Z',
+    },
+    {
+      id: 4,
+      user: { profileImageUrl: 'string', nickname: '아무개4', id: 4 },
+      activityId: 1000,
+      rating: 5,
+      content: '잊지 못할 시간이었습니다!',
+      createdAt: '2025-07-15T18:28:41.527Z',
+      updatedAt: '2025-07-15T18:28:41.527Z',
+    },
+    {
+      id: 5,
+      user: { profileImageUrl: 'string', nickname: '아무개5', id: 5 },
+      activityId: 1000,
+      rating: 4,
+      content: '친구들과 함께 해서 더 좋았어요.',
+      createdAt: '2025-07-15T18:28:41.527Z',
+      updatedAt: '2025-07-15T18:28:41.527Z',
+    },
+    {
+      id: 6,
+      user: { profileImageUrl: 'string', nickname: '아무개6', id: 6 },
+      activityId: 1000,
+      rating: 4,
+      content: '한 번쯤 해볼 만한 체험이에요.',
+      createdAt: '2025-07-15T18:28:41.527Z',
+      updatedAt: '2025-07-15T18:28:41.527Z',
+    },
+    {
+      id: 7,
+      user: { profileImageUrl: 'string', nickname: '아무개7', id: 7 },
+      activityId: 1000,
+      rating: 5,
+      content: '분위기가 정말 좋았어요.',
+      createdAt: '2025-07-15T18:28:41.527Z',
+      updatedAt: '2025-07-15T18:28:41.527Z',
+    },
+    {
+      id: 8,
+      user: { profileImageUrl: 'string', nickname: '아무개8', id: 8 },
+      activityId: 1000,
+      rating: 4,
+      content: '내용도 알차고 만족합니다.',
+      createdAt: '2025-07-15T18:28:41.527Z',
+      updatedAt: '2025-07-15T18:28:41.527Z',
+    },
+    {
+      id: 9,
+      user: { profileImageUrl: 'string', nickname: '아무개9', id: 9 },
+      activityId: 1000,
+      rating: 3,
+      content: '무난무난 했어요.',
+      createdAt: '2025-07-15T18:28:41.527Z',
+      updatedAt: '2025-07-15T18:28:41.527Z',
+    },
+    {
+      id: 10,
+      user: { profileImageUrl: 'string', nickname: '아무개10', id: 10 },
+      activityId: 1000,
+      rating: 5,
+      content: '강추합니다! 또 가고 싶어요!',
       createdAt: '2025-07-15T18:28:41.527Z',
       updatedAt: '2025-07-15T18:28:41.527Z',
     },
   ],
 };
 
-interface Props {
+interface ClientActivitesPageProps {
   id: string;
 }
 
-const ClientActivitesPage = ({ id }: Props) => {
+const ClientActivitesPage = ({ id }: ClientActivitesPageProps) => {
   const screenSize = useResponsive();
   const [mounted, setMounted] = useState(false);
 
@@ -116,7 +191,7 @@ const ClientActivitesPage = ({ id }: Props) => {
     <>
       {!isDesktop ? (
         <article className='flex flex-col gap-20'>
-          <PhotoSection />
+          <PhotoSection bannerImages={mock.bannerImageUrl} subImages={mock.subImages} />
 
           <header className='flex justify-between border-b-1 border-gray-100 pb-12'>
             <div className='flex flex-col'>
@@ -133,7 +208,7 @@ const ClientActivitesPage = ({ id }: Props) => {
                 <p className='text-14-m text-gray-700'>{mock.address}</p>
               </div>
             </div>
-            <DropdownMenu />
+            <DropdownMenu activityId={id} />
           </header>
 
           <section className='flex flex-col gap-8 border-b-1 border-gray-100'>
@@ -147,29 +222,7 @@ const ClientActivitesPage = ({ id }: Props) => {
             <MapView address={mock.address} />
           </section>
 
-          <section className='flex flex-col items-center justify-center gap-8'>
-            <h2 className='text-18-b self-start text-gray-950'>
-              체험 후기{' '}
-              <span className='text-[14px] font-semibold text-[#79747E]'>{mock.reviewCount}개</span>
-            </h2>
-            <p className='text-2xl font-semibold text-gray-950'>{mock.rating}</p>
-            <p className='text-lg font-bold text-gray-950'>매우 만족</p>
-            <div className='mb-10 flex items-center gap-0.5'>
-              <Image src='/icons/icon_star_on.svg' alt='별' width={16} height={16} />
-              <p className='text-14-body-m text-gray-700'>{mock.reviewCount}개 후기</p>
-            </div>
-            {mockReviews.reviews.map((review) => (
-              <ReviewCard
-                key={review.id}
-                nickname={review.user.nickname}
-                rating={review.rating}
-                content={review.content}
-                createdAt={review.createdAt}
-              />
-            ))}
-            {/* 임시 적용 */}
-            <Pagination currentPage={1} totalPages={1} onPageChange={(page) => console.log(page)} />
-          </section>
+          <ReviewSection reviewData={mockReviews} />
 
           <div>
             <ReservationContent />
@@ -178,7 +231,7 @@ const ClientActivitesPage = ({ id }: Props) => {
       ) : (
         <div className='flex gap-40'>
           <article className='flex flex-1 flex-col gap-40'>
-            <PhotoSection />
+            <PhotoSection bannerImages={mock.bannerImageUrl} subImages={mock.subImages} />
 
             <div className='flex flex-col gap-20'>
               <section className='flex flex-col gap-8 border-b-1 border-gray-100'>
@@ -192,35 +245,7 @@ const ClientActivitesPage = ({ id }: Props) => {
                 <MapView address={mock.address} />
               </section>
 
-              <section className='flex flex-col items-center justify-center gap-8'>
-                <h3 className='text-18-b self-start text-gray-950'>
-                  체험 후기{' '}
-                  <span className='text-[14px] font-semibold text-[#79747E]'>
-                    {mock.reviewCount}개
-                  </span>
-                </h3>
-                <p className='text-2xl font-semibold text-gray-950'>{mock.rating}</p>
-                <p className='text-lg font-bold text-gray-950'>매우 만족</p>
-                <div className='mb-10 flex items-center gap-0.5'>
-                  <Image src='/icons/icon_star_on.svg' alt='별' width={16} height={16} />
-                  <p className='text-14-body-m text-gray-700'>{mock.reviewCount}개 후기</p>
-                </div>
-                {mockReviews.reviews.map((review) => (
-                  <ReviewCard
-                    key={review.id}
-                    nickname={review.user.nickname}
-                    rating={review.rating}
-                    content={review.content}
-                    createdAt={review.createdAt}
-                  />
-                ))}
-                {/* 임시 적용 */}
-                <Pagination
-                  currentPage={1}
-                  totalPages={1}
-                  onPageChange={(page) => console.log(page)}
-                />
-              </section>
+              <ReviewSection reviewData={mockReviews} />
             </div>
           </article>
 
@@ -240,7 +265,7 @@ const ClientActivitesPage = ({ id }: Props) => {
                   <p className='text-14-m text-gray-700'>{mock.address}</p>
                 </div>
               </div>
-              <DropdownMenu />
+              <DropdownMenu activityId={id} />
             </header>
 
             <div className='sticky top-20'>
