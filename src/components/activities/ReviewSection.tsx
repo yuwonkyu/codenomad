@@ -33,7 +33,8 @@ const ReviewSection = ({ reviewData }: ReviewSectionProps) => {
     <section className='flex flex-col items-center justify-center gap-8'>
       {/* 후기 요약 헤더 */}
       <h2 className='text-18-b self-start text-gray-950'>
-        체험 후기 <span className='text-[14px] font-semibold text-[#79747E]'>{totalCount}개</span>
+        체험 후기{' '}
+        <span className='text-[0.875rem] font-semibold text-[#79747E]'>{totalCount}개</span>
       </h2>
       <p className='text-2xl font-semibold text-gray-950'>{averageRating}</p>
       <p className='text-lg font-bold text-gray-950'>{getSatisfactionText(averageRating)}</p>

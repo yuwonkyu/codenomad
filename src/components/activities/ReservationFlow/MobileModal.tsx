@@ -7,6 +7,7 @@ import CalendarStep from './CalendarStep';
 import TimeSelectionStep from './TimeSelectionStep';
 import PersonStep from './PersonStep';
 import { getDateFromScheduleId } from '@/utils/reservation';
+import clsx from 'clsx';
 
 type ModalStep = 'calendar' | 'person';
 
@@ -108,11 +109,12 @@ const MobileModal = ({
             />
 
             <button
-              className={`text-16-b mt-30 h-50 w-full rounded-[14px] py-15 ${
+              className={clsx(
+                'text-16-b mt-30 h-50 w-full rounded-[0.875rem] py-15',
                 isConfirmEnabled
-                  ? 'bg-primary-500 hover:bg-primary-600 cursor-pointer text-white'
-                  : 'cursor-not-allowed bg-gray-300 text-gray-50'
-              }`}
+                  ? 'bg-primary-500 hover:bg-primary-600 text-white'
+                  : 'cursor-not-allowed bg-gray-300 text-gray-50',
+              )}
               disabled={!isConfirmEnabled}
               onClick={handleNextStep}
             >
