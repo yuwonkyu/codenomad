@@ -1,7 +1,7 @@
 import ClientActivitesPage from '@/components/activities/ClientActivitesPage';
 
 interface Props {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: number }>;
 }
 
 const ActivityPage = async ({ params }: Props) => {

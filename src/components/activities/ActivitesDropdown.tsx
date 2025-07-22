@@ -7,7 +7,7 @@ import CommonModal from '@/components/common/CancelModal';
 import { useRouter } from 'next/navigation';
 
 interface DropdownMenuProps {
-  activityId: string;
+  activityId: number;
 }
 export default function DropdownMenu({ activityId }: DropdownMenuProps) {
   const route = useRouter();
