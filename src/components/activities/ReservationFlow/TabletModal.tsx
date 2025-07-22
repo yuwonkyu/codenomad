@@ -1,14 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { BaseModalProps } from '../Activities.types';
 import CalendarStep from './CalendarStep';
 import TimeSelectionStep from './TimeSelectionStep';
 import PersonStep from './PersonStep';
 import { getDateFromScheduleId } from '@/utils/reservation';
-
-type ModalStep = 'calendar' | 'person';
 
 const TabletModal = ({
   isOpen,
@@ -60,13 +57,12 @@ const TabletModal = ({
           <h3 className='text-18-b'>날짜</h3>
         </div>
         <div className='flex max-h-492 justify-center gap-24'>
-          <div className='w-full overflow-hidden'>
-            <CalendarStep
-              schedules={schedules}
-              selectedDate={selectedDate}
-              onDateSelect={handleDateSelect}
-            />
-          </div>
+          <CalendarStep
+            schedules={schedules}
+            selectedDate={selectedDate}
+            onDateSelect={handleDateSelect}
+          />
+
           <div className='shadow-custom-5 flex h-492 w-full flex-col gap-32 rounded-3xl p-24'>
             <TimeSelectionStep
               selectedDate={selectedDate}
