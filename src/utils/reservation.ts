@@ -8,13 +8,19 @@ export const formatScheduleText = (schedule: Schedule): string => {
 };
 
 //스케줄 ID로 해당하는 스케줄 찾기
-export const findScheduleById = (schedules: Schedule[], scheduleId: number | null): Schedule | undefined => {
+export const findScheduleById = (
+  schedules: Schedule[],
+  scheduleId: number | null,
+): Schedule | undefined => {
   if (!scheduleId) return undefined;
   return schedules.find((s) => s.id === scheduleId);
 };
 
 //스케줄 ID로 해당하는 날짜 찾기
-export const getDateFromScheduleId = (schedules: Schedule[], scheduleId: number | null): string | null => {
+export const getDateFromScheduleId = (
+  schedules: Schedule[],
+  scheduleId: number | null,
+): string | null => {
   const schedule = findScheduleById(schedules, scheduleId);
   return schedule ? schedule.date : null;
-}; 
+};
