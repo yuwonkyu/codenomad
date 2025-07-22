@@ -2,7 +2,7 @@
 import Badge from '@/components/reservationList/Badge';
 import ReservationCard from '@/components/reservationList/ReservationCard';
 import { StatusType } from '@/components/reservationList/StatusBadge';
-import { getReservationList } from '@/lib/api/profile/reservationList';
+import { getReservationList, getReservationListStatus } from '@/lib/api/profile/reservationList';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -47,44 +47,58 @@ const Page = () => {
     };
     getData();
   }, []);
+
+  useEffect(() => {
+    const getFilteredData = async (status: StatusType) => {
+      const data = await getReservationListStatus(status);
+      setReservationList(data.reservations);
+    };
+    if (filter) {
+      getFilteredData(filter);
+    }
+  }, [filter]);
   return (
     <div className='mx-auto flex w-full flex-col justify-center p-24'>
       <h1 className='text-18-b text-gray-950'>예약 내역</h1>
       <h2 className='text-14-m my-10 text-gray-500'>예약 내역을 변경 및 취소 할 수 있습니다.</h2>
-      {reservationList.length === 0 && (
-        <div className='mt-40 flex flex-col items-center justify-center'>
-          <div className='flex justify-center'>
-            <Image src={'/imgs/earth.svg'} width={122} height={122} alt='우는 지구 이미지' />
-          </div>
-          <p className='text-18-m my-30 text-center text-gray-600'>아직 예약한 체험이 없어요</p>
-          <Link
-            href={'/'}
-            className='bg-primary-500 text-16-b h-54 w-182 grow-0 rounded-2xl px-63 py-17 text-white'
-          >
-            둘러보기
-          </Link>
+
+      <div className='scrollbar-hide overflow-x-scroll'>
+        <div className='my-14 flex w-max grow-0 gap-8'>
+          {statusList.map((item) => {
+            return (
+              <Badge
+                key={item.value}
+                setFilter={() => setFilter(item.value)}
+                selected={filter === item.value}
+              >
+                {item.text}
+              </Badge>
+            );
+          })}
         </div>
-      )}
-      {reservationList.length !== 0 ? (
-        <div className='scrollbar-hide overflow-x-scroll'>
-          <div className='my-14 flex w-max grow-0 gap-8'>
-            {statusList.map((item) => {
-              return (
-                <Badge
-                  key={item.value}
-                  setFilter={() => setFilter(item.value)}
-                  selected={filter === item.value}
-                >
-                  {item.text}
-                </Badge>
-              );
-            })}
+      </div>
+
+      {reservationList.length === 0 ? (
+        filter === null ? (
+          <div className='mt-40 flex flex-col items-center justify-center'>
+            <div className='flex justify-center'>
+              <Image src={'/imgs/earth.svg'} width={122} height={122} alt='우는 지구 이미지' />
+            </div>
+            <p className='text-18-m my-30 text-center text-gray-600'>아직 예약한 체험이 없어요</p>
+            <Link
+              href={'/'}
+              className='bg-primary-500 text-16-b h-54 w-182 grow-0 rounded-2xl px-63 py-17 text-white'
+            >
+              둘러보기
+            </Link>
           </div>
-        </div>
-      ) : null}
-      {reservationList.map((item: reservationsType) => {
-        return (
+        ) : (
+          <p className='mt-40 text-center text-gray-500'>해당 상태의 예약이 없습니다.</p>
+        )
+      ) : (
+        reservationList.map((item: reservationsType) => (
           <ReservationCard
+            key={item.id}
             status={item.status}
             title={item?.activity?.title}
             startTime={item.startTime}
@@ -94,8 +108,8 @@ const Page = () => {
             headCount={item.headCount}
             bannerUrl={item.activity.bannerImageUrl}
           />
-        );
-      })}
+        ))
+      )}
     </div>
   );
 };
