@@ -107,6 +107,7 @@ const Page = () => {
             price={item.totalPrice}
             headCount={item.headCount}
             bannerUrl={item.activity.bannerImageUrl}
+            reservationId={item.id}
           />
         ))
       )}

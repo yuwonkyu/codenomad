@@ -11,6 +11,7 @@ interface ReservationCardType {
   price: number;
   headCount: number;
   bannerUrl: string;
+  reservationId: number;
 }
 
 const ReservationCard = ({
@@ -22,10 +23,11 @@ const ReservationCard = ({
   price,
   headCount,
   bannerUrl,
+  reservationId,
 }: ReservationCardType) => {
   const router = useRouter();
   const openReviewModal = () => {
-    router.push('/profile/reservations/review');
+    router.push(`/profile/reservations/review?reservationId=${reservationId}`);
   };
   return (
     <div className='static mb-20 md:w-640'>

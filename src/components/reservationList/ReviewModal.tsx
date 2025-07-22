@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import RatingStar from './RatingStar';
+import { postReview, ReviewDataType } from '@/lib/api/profile/reservationList';
 
 interface ReviewModalType {
   title: string;
@@ -19,12 +20,16 @@ const ReviewModal = ({
   startTime,
   endTime,
   headCount,
-}: Omit<ReviewModalType, 'reservationId'>) => {
+  reservationId,
+}: ReviewModalType) => {
   const [rating, setRating] = useState<number>(1);
   const [letterCount, setLetterCount] = useState(0);
   const [activeSubmit, setActiveSubmit] = useState(true);
+  const [content, setContent] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     document.body.style = 'overflow: hidden;';
@@ -38,6 +43,22 @@ const ReviewModal = ({
     router.push('/profile/reservations/exit');
   };
 
+  const submitReview = async () => {
+    if (isSubmitting) return;
+
+    try {
+      setIsSubmitting(true);
+      const data = { rating, content };
+      await postReview(reservationId, data);
+      router.back();
+      document.body.style.overflow = 'auto';
+    } catch (error) {
+      console.error(error);
+      alert('리뷰 제출 실패');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
     <div className='fixed top-0 left-0 z-50 h-screen w-screen bg-black/50' onClick={onDismiss}>
       <dialog
@@ -74,6 +95,7 @@ const ReviewModal = ({
           className='text-14-body-m md:text-16-m h-179 resize-none rounded-xl border-1 border-gray-100 p-20 text-gray-950 placeholder:text-gray-400'
           placeholder='체험에서 느낀 경험을 자유롭게 남겨주세요'
           maxLength={99}
+          ref={textAreaRef}
           onChange={(e) => {
             if (e.currentTarget.value.length !== 0) {
               setActiveSubmit(false);
@@ -81,6 +103,7 @@ const ReviewModal = ({
               setActiveSubmit(true);
             }
             setLetterCount(e.currentTarget.value.length);
+            setContent(e.currentTarget.value);
           }}
         ></textarea>
         <p className='text-13-m md:text-14-m mt-8 mb-20 text-right text-gray-600'>
@@ -91,6 +114,7 @@ const ReviewModal = ({
             'md:text-16-b bg-primary-500 text-14-b rounded-xl py-12 text-white disabled:bg-gray-300 md:py-17'
           }
           disabled={activeSubmit}
+          onClick={submitReview}
         >
           작성하기
         </button>

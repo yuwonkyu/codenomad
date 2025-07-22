@@ -1,6 +1,12 @@
 import ReviewModal from '@/components/reservationList/ReviewModal';
 
-export default async function page() {
+type Props = {
+  params: { reservationId: string };
+};
+
+export default async function page({ params }: Props) {
+  const { reservationId } = params;
+  console.log(reservationId);
   return (
     <>
       <ReviewModal
