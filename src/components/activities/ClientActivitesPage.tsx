@@ -220,7 +220,7 @@ const ClientActivitesPage = ({ id }: ClientActivitesPageProps) => {
 
           <section className='flex flex-col gap-8 border-b-1 border-gray-100'>
             <h2 className='text-18-b text-gray-950'>오시는 길</h2>
-            <p className='text-[14px] font-semibold text-gray-950'>{mock.address}</p>
+            <p className='text-[0.875rem] font-semibold text-gray-950'>{mock.address}</p>
             <MapView address={mock.address} />
           </section>
 
@@ -229,7 +229,10 @@ const ClientActivitesPage = ({ id }: ClientActivitesPageProps) => {
 
         {/* 예약 영역 */}
         <section
-          className={clsx('flex flex-col gap-24', isDesktop ? 'sticky top-20 w-[410px]' : 'mt-20')}
+          className={clsx(
+            'flex flex-col gap-24',
+            isDesktop ? 'sticky top-20 w-[25.625rem]' : 'mt-20',
+          )}
         >
           <ReservationContent activity={mock} />
         </section>

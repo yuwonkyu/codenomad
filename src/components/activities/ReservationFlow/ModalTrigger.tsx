@@ -74,16 +74,16 @@ const ModalTrigger = ({
             {price} <span className='text-16-b text-[#79747e]'>/ 명</span>
           </p>
           <button
-            className='text-primary-500 text-16-b decoration-primary-500 cursor-pointer underline decoration-2'
+            className='text-primary-500 text-16-b decoration-primary-500 underline decoration-2'
             onClick={handleOpenModal}
           >
             {selectedSchedule ? formatScheduleText(selectedSchedule) : '날짜 선택하기'}
           </button>
         </div>
         <button
-          className={`h-50 w-auto rounded-[14px] py-15 text-white transition-colors ${
+          className={`h-50 w-auto rounded-[0.875rem] py-15 text-white transition-colors ${
             selectedSchedule
-              ? 'bg-primary-500 hover:bg-primary-600 cursor-pointer'
+              ? 'bg-primary-500 hover:bg-primary-600'
               : 'cursor-not-allowed bg-gray-300'
           }`}
           onClick={handleTriggerReservation}

@@ -1,6 +1,6 @@
 import Calendar from '@/components/common/Calendar';
 import { Schedule } from '../Activities.types';
-
+import { useMemo } from 'react';
 interface CalendarStepProps {
   schedules: Schedule[];
   selectedDate: string | null;
@@ -21,7 +21,8 @@ const CalendarStep = ({ schedules, selectedDate, onDateSelect }: CalendarStepPro
     return `${year}-${month}-${day}`;
   };
 
-  const availableDates = new Set(schedules.map((s) => s.date));
+  const availableDates = useMemo(() => new Set(schedules.map((s) => s.date)), [schedules]);
+  console.log(availableDates);
 
   const handleDateChange = (date: Date | null) => {
     if (date) {
