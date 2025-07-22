@@ -12,103 +12,6 @@ import ReviewSection from '@/components/activities/ReviewSection';
 import type { ActivityDetail } from '@/components/activities/Activities.types';
 import { fetchActivitiesDetails } from '@/lib/api/activities';
 
-const activityReviews = {
-  averageRating: 4.2,
-  totalCount: 10,
-  reviews: [
-    {
-      id: 1,
-      user: { profileImageUrl: 'string', nickname: '아무개1', id: 1 },
-      activityId: 1000,
-      rating: 5,
-      content: '정말 유익한 체험이었어요!',
-      createdAt: '2025-07-15T18:28:41.527Z',
-      updatedAt: '2025-07-15T18:28:41.527Z',
-    },
-    {
-      id: 2,
-      user: { profileImageUrl: 'string', nickname: '아무개2', id: 2 },
-      activityId: 1000,
-      rating: 4,
-      content: '재밌고 강사님이 친절했어요.',
-      createdAt: '2025-07-15T18:28:41.527Z',
-      updatedAt: '2025-07-15T18:28:41.527Z',
-    },
-    {
-      id: 3,
-      user: { profileImageUrl: 'string', nickname: '아무개3', id: 3 },
-      activityId: 1000,
-      rating: 3,
-      content: '기대보다 평범했지만 괜찮았어요.',
-      createdAt: '2025-07-15T18:28:41.527Z',
-      updatedAt: '2025-07-15T18:28:41.527Z',
-    },
-    {
-      id: 4,
-      user: { profileImageUrl: 'string', nickname: '아무개4', id: 4 },
-      activityId: 1000,
-      rating: 5,
-      content: '잊지 못할 시간이었습니다!',
-      createdAt: '2025-07-15T18:28:41.527Z',
-      updatedAt: '2025-07-15T18:28:41.527Z',
-    },
-    {
-      id: 5,
-      user: { profileImageUrl: 'string', nickname: '아무개5', id: 5 },
-      activityId: 1000,
-      rating: 4,
-      content: '친구들과 함께 해서 더 좋았어요.',
-      createdAt: '2025-07-15T18:28:41.527Z',
-      updatedAt: '2025-07-15T18:28:41.527Z',
-    },
-    {
-      id: 6,
-      user: { profileImageUrl: 'string', nickname: '아무개6', id: 6 },
-      activityId: 1000,
-      rating: 4,
-      content: '한 번쯤 해볼 만한 체험이에요.',
-      createdAt: '2025-07-15T18:28:41.527Z',
-      updatedAt: '2025-07-15T18:28:41.527Z',
-    },
-    {
-      id: 7,
-      user: { profileImageUrl: 'string', nickname: '아무개7', id: 7 },
-      activityId: 1000,
-      rating: 5,
-      content: '분위기가 정말 좋았어요.',
-      createdAt: '2025-07-15T18:28:41.527Z',
-      updatedAt: '2025-07-15T18:28:41.527Z',
-    },
-    {
-      id: 8,
-      user: { profileImageUrl: 'string', nickname: '아무개8', id: 8 },
-      activityId: 1000,
-      rating: 4,
-      content: '내용도 알차고 만족합니다.',
-      createdAt: '2025-07-15T18:28:41.527Z',
-      updatedAt: '2025-07-15T18:28:41.527Z',
-    },
-    {
-      id: 9,
-      user: { profileImageUrl: 'string', nickname: '아무개9', id: 9 },
-      activityId: 1000,
-      rating: 3,
-      content: '무난무난 했어요.',
-      createdAt: '2025-07-15T18:28:41.527Z',
-      updatedAt: '2025-07-15T18:28:41.527Z',
-    },
-    {
-      id: 10,
-      user: { profileImageUrl: 'string', nickname: '아무개10', id: 10 },
-      activityId: 1000,
-      rating: 5,
-      content: '강추합니다! 또 가고 싶어요!',
-      createdAt: '2025-07-15T18:28:41.527Z',
-      updatedAt: '2025-07-15T18:28:41.527Z',
-    },
-  ],
-};
-
 interface ClientActivitesPageProps {
   id: number;
 }
@@ -135,6 +38,8 @@ const ClientActivitesPage = ({ id }: ClientActivitesPageProps) => {
   if (!activity) return null; // 추후 조건부 렌더링으로 스켈레톤 적용 예정
 
   const isDesktop = screenSize === 'lg';
+  const user = JSON.parse(localStorage.getItem('user') ?? '{}');
+  const isOwner = user.id === activity.userId;
 
   return (
     <>
@@ -159,7 +64,7 @@ const ClientActivitesPage = ({ id }: ClientActivitesPageProps) => {
                 <p className='text-14-m text-gray-700'>{activity.address}</p>
               </div>
             </div>
-            <DropdownMenu activityId={id} />
+            {isOwner && <DropdownMenu activityId={id} />}
           </header>
 
           <section className='flex flex-col gap-8 border-b-1 border-gray-100'>
