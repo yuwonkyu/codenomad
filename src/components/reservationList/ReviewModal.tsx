@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import RatingStar from './RatingStar';
-import { postReview, ReviewDataType } from '@/lib/api/profile/reservationList';
+import { postReview } from '@/lib/api/profile/reservationList';
 
 interface ReviewModalType {
   title: string;
