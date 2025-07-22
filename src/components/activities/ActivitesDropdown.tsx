@@ -36,7 +36,7 @@ export default function DropdownMenu({ activityId }: DropdownMenuProps) {
         <Dropdown.Content className='top-45 right-10'>
           <Dropdown.Item
             className='py-18'
-            onClick={() => route.push(`/experiences/${activityId}/edit`)}
+            onClick={() => route.push(`/experiences/edit/${activityId}`)}
           >
             수정하기
           </Dropdown.Item>
