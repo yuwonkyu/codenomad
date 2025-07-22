@@ -173,7 +173,7 @@ const ClientActivitesPage = ({ id }: ClientActivitesPageProps) => {
             <MapView address={activity.address} />
           </section>
 
-          <ReviewSection reviewData={activityReviews} />
+          <ReviewSection activityId={id} />
         </article>
 
         {/* 예약 영역 */}
