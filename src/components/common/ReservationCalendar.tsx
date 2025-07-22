@@ -12,7 +12,6 @@ const cn = (...inputs: (string | undefined)[]) => twMerge(clsx(inputs));
 // 예약 상태 뱃지 컴포넌트
 const StatusBadge = ({ status, count }: { status: string; count: number }) => {
   const colorMap: Record<string, string> = {
-    완료: 'bg-gray-100 text-gray-600',
     예약: 'bg-blue-100 text-blue-600',
     승인: 'bg-yellow-100 text-yellow-700',
     거절: 'bg-red-100 text-red-600',
@@ -52,6 +51,8 @@ interface ReservationCalendarProps {
   selectedExperienceId?: string;
   /** 체험 변경 콜백 */
   onExperienceChange?: (experienceId: string) => void;
+  /** 월 변경 콜백 */
+  onMonthChange?: (newDate: Date) => void;
 }
 
 const ReservationCalendar = ({
@@ -62,6 +63,7 @@ const ReservationCalendar = ({
   experiences = [{ id: 'default', title: '함께 배우면 즐거운 스트릿 댄스' }],
   selectedExperienceId = 'default',
   onExperienceChange,
+  onMonthChange,
 }: ReservationCalendarProps) => {
   const [date, setDate] = useState<Date | null>(selectedDate || new Date());
   const calendarRef = useRef<HTMLDivElement>(null);
@@ -169,6 +171,9 @@ const ReservationCalendar = ({
         <Calendar
           value={date}
           onChange={(value) => handleDateChange(value as Date)}
+          onActiveStartDateChange={({ activeStartDate }) =>
+            activeStartDate && onMonthChange?.(activeStartDate)
+          }
           calendarType='gregory'
           className={cn(
             // 이 부분이 캘린더 전체 컨테이너를 제어
@@ -301,7 +306,7 @@ const ReservationCalendar = ({
             const key = formatDate(date);
             const reservations = reservationData[key] || [];
             const hasStatus = reservations.length > 0;
-            const statusList = ['예약', '승인', '거절', '완료'];
+            const statusList = ['예약', '승인', '거절'];
 
             // 현재 달 여부 판별
             const isCurrentMonth =

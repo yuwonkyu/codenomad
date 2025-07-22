@@ -1,22 +1,35 @@
 import axios from '@/lib/api/axios';
 
 // 월별 예약 현황 조회
-export async function getReservationDashboard(activityId: number) {
-  const res = await axios.get(`/my-activities/${activityId}/reservation-dashboard`);
+export async function getReservationDashboard(activityId: number, year: string, month: string) {
+  console.log('getReservationDashboard called with:', { activityId, year, month });
+  const res = await axios.get(`/my-activities/${activityId}/reservation-dashboard`, {
+    params: { year, month },
+  });
+  console.log('getReservationDashboard response:', res.data);
   return res.data;
 }
 
 // 날짜별 예약 스케줄 조회
-export async function getReservedSchedule(activityId: number) {
-  const res = await axios.get(`/my-activities/${activityId}/reserved-schedule`);
+export async function getReservedSchedule(activityId: number, date: string) {
+  console.log('getReservedSchedule called with:', { activityId, date });
+  const res = await axios.get(`/my-activities/${activityId}/reserved-schedule`, {
+    params: { date },
+  });
+  console.log('getReservedSchedule response:', res.data);
   return res.data;
 }
 
-// 시간대별 예약 내역 조회 (date, scheduleId 쿼리)
-export async function getReservations(activityId: number, date: string, scheduleId: number) {
+// 시간대별 예약 내역 조회 (scheduleId 쿼리)
+export async function getReservations(activityId: number, scheduleId: number) {
+  console.log('getReservations called with:', { activityId, scheduleId });
   const res = await axios.get(`/my-activities/${activityId}/reservations`, {
-    params: { date, scheduleId },
+    params: {
+      scheduleId: scheduleId,
+      status: 'pending', // pending 상태의 예약만 가져오기
+    },
   });
+  console.log('getReservations response:', res.data);
   return res.data;
 }
 
@@ -26,8 +39,10 @@ export async function updateReservationStatus(
   reservationId: number,
   status: 'confirmed' | 'declined',
 ) {
+  console.log('updateReservationStatus called with:', { activityId, reservationId, status });
   const res = await axios.patch(`/my-activities/${activityId}/reservations/${reservationId}`, {
     status,
   });
+  console.log('updateReservationStatus response:', res.data);
   return res.data;
 }
