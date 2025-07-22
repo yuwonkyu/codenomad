@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Dropdown from '@/components/common/Dropdown/Dropdown';
 import CommonModal from '@/components/common/CancelModal';
 import { useRouter } from 'next/navigation';
+import { deleteMyActivity } from '@/lib/api/profile/my-activities';
 
 interface DropdownMenuProps {
   activityId: number;
@@ -21,10 +22,15 @@ export default function DropdownMenu({ activityId }: DropdownMenuProps) {
     setIsDeleteModalOpen(false);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     setIsDeleteModalOpen(false);
-    // TODO: 실제 삭제 API 호출
-    console.log('체험 삭제 확정');
+    try {
+      await deleteMyActivity(activityId);
+      console.log('체험 삭제 확정'); // 임시 처리
+      route.push('/');
+    } catch (err) {
+      console.error('삭제 실패', err); // 임시 처리
+    }
   };
 
   return (
