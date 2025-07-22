@@ -26,7 +26,7 @@ const TimeSelectionStep = ({
               key={s.id}
               onClick={() => onTimeSelect(s.id)}
               className={clsx(
-                'text-16-m hover:text-primary-500 hover:border-primary-500 hover:bg-blue-50, h-52 w-full cursor-pointer rounded-[0.6875rem] border-2 text-center text-gray-950',
+                'text-16-m hover:text-primary-500 hover:border-primary-500 h-52 w-full rounded-[0.6875rem] border-2 text-center text-gray-950 hover:bg-blue-50',
                 scheduleId === s.id
                   ? 'border-primary-500 text-primary-500 bg-blue-50'
                   : 'border-gray-300',
