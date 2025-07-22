@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Dropdown from './Dropdown/Dropdown';
+import NotiBell from './Notification/NotiBell';
 import clsx from 'clsx';
 
 const Header = () => {
@@ -65,13 +66,7 @@ const Header = () => {
         {user ? (
           <div className='relative flex items-center gap-4'>
             {/* 알림 아이콘 */}
-            <Image
-              src={hasNewNotification ? '/icons/icon_bell_on.svg' : '/icons/icon_bell_off.svg'}
-              alt='알림'
-              width={24}
-              height={24}
-              className='cursor-pointer text-gray-600 transition-opacity duration-200 hover:opacity-80'
-            />
+            <NotiBell />
             {/* 구분선 */}
             <div className='h-14 w-px bg-gray-200' />
 
