@@ -91,6 +91,7 @@
 @layer base {
   button {
     cursor: pointer;
+    @apply hover:brightness-95 active:brightness-90;
   }
 }
 
