@@ -7,9 +7,29 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+interface reservationsType {
+  activity: {
+    bannerImageUrl: string;
+    id: number;
+    title: string;
+  };
+  createdAt: string;
+  date: string;
+  endTime: string;
+  headCount: number;
+  id: number;
+  reviewSubmitted: boolean;
+  scheduleId: number;
+  startTime: string;
+  status: StatusType;
+  teamId: string;
+  totalPrice: number;
+  updatedAt: string;
+  userId: number;
+}
+
 const Page = () => {
   const [filter, setFilter] = useState<StatusType | null>(null);
-  const [isContentEmpty, setIsContentEmpty] = useState<boolean | null>(true);
   const [reservationList, setReservationList] = useState([]);
   const statusList: { text: string; value: StatusType }[] = [
     { text: '예약 신청', value: 'pending' },
@@ -21,10 +41,8 @@ const Page = () => {
   useEffect(() => {
     const getData = async () => {
       const data = await getReservationList();
-      console.log(data);
-      if (data.reservations.length === 0) {
-        setIsContentEmpty(true);
-      }
+      console.log(data.reservations);
+
       setReservationList(data.reservations);
     };
     getData();
@@ -33,7 +51,7 @@ const Page = () => {
     <div className='mx-auto flex w-full flex-col justify-center p-24'>
       <h1 className='text-18-b text-gray-950'>예약 내역</h1>
       <h2 className='text-14-m my-10 text-gray-500'>예약 내역을 변경 및 취소 할 수 있습니다.</h2>
-      {isContentEmpty && (
+      {reservationList.length === 0 && (
         <div className='mt-40 flex flex-col items-center justify-center'>
           <div className='flex justify-center'>
             <Image src={'/imgs/earth.svg'} width={122} height={122} alt='우는 지구 이미지' />
@@ -47,7 +65,7 @@ const Page = () => {
           </Link>
         </div>
       )}
-      {!isContentEmpty ? (
+      {reservationList.length !== 0 ? (
         <div className='scrollbar-hide overflow-x-scroll'>
           <div className='my-14 flex w-max grow-0 gap-8'>
             {statusList.map((item) => {
@@ -64,16 +82,20 @@ const Page = () => {
           </div>
         </div>
       ) : null}
-
-      {/* <ReservationCard
-        status='pending'
-        title='title'
-        date='0000.00.00'
-        startTime='11:00'
-        endTime='12:00'
-        price={35000}
-        headCount={30}
-      /> */}
+      {reservationList.map((item: reservationsType) => {
+        return (
+          <ReservationCard
+            status={item.status}
+            title={item?.activity?.title}
+            startTime={item.startTime}
+            date={item.date}
+            endTime={item.endTime}
+            price={item.totalPrice}
+            headCount={item.headCount}
+            bannerUrl={item.activity.bannerImageUrl}
+          />
+        );
+      })}
     </div>
   );
 };
