@@ -24,7 +24,7 @@ const CategoryInput = ({ value, onChange, options }: CategoryInputProps) => {
 
   return (
     <div className='relative mb-24' ref={ref}>
-      <span className='text-16-b mb-10'>카테고리</span>
+      <span className='text-16-b flex pb-10'>카테고리</span>
       <button
         type='button'
         className='shadow-custom-5 flex h-54 w-327 items-center justify-between rounded-[16px] bg-white px-20 py-16 outline-1 outline-offset-[-1px] outline-gray-100 md:w-684 lg:w-700'
