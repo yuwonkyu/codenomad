@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { BaseModalProps } from './types';
+import { BaseModalProps } from '../Activities.types';
 import CalendarStep from './CalendarStep';
 import TimeSelectionStep from './TimeSelectionStep';
 import PersonStep from './PersonStep';
+import { getDateFromScheduleId } from '@/utils/reservation';
+import clsx from 'clsx';
 
 type ModalStep = 'calendar' | 'person';
 
@@ -15,40 +17,36 @@ const MobileModal = ({
   onConfirm,
   schedules,
   scheduleId,
-  setScheduleId,
+  onChangeSchedule,
   headCount,
-  setHeadCount,
+  onChangeHeadCount,
 }: BaseModalProps) => {
   const [step, setStep] = useState<ModalStep>('calendar');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-  // 선택된 스케줄 ID에 해당하는 날짜 찾기 (scheduleId가 있을 때만)
   useEffect(() => {
-    if (scheduleId) {
-      const selectedSchedule = schedules.find((s) => s.id === scheduleId);
-      if (selectedSchedule) {
-        setSelectedDate(selectedSchedule.date);
-      }
+    const date = getDateFromScheduleId(schedules, scheduleId);
+    setSelectedDate(date);
+    if (date) {
+      console.log('[MobileModal] scheduleId → selectedDate 세팅:', date);
     }
-    // scheduleId가 null이어도 selectedDate는 유지 (날짜 변경 시 시간만 초기화)
   }, [scheduleId, schedules]);
 
-  // 모달 상태에 따른 초기화
   useEffect(() => {
     if (isOpen) {
-      // 모달이 열릴 때만 내부 상태 초기화
       setStep('calendar');
       setSelectedDate(null);
+      console.log('[MobileModal] isOpen true → step 초기화 및 selectedDate 초기화');
     }
   }, [isOpen]);
 
   const handleDateSelect = (date: string) => {
     setSelectedDate(date);
-    setScheduleId(null); // 날짜 변경 시 선택된 시간 초기화
+    onChangeSchedule(null); // 날짜 변경 시 선택된 시간 초기화
   };
 
   const handleTimeSelect = (id: number) => {
-    setScheduleId(id);
+    onChangeSchedule(id);
   };
 
   const handleNextStep = () => {
@@ -111,11 +109,12 @@ const MobileModal = ({
             />
 
             <button
-              className={`text-16-b mt-30 h-50 w-full rounded-[14px] py-15 ${
+              className={clsx(
+                'text-16-b mt-30 h-50 w-full rounded-[0.875rem] py-15',
                 isConfirmEnabled
-                  ? 'bg-primary-500 hover:bg-primary-600 cursor-pointer text-white'
-                  : 'cursor-not-allowed bg-gray-300 text-gray-50'
-              }`}
+                  ? 'bg-primary-500 hover:bg-primary-600 text-white'
+                  : 'cursor-not-allowed bg-gray-300 text-gray-50',
+              )}
               disabled={!isConfirmEnabled}
               onClick={handleNextStep}
             >
@@ -125,7 +124,7 @@ const MobileModal = ({
         ) : (
           <PersonStep
             headCount={headCount}
-            setHeadCount={setHeadCount}
+            onChangeHeadCount={onChangeHeadCount}
             onConfirm={handleReservationConfirm}
             showConfirmButton={true}
           />

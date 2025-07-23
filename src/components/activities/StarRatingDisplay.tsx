@@ -4,8 +4,9 @@ interface StarRatingDisplayProps {
   rating: number;
 }
 
+const MAX = 5;
+
 export default function StarRatingDisplay({ rating }: StarRatingDisplayProps) {
-  const MAX = 5;
   return (
     <div className='flex'>
       {Array.from({ length: MAX }).map((_, index) => {
