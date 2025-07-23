@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import StatusBadge, { StatusType } from './StatusBadge';
 import { useRouter } from 'next/navigation';
 
@@ -9,6 +10,8 @@ interface ReservationCardType {
   endTime: string;
   price: number;
   headCount: number;
+  bannerUrl: string;
+  reservationId: number;
 }
 
 const ReservationCard = ({
@@ -19,16 +22,18 @@ const ReservationCard = ({
   endTime,
   price,
   headCount,
+  bannerUrl,
+  reservationId,
 }: ReservationCardType) => {
   const router = useRouter();
   const openReviewModal = () => {
-    router.push('/profile/reservations/review');
+    router.push(`/profile/reservations/review?reservationId=${reservationId}`);
   };
   return (
     <div className='static mb-20 md:w-640'>
       <h1 className='text-16-b mb-12 text-gray-800 lg:hidden'>{date}</h1>
       <div className='shadow-card h-136 lg:h-181'>
-        <div className='shadow-card absolute inline-block h-136 w-229 rounded-3xl bg-white p-20 md:w-360 lg:h-181 lg:w-485'>
+        <div className='shadow-card absolute z-10 inline-block h-136 w-229 rounded-3xl bg-white p-20 md:w-360 lg:h-181 lg:w-485'>
           <StatusBadge status={status} />
           <h2 className='text-14-b lg:text-18-b mt-8 mb-4 text-shadow-gray-950 lg:mt-12 lg:mb-10'>
             {title}
@@ -67,7 +72,9 @@ const ReservationCard = ({
             </div>
           </div>
         </div>
-        <div className='h-full rounded-3xl bg-gray-400'></div>
+        <div className='relative left-40 h-full w-300 overflow-hidden rounded-3xl bg-gray-50 md:left-200 lg:left-350'>
+          <Image src={bannerUrl} fill alt='banner_image' className='object-cover' />
+        </div>
       </div>
       <div className='mt-12 lg:hidden'>
         {status === 'completed' && (

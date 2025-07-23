@@ -6,7 +6,10 @@ import Dropdown from '@/components/common/Dropdown/Dropdown';
 import CommonModal from '@/components/common/CancelModal';
 import { useRouter } from 'next/navigation';
 
-export default function DropdownMenu() {
+interface DropdownMenuProps {
+  activityId: string;
+}
+export default function DropdownMenu({ activityId }: DropdownMenuProps) {
   const route = useRouter();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -31,7 +34,10 @@ export default function DropdownMenu() {
           <Image src={'/icons/icon_more.svg'} alt='드롭 다운' width={28} height={28} />
         </Dropdown.Trigger>
         <Dropdown.Content className='top-45 right-10'>
-          <Dropdown.Item className='py-18' onClick={() => route.push('/experiences/edit')}>
+          <Dropdown.Item
+            className='py-18'
+            onClick={() => route.push(`/experiences/edit/${activityId}`)}
+          >
             수정하기
           </Dropdown.Item>
           <Dropdown.Item className='py-18' onClick={handleDeleteClick}>

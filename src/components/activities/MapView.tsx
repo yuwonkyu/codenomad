@@ -71,7 +71,7 @@ const MapView = ({ address = DEFAULT_ADDRESS }: MapViewProps) => {
     <div className='mb-20 h-180 w-auto overflow-hidden rounded-2xl md:h-400'>
       <Map
         center={{ lat: place.lat, lng: place.lng }}
-        style={{ width: '100%', height: '100%' }}
+        style={{ width: '100%', height: '100%', zIndex: '0' }}
         level={2}
       >
         <MapMarker position={{ lat: place.lat, lng: place.lng }} />
