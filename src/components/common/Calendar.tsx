@@ -14,11 +14,11 @@ const cn = (...inputs: (string | undefined)[]) => twMerge(clsx(inputs));
 type CalendarValue = Date | null;
 
 export interface CalendarProps {
-  selectedDate?: Date | null;
-  onChange?: (date: Date | null) => void;
+  selectedDate?: CalendarValue;
+  onChange?: (date: CalendarValue) => void;
   className?: string;
 
-  // ========== 2024.01 추가: 고급 캘린더 기능 ==========
+  // ========== 2025.07 추가: 고급 캘린더 기능 ==========
 
   // 날짜 비활성화 Props
   disabledDates?: Date[]; // 특정 날짜들을 배열로 비활성화
@@ -47,9 +47,11 @@ const CalendarComponent = ({
   allowSelection,
 }: CalendarProps) => {
   const calendarRef = useRef<HTMLDivElement>(null);
-  const [styleId] = useState(() => `calendar-styles-${Math.random().toString(36).substr(2, 9)}`);
+  const [styleId] = useState(
+    () => `calendar-styles-${Math.random().toString(36).substring(2, 11)}`,
+  );
 
-  // ========== 2024.01 추가: 날짜 비활성화 로직 ==========
+  // ========== 2025.07 추가: 날짜 비활성화 로직 ==========
   // react-calendar의 tileDisabled 콜백 함수 - 특정 날짜를 비활성화
   const tileDisabled = ({ date, view }: { date: Date; view: string }) => {
     if (view !== 'month') return false;
@@ -71,7 +73,7 @@ const CalendarComponent = ({
     return false;
   };
 
-  // ========== 2024.01 추가: 동적 스타일링 로직 ==========
+  // ========== 2025.07 추가: 동적 스타일링 로직 ==========
   // react-calendar의 tileClassName 콜백 함수 - 각 날짜에 동적 CSS 클래스 적용
   const getTileClassName = ({ date, view }: { date: Date; view: string }) => {
     if (view !== 'month') return '';
@@ -98,7 +100,7 @@ const CalendarComponent = ({
     return classes.trim();
   };
 
-  // ========== 2024.01 추가: 향상된 클릭 이벤트 처리 ==========
+  // ========== 2025.07 추가: 향상된 클릭 이벤트 처리 ==========
   // 기존 onChange를 대체하는 고급 클릭 핸들러 - 유효성 검사 및 커스텀 로직 포함
   const handleDateClick = (value: any, event: React.MouseEvent<HTMLButtonElement>) => {
     // react-calendar의 Value 타입 안전성 검사 (Date | Date[] | null 가능)
@@ -251,6 +253,7 @@ const CalendarComponent = ({
         grid-template-columns: repeat(7, 1fr) !important;
         row-gap: 4px !important; /* 모바일 기본 */
         column-gap: 0px !important;
+        /* Center-aligns date tiles horizontally within the grid */
         justify-items: center !important;
       }
       
@@ -340,7 +343,7 @@ const CalendarComponent = ({
         color: #374151 !important;
       }
       
-      /* ========== 2024.01 추가: 비활성화된 날짜 스타일 ========== */
+      /* ========== 2025.07 추가: 비활성화된 날짜 스타일 ========== */
       .react-calendar__tile:disabled {
         background-color: #f9fafb !important;
         color: #d1d5db !important;
@@ -351,7 +354,7 @@ const CalendarComponent = ({
         background-color: #f9fafb !important;
       }
       
-      /* ========== 2024.01 추가: 강조 표시된 날짜 스타일 ========== */
+      /* ========== 2025.07 추가: 강조 표시된 날짜 스타일 ========== */
       /* highlightedDates 배열에 포함된 날짜들에 적용되는 노란색 강조 스타일 */
       .highlighted-date {
         background-color: #fef3c7 !important; /* 연한 노란색 배경 */
@@ -371,26 +374,20 @@ const CalendarComponent = ({
     };
   }, [styleId]);
 
-  const handleDateChange = (value: any) => {
-    if (value instanceof Date) {
-      // 시간대 문제를 방지하기 위해 로컬 시간 기준으로 처리
-      const localDate = new Date(value.getFullYear(), value.getMonth(), value.getDate());
-      onChange?.(localDate);
-    }
-  };
+  // (handleDateChange function removed as it's no longer used)
 
   return (
     <div ref={calendarRef} className={cn('inline-block', className)}>
       <Calendar
         value={selectedDate}
-        onChange={handleDateClick} // 2024.01 수정: 기본 handleDateChange → 고급 handleDateClick으로 변경
+        onChange={handleDateClick} // 2025.07 수정: 기본 handleDateChange → 고급 handleDateClick으로 변경
         locale='ko-KR'
         calendarType='gregory'
         showNeighboringMonth={true}
         selectRange={false}
         returnValue='start'
-        tileDisabled={tileDisabled} // 2024.01 추가: 날짜 비활성화 로직 연결
-        tileClassName={getTileClassName} // 2024.01 추가: 동적 스타일링 로직 연결
+        tileDisabled={tileDisabled} // 2025.07 추가: 날짜 비활성화 로직 연결
+        tileClassName={getTileClassName} // 2025.07 추가: 동적 스타일링 로직 연결
         navigationLabel={({ date }) => (
           <span className='text-16-m text-left text-black'>
             {date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}
