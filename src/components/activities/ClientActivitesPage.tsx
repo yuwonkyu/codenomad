@@ -19,22 +19,27 @@ interface ClientActivitesPageProps {
 const ClientActivitesPage = ({ id }: ClientActivitesPageProps) => {
   const screenSize = useResponsive();
   const [activity, setActivity] = useState<ActivityDetail | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const loadActivity = async () => {
       try {
+        setLoading(true);
         const res = await fetchActivitiesDetails(id);
         setActivity(res);
         console.log(activity);
       } catch (err) {
         console.error('데이터 불러오기 실패', err); // 추후 not-found나 error 페이지 작성 시 변경 예정
         setActivity(null); // 또는 fallback
+      } finally {
+        setLoading(false);
       }
     };
 
     loadActivity();
   }, [id]);
 
+  if (loading) return <p>로딩 중...</p>;
   if (!activity) return null; // 추후 조건부 렌더링으로 스켈레톤 적용 예정
 
   const isDesktop = screenSize === 'lg';

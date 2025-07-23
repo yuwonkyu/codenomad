@@ -35,8 +35,8 @@ const ReviewSection = ({ activityId }: ReviewSectionProps) => {
   }, [activityId, currentPage]);
 
   // 임시 처리
-  if (!reviewData) return <p> 리뷰를 불러오지 못하였습니다. </p>;
   if (loading) return <p>로딩 중...</p>;
+  if (!reviewData) return <p> 리뷰를 불러오지 못하였습니다. </p>;
 
   const totalPages = Math.ceil(reviewData.totalCount / PAGE_SIZE);
 
