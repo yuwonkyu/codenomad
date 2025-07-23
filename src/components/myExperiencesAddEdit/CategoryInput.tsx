@@ -22,13 +22,30 @@ const CategoryInput = ({ value, onChange, options }: CategoryInputProps) => {
 
   const selected = options.find((opt) => opt.value === value);
 
+  // 디버깅 로그
+  console.log('CategoryInput 렌더링:', {
+    value,
+    selected,
+    open,
+    optionsLength: options.length,
+  });
+
+  const handleCategorySelect = (selectedValue: string) => {
+    console.log('카테고리 선택됨:', selectedValue);
+    onChange(selectedValue);
+    setOpen(false);
+  };
+
   return (
     <div className='relative mb-24' ref={ref}>
       <span className='text-16-b flex pb-10'>카테고리</span>
       <button
         type='button'
         className='shadow-custom-5 flex h-54 w-327 items-center justify-between rounded-[16px] bg-white px-20 py-16 outline-1 outline-offset-[-1px] outline-gray-100 md:w-684 lg:w-700'
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          console.log('드롭다운 버튼 클릭, 현재 open:', open);
+          setOpen((v) => !v);
+        }}
       >
         <span className={`text-16-m ${selected && value ? 'text-gray-900' : 'text-gray-400'}`}>
           {selected ? selected.label : '카테고리를 선택해 주세요'}
@@ -41,11 +58,8 @@ const CategoryInput = ({ value, onChange, options }: CategoryInputProps) => {
             <button
               key={opt.value}
               type='button'
-              className={`flex h-48 w-303 items-center justify-between self-stretch rounded-[12px] px-20 py-16 md:w-660 lg:w-676 ${value === opt.value ? 'bg-sky-100' : ''} `}
-              onClick={() => {
-                onChange(opt.value);
-                setOpen(false);
-              }}
+              className={`flex h-48 w-303 items-center justify-between self-stretch rounded-[12px] px-20 py-16 md:w-660 lg:w-676 ${value === opt.value ? 'bg-sky-100' : ''} hover:bg-gray-50`}
+              onClick={() => handleCategorySelect(opt.value)}
             >
               <span className='font-pretendard justify-center text-base font-medium text-gray-900'>
                 {opt.label}

@@ -20,12 +20,12 @@ import {
 } from '@/lib/api/experiences';
 
 const categoryOptions = [
-  { value: 'culture', label: '문화 · 예술' },
-  { value: 'food', label: '식음료' },
-  { value: 'sports', label: '스포츠' },
-  { value: 'tour', label: '투어' },
-  { value: 'sightseeing', label: '관광' },
-  { value: 'wellbeing', label: '웰빙' },
+  { value: '문화 · 예술', label: '문화 · 예술' },
+  { value: '식음료', label: '식음료' },
+  { value: '스포츠', label: '스포츠' },
+  { value: '투어', label: '투어' },
+  { value: '관광', label: '관광' },
+  { value: '웰빙', label: '웰빙' },
 ];
 
 interface ReserveTime {
@@ -164,6 +164,9 @@ const ExperienceAddPage = () => {
         subImageUrls: subImageUploads.map((upload) => upload.activityImageUrl),
       };
 
+      console.log('전송할 체험 데이터:', experienceData);
+      console.log('선택된 카테고리:', category);
+
       // 4. 체험 등록 API 호출
       await createExperience(experienceData);
 
@@ -259,7 +262,14 @@ const ExperienceAddPage = () => {
           <h2 className='text-18-b'>내 체험 등록</h2>
         </div>
         <TitleInput value={title} onChange={setTitle} />
-        <CategoryInput value={category} onChange={setCategory} options={categoryOptions} />
+        <CategoryInput
+          value={category}
+          onChange={(newCategory) => {
+            console.log('카테고리 변경됨:', newCategory);
+            setCategory(newCategory);
+          }}
+          options={categoryOptions}
+        />
         <DescriptionInput value={desc} onChange={setDesc} />
         <PriceInput value={price} onChange={setPrice} />
         <AddressInput
