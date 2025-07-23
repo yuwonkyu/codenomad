@@ -21,12 +21,16 @@ export async function getReservedSchedule(activityId: number, date: string) {
 }
 
 // 시간대별 예약 내역 조회 (scheduleId 쿼리)
-export async function getReservations(activityId: number, scheduleId: number) {
-  console.log('getReservations called with:', { activityId, scheduleId });
+export async function getReservations(
+  activityId: number,
+  scheduleId: number,
+  status: string = 'pending',
+) {
+  console.log('getReservations called with:', { activityId, scheduleId, status });
   const res = await axios.get(`/my-activities/${activityId}/reservations`, {
     params: {
       scheduleId: scheduleId,
-      status: 'pending', // pending 상태의 예약만 가져오기
+      status: status,
     },
   });
   console.log('getReservations response:', res.data);

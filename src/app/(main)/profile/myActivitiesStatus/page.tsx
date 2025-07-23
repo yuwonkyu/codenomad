@@ -149,12 +149,25 @@ export default function ReservationStatusPage() {
 
       setLoading(true);
       setError(null);
-      const data = await getReservations(activityId, numericScheduleId);
 
-      console.log('getReservations API response:', data);
-      console.log('Reservations array:', data.reservations);
+      // 모든 상태의 예약을 한 번에 가져오기 (pending, confirmed, declined)
+      const allReservations = [];
 
-      setReservationDetails(data.reservations || []);
+      // 각 상태별로 예약을 가져와서 합치기
+      const statuses = ['pending', 'confirmed', 'declined'];
+      for (const status of statuses) {
+        try {
+          const data = await getReservations(activityId, numericScheduleId, status);
+          if (data.reservations && data.reservations.length > 0) {
+            allReservations.push(...data.reservations);
+          }
+        } catch (err) {
+          console.warn(`Failed to load reservations for status ${status}:`, err);
+        }
+      }
+
+      console.log('All reservations loaded:', allReservations);
+      setReservationDetails(allReservations);
     } catch (err) {
       setError('예약 내역을 불러오는데 실패했습니다.');
       console.error('Failed to load reservations:', err);
@@ -173,8 +186,15 @@ export default function ReservationStatusPage() {
       setLoading(true);
       setError(null);
       await updateReservationStatus(activityId, reservationId, status);
-      if (selectedDate) {
-        loadReservations(activityId, scheduleId);
+
+      // 상태 업데이트 후 모든 예약을 다시 불러오기
+      if (selectedDate && selectedActivity) {
+        const dateStr = formatDate(selectedDate);
+        const schedule = scheduleDetails.find((s) => s.timeSlot === selectedTime);
+        if (schedule && (schedule.scheduleId !== undefined || schedule.id !== undefined)) {
+          const scheduleIdToUse = schedule.scheduleId || schedule.id;
+          await loadReservations(selectedActivity.id, scheduleIdToUse);
+        }
       }
     } catch (err) {
       setError('예약 상태 변경에 실패했습니다.');
