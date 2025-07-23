@@ -59,7 +59,14 @@ export default function ReservationStatusPage() {
   const [scheduleDetails, setScheduleDetails] = useState<ScheduleData[]>([]);
   const [filteredReservations, setFilteredReservations] = useState<ReservationData[]>([]);
 
-  const formatDate = (date: Date | null) => (date ? date.toISOString().split('T')[0] : '');
+  const formatDate = (date: Date | null) => {
+    if (!date) return '';
+    // 로컬 시간대 기준으로 YYYY-MM-DD 형식 생성
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
   const loadReservationDashboard = async (activityId: number, year: number, month: number) => {
     try {
@@ -367,14 +374,84 @@ export default function ReservationStatusPage() {
         onDateChange={setDate}
         onDayClick={handleDayClick}
         onMonthChange={(newDate) => setDate(newDate)}
-        reservationData={Object.fromEntries(
-          Object.entries(apiReservationData).map(([d, schedules]) => [
-            d,
-            schedules.flatMap((s) =>
-              (s.reservations || []).map((r) => ({ ...r, count: r.headCount })),
-            ),
-          ]),
-        )}
+        reservationData={(() => {
+          // 캘린더용 타입 정의 (캘린더 컴포넌트와 일치)
+          type CalendarReservationData = {
+            status: string;
+            count: number;
+            nickname: string;
+          };
+
+          const convertedData: Record<string, CalendarReservationData[]> = {};
+
+          Object.entries(apiReservationData).forEach(([date, schedules]) => {
+            const dateReservations: CalendarReservationData[] = [];
+
+            schedules.forEach((schedule) => {
+              if (schedule.reservations) {
+                if (Array.isArray(schedule.reservations)) {
+                  // 배열 형태의 reservations (기존 구조)
+                  schedule.reservations.forEach((r) => {
+                    dateReservations.push({
+                      status: API_STATUS_TO_KOREAN[r.status] || r.status,
+                      count: r.headCount,
+                      nickname: r.nickname,
+                    });
+                  });
+                } else {
+                  // 객체 형태의 reservations (새로운 구조)
+                  const reservationCounts = schedule.reservations as any;
+
+                  // pending -> 예약
+                  if (reservationCounts.pending > 0) {
+                    dateReservations.push({
+                      status: '예약',
+                      count: reservationCounts.pending,
+                      nickname: 'Unknown',
+                    });
+                  }
+
+                  // confirmed -> 승인
+                  if (reservationCounts.confirmed > 0) {
+                    dateReservations.push({
+                      status: '승인',
+                      count: reservationCounts.confirmed,
+                      nickname: 'Unknown',
+                    });
+                  }
+
+                  // completed/declined -> 거절
+                  const declinedCount =
+                    (reservationCounts.completed || 0) + (reservationCounts.declined || 0);
+                  if (declinedCount > 0) {
+                    dateReservations.push({
+                      status: '거절',
+                      count: declinedCount,
+                      nickname: 'Unknown',
+                    });
+                  }
+                }
+              }
+            });
+
+            convertedData[date] = dateReservations;
+          });
+
+          console.log('Original API data:', apiReservationData);
+          console.log('API date keys:', Object.keys(apiReservationData));
+          console.log('Converted reservation data for calendar:', convertedData);
+          console.log('Calendar date keys:', Object.keys(convertedData));
+          console.log('Has any data?', Object.keys(convertedData).length > 0);
+
+          // 각 날짜별 상세 정보 출력
+          Object.entries(convertedData).forEach(([dateKey, reservations]) => {
+            if (reservations.length > 0) {
+              console.log(`Date key: ${dateKey}, reservations:`, reservations);
+            }
+          });
+
+          return convertedData;
+        })()}
         experiences={myActivities.map((act) => ({ ...act, id: act.id.toString() }))}
         selectedExperienceId={selectedActivity?.id.toString()}
         onExperienceChange={(experienceId) => {
