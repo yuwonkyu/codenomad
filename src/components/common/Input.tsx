@@ -51,7 +51,12 @@ const Input = ({
   const inputType = isPassword ? (show ? 'text' : 'password') : type;
 
   // 컨테이너 클릭 시 해당 input에 포커스
-  const handleContainerClick = () => {
+  const handleContainerClick = (e: React.MouseEvent) => {
+    // 라벨 클릭 시에는 포커스 주지 않음
+    if ((e.target as HTMLElement).tagName === 'LABEL') {
+      return;
+    }
+
     if (props.onClick) {
       props.onClick({} as any);
       return;
@@ -64,9 +69,7 @@ const Input = ({
     } else if (as === 'input' && inputRef.current) {
       inputRef.current.focus();
     }
-  };
-
-  // outline 스타일 클래스
+  }; // outline 스타일 클래스
   const baseOutline = 'outline outline-1 outline-offset-[-1px] transition-all duration-150';
   const outlineColor = error
     ? 'outline-red'
@@ -84,7 +87,7 @@ const Input = ({
       )}
 
       <div
-        className={`shadow-custom-5 flex w-full items-center justify-between rounded-[16px] bg-white px-20 py-16 ${baseOutline} ${outlineColor} cursor-text`}
+        className={`shadow-custom-5 flex w-full items-center justify-between rounded-[16px] bg-white px-20 py-16 ${baseOutline} ${outlineColor} ${props.onClick ? 'cursor-pointer' : 'cursor-text'}`}
         onClick={handleContainerClick}
       >
         {/* textarea 타입 */}
