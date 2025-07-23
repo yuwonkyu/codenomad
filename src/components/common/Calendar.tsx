@@ -17,11 +17,119 @@ export interface CalendarProps {
   selectedDate?: Date | null;
   onChange?: (date: Date | null) => void;
   className?: string;
+
+  // ========== 2024.01 추가: 고급 캘린더 기능 ==========
+
+  // 날짜 비활성화 Props
+  disabledDates?: Date[]; // 특정 날짜들을 배열로 비활성화
+  isDateDisabled?: (date: Date) => boolean; // 동적 날짜 비활성화 로직 (예: 주말, 공휴일 등)
+
+  // 커스텀 스타일링 Props
+  tileClassName?: ({ date, view }: { date: Date; view: string }) => string; // 각 날짜별 동적 CSS 클래스 적용
+  highlightedDates?: Date[]; // 특별한 날짜들을 강조 표시 (노란색 배경)
+
+  // 클릭 검증 및 이벤트 처리
+  onClickDay?: (date: Date, event?: React.MouseEvent<HTMLButtonElement>) => void; // 날짜 클릭 시 커스텀 로직 실행
+  allowSelection?: (date: Date) => boolean; // 특정 날짜의 선택 가능 여부를 동적으로 결정
+
+  // ================================================
 }
 
-const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps) => {
+const CalendarComponent = ({
+  selectedDate,
+  onChange,
+  className,
+  disabledDates = [],
+  isDateDisabled,
+  tileClassName,
+  highlightedDates = [],
+  onClickDay,
+  allowSelection,
+}: CalendarProps) => {
   const calendarRef = useRef<HTMLDivElement>(null);
   const [styleId] = useState(() => `calendar-styles-${Math.random().toString(36).substr(2, 9)}`);
+
+  // ========== 2024.01 추가: 날짜 비활성화 로직 ==========
+  // react-calendar의 tileDisabled 콜백 함수 - 특정 날짜를 비활성화
+  const tileDisabled = ({ date, view }: { date: Date; view: string }) => {
+    if (view !== 'month') return false;
+
+    // 1. disabledDates 배열에 포함된 날짜 비활성화
+    if (
+      disabledDates.some(
+        (disabledDate) => date.toDateString() === new Date(disabledDate).toDateString(),
+      )
+    ) {
+      return true;
+    }
+
+    // 2. 커스텀 비활성화 함수 실행 (예: 주말, 공휴일 등)
+    if (isDateDisabled) {
+      return isDateDisabled(date);
+    }
+
+    return false;
+  };
+
+  // ========== 2024.01 추가: 동적 스타일링 로직 ==========
+  // react-calendar의 tileClassName 콜백 함수 - 각 날짜에 동적 CSS 클래스 적용
+  const getTileClassName = ({ date, view }: { date: Date; view: string }) => {
+    if (view !== 'month') return '';
+
+    let classes = '';
+
+    // 1. highlightedDates 배열에 있는 날짜에 강조 스타일 적용
+    const isHighlighted = highlightedDates.some(
+      (highlightedDate) => date.toDateString() === new Date(highlightedDate).toDateString(),
+    );
+
+    if (isHighlighted) {
+      classes += ' highlighted-date'; // CSS에서 정의된 노란색 배경 클래스
+    }
+
+    // 2. 커스텀 클래스 함수가 있으면 실행하여 추가 클래스 적용
+    if (tileClassName) {
+      const customClass = tileClassName({ date, view });
+      if (customClass) {
+        classes += ` ${customClass}`;
+      }
+    }
+
+    return classes.trim();
+  };
+
+  // ========== 2024.01 추가: 향상된 클릭 이벤트 처리 ==========
+  // 기존 onChange를 대체하는 고급 클릭 핸들러 - 유효성 검사 및 커스텀 로직 포함
+  const handleDateClick = (value: any, event: React.MouseEvent<HTMLButtonElement>) => {
+    // react-calendar의 Value 타입 안전성 검사 (Date | Date[] | null 가능)
+    if (!value || value instanceof Array || !(value instanceof Date)) {
+      return;
+    }
+
+    const dateValue = value as Date;
+
+    // 1. allowSelection 함수로 선택 가능 여부 사전 검증
+    if (allowSelection && !allowSelection(dateValue)) {
+      event.preventDefault();
+      return;
+    }
+
+    // 2. 비활성화된 날짜 클릭 방지
+    if (tileDisabled({ date: dateValue, view: 'month' })) {
+      event.preventDefault();
+      return;
+    }
+
+    // 3. 커스텀 클릭 핸들러 우선 실행 (비즈니스 로직, 로깅 등)
+    if (onClickDay) {
+      onClickDay(dateValue, event);
+    }
+
+    // 4. 기본 onChange 핸들러 실행 (상태 업데이트)
+    if (onChange) {
+      onChange(dateValue);
+    }
+  };
 
   // 컴포넌트 범위 스타일링 적용
   useEffect(() => {
@@ -143,6 +251,7 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
         grid-template-columns: repeat(7, 1fr) !important;
         row-gap: 4px !important; /* 모바일 기본 */
         column-gap: 0px !important;
+        justify-items: center !important;
       }
       
       /* 태블릿 사이즈 */
@@ -231,7 +340,7 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
         color: #374151 !important;
       }
       
-      /* 비활성화된 날짜 */
+      /* ========== 2024.01 추가: 비활성화된 날짜 스타일 ========== */
       .react-calendar__tile:disabled {
         background-color: #f9fafb !important;
         color: #d1d5db !important;
@@ -241,8 +350,16 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
       .react-calendar__tile:disabled:hover {
         background-color: #f9fafb !important;
       }
+      
+      /* ========== 2024.01 추가: 강조 표시된 날짜 스타일 ========== */
+      /* highlightedDates 배열에 포함된 날짜들에 적용되는 노란색 강조 스타일 */
+      .highlighted-date {
+        background-color: #fef3c7 !important; /* 연한 노란색 배경 */
+        color: #92400e !important; /* 갈색 텍스트 */
+        font-weight: 600 !important; /* 글자 굵게 */
+      }
     `;
-    
+
     document.head.appendChild(style);
 
     // 컴포넌트 언마운트 시 스타일 정리
@@ -263,43 +380,29 @@ const CalendarComponent = ({ selectedDate, onChange, className }: CalendarProps)
   };
 
   return (
-    <div 
-      ref={calendarRef}
-      className={cn(
-        "inline-block",
-        className
-      )}
-    >
+    <div ref={calendarRef} className={cn('inline-block', className)}>
       <Calendar
         value={selectedDate}
-        onChange={handleDateChange}
-        locale="ko-KR"
-        calendarType="gregory"
+        onChange={handleDateClick} // 2024.01 수정: 기본 handleDateChange → 고급 handleDateClick으로 변경
+        locale='ko-KR'
+        calendarType='gregory'
         showNeighboringMonth={true}
         selectRange={false}
-        returnValue="start"
+        returnValue='start'
+        tileDisabled={tileDisabled} // 2024.01 추가: 날짜 비활성화 로직 연결
+        tileClassName={getTileClassName} // 2024.01 추가: 동적 스타일링 로직 연결
         navigationLabel={({ date }) => (
-          <span className="text-left text-black text-16-m">
+          <span className='text-16-m text-left text-black'>
             {date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}
           </span>
         )}
         prev2Label={null}
         next2Label={null}
         prevLabel={
-          <Image 
-            src="/icons/icon_alt arrow_left.svg" 
-            alt="previous month" 
-            width={24} 
-            height={24}
-          />
+          <Image src='/icons/icon_alt arrow_left.svg' alt='previous month' width={24} height={24} />
         }
         nextLabel={
-          <Image 
-            src="/icons/icon_alt arrow_right.svg" 
-            alt="next month" 
-            width={24} 
-            height={24}
-          />
+          <Image src='/icons/icon_alt arrow_right.svg' alt='next month' width={24} height={24} />
         }
         formatShortWeekday={(_, date) => {
           const week = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
