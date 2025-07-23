@@ -12,12 +12,7 @@ import IntroImagesInput from '@/components/myExperiencesAddEdit/IntroImagesInput
 import ReserveTimesInput from '@/components/myExperiencesAddEdit/ReserveTimesInput';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import CommonModal from '@/components/common/CancelModal';
-import {
-  createExperience,
-  uploadImage,
-  CreateExperienceRequest,
-  testApiConnection,
-} from '@/lib/api/experiences';
+import { createExperience, uploadImage, CreateExperienceRequest } from '@/lib/api/experiences';
 
 const categoryOptions = [
   { value: '문화 · 예술', label: '문화 · 예술' },
@@ -71,7 +66,7 @@ const ExperienceAddPage = () => {
       // return;
     }
 
-    testApiConnection();
+    // API 연결 테스트 제거 (등록이 잘 작동하므로 불필요)
   }, []);
 
   // 최초 입력값 저장
