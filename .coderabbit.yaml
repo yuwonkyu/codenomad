@@ -29,8 +29,6 @@ reviews:
       enabled: true
     eslint:
       enabled: true
-    prettier:
-      enabled: true
     biome:
       enabled: true
     github-checks:
