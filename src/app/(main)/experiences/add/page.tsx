@@ -14,7 +14,6 @@ import ConfirmModal from '@/components/common/ConfirmModal';
 import CommonModal from '@/components/common/CancelModal';
 
 const categoryOptions = [
-  { value: '', label: '카테고리를 선택해 주세요' },
   { value: 'culture', label: '문화 · 예술' },
   { value: 'food', label: '식음료' },
   { value: 'sports', label: '스포츠' },

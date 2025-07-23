@@ -1,4 +1,5 @@
-import Input from '@/components/common/Input';
+import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 
 interface CategoryInputProps {
   value: string;
@@ -6,18 +7,53 @@ interface CategoryInputProps {
   options: { value: string; label: string }[];
 }
 
-// 화살표 함수식 및 타입 호환성 문제 해결
 const CategoryInput = ({ value, onChange, options }: CategoryInputProps) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // 바깥 클릭 시 닫기
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    if (open) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [open]);
+
+  const selected = options.find((opt) => opt.value === value);
+
   return (
-    <div className='mb-24'>
-      <Input
-        label='카테고리'
-        labelClassName='text-16-b'
-        as='select'
-        options={options}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
+    <div className='relative mb-24' ref={ref}>
+      <span className='text-16-b mb-10'>카테고리</span>
+      <button
+        type='button'
+        className='shadow-custom-5 flex h-54 w-327 items-center justify-between rounded-[16px] bg-white px-20 py-16 outline-1 outline-offset-[-1px] outline-gray-100 md:w-684 lg:w-700'
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className={`text-16-m ${selected && value ? 'text-gray-900' : 'text-gray-400'}`}>
+          {selected ? selected.label : '카테고리를 선택해 주세요'}
+        </span>
+        <Image src='/icons/icon_alt arrow_down.svg' alt='dropdown arrow' width={24} height={24} />
+      </button>
+      {open && (
+        <div className='absolute top-full left-0 z-10 mt-10 flex w-327 flex-col gap-4 rounded-[16px] bg-white p-12 outline-1 outline-offset-[-1px] outline-gray-100 md:w-684 md:p-12 lg:w-700'>
+          {options.map((opt) => (
+            <button
+              key={opt.value}
+              type='button'
+              className={`flex h-48 w-303 items-center justify-between self-stretch rounded-[12px] px-20 py-16 md:w-660 lg:w-676 ${value === opt.value ? 'bg-sky-100' : ''} `}
+              onClick={() => {
+                onChange(opt.value);
+                setOpen(false);
+              }}
+            >
+              <span className='font-pretendard justify-center text-base font-medium text-gray-900'>
+                {opt.label}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
