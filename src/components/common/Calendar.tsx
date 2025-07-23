@@ -155,8 +155,7 @@ const CalendarComponent = ({
         line-height: 1.125em !important;
         width: 100% !important; /* 모바일 기본 */
       }
-      
-      
+
       /* 네비게이션 스타일 */
       .react-calendar__navigation {
         display: grid !important;
@@ -253,7 +252,6 @@ const CalendarComponent = ({
         grid-template-columns: repeat(7, 1fr) !important;
         row-gap: 4px !important; /* 모바일 기본 */
         column-gap: 0px !important;
-        /* Center-aligns date tiles horizontally within the grid */
         justify-items: center !important;
       }
       
@@ -288,7 +286,6 @@ const CalendarComponent = ({
         color: #374151 !important;
         font-size: 16px !important;
         font-weight: 500 !important;
-
       }
       
       /* 날짜 타일 호버 효과 */
@@ -373,8 +370,6 @@ const CalendarComponent = ({
       }
     };
   }, [styleId]);
-
-  // (handleDateChange function removed as it's no longer used)
 
   return (
     <div ref={calendarRef} className={cn('inline-block', className)}>
