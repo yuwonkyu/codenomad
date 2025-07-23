@@ -2,6 +2,7 @@
 
 import {
   useState,
+  useRef,
   InputHTMLAttributes,
   TextareaHTMLAttributes,
   SelectHTMLAttributes,
@@ -42,8 +43,28 @@ const Input = ({
   ...props
 }: InputProps) => {
   const [show, setShow] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const selectRef = useRef<HTMLSelectElement>(null);
+
   const isPassword = type === 'password';
   const inputType = isPassword ? (show ? 'text' : 'password') : type;
+
+  // 컨테이너 클릭 시 해당 input에 포커스
+  const handleContainerClick = () => {
+    if (props.onClick) {
+      props.onClick({} as any);
+      return;
+    }
+
+    if (as === 'textarea' && textareaRef.current) {
+      textareaRef.current.focus();
+    } else if (as === 'select' && selectRef.current) {
+      selectRef.current.focus();
+    } else if (as === 'input' && inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
 
   // outline 스타일 클래스
   const baseOutline = 'outline outline-1 outline-offset-[-1px] transition-all duration-150';
@@ -52,36 +73,33 @@ const Input = ({
     : 'focus-within:outline-primary-500 focus-within:outline-[1.5px] outline-gray-200';
 
   return (
-    <div className={`flex flex-col items-start w-full ${className}`}>
+    <div className={`flex w-full flex-col items-start ${className}`}>
       {/* 라벨 */}
       {label && (
         <label
-          className={`
-            pb-10 ${labelClassName}
-            ${hideLabelOnMobile ? 'hidden md:block' : ''}
-            ${hideLabelOnDesktop ? 'block md:hidden' : ''}
-          `}
+          className={`pb-10 ${labelClassName} ${hideLabelOnMobile ? 'hidden md:block' : ''} ${hideLabelOnDesktop ? 'block md:hidden' : ''} `}
         >
           {label}
         </label>
       )}
 
       <div
-        className={`w-full px-20 py-16 bg-white rounded-[16px] shadow-custom-5 flex justify-between items-center ${baseOutline} ${outlineColor} ${props.onClick ? 'cursor-pointer' : ''}`}
-        {...(props.onClick && { onClick: props.onClick })}
+        className={`shadow-custom-5 flex w-full items-center justify-between rounded-[16px] bg-white px-20 py-16 ${baseOutline} ${outlineColor} cursor-text`}
+        onClick={handleContainerClick}
       >
         {/* textarea 타입 */}
         {as === 'textarea' ? (
           <textarea
-            className={`flex-1 border-none outline-none text-gray-950 text-16-m placeholder:text-gray-400 bg-transparent resize-none ${className}`}
+            ref={textareaRef}
+            className={`text-16-m flex-1 resize-none border-none bg-transparent text-gray-950 outline-none placeholder:text-gray-400 ${className}`}
             {...(props as TextareaHTMLAttributes<HTMLTextAreaElement>)}
           />
         ) : as === 'select' ? (
           // select 타입
           <div className='relative w-full'>
             <select
-              className={`appearance-none w-full flex-1 border-none outline-none bg-transparent text-16-m
-                ${props.value === '' ? 'text-gray-400' : 'text-gray-950'}`}
+              ref={selectRef}
+              className={`text-16-m w-full flex-1 appearance-none border-none bg-transparent outline-none ${props.value === '' ? 'text-gray-400' : 'text-gray-950'}`}
               {...(props as SelectHTMLAttributes<HTMLSelectElement>)}
             >
               {options.map((opt) => (
@@ -97,7 +115,7 @@ const Input = ({
               ))}
             </select>
             {/* 드롭다운 아이콘 */}
-            <span className='pointer-events-none absolute right-0 top-1/2 -translate-y-1/2'>
+            <span className='pointer-events-none absolute top-1/2 right-0 -translate-y-1/2'>
               <Image src='/icons/icon_alt arrow_down.svg' alt='드롭다운' width={24} height={24} />
             </span>
           </div>
@@ -105,8 +123,9 @@ const Input = ({
           // 기본 input 타입
           <>
             <input
+              ref={inputRef}
               type={inputType}
-              className='flex-1 border-none outline-none text-gray-950 text-16-m placeholder:text-gray-400 bg-transparent'
+              className='text-16-m flex-1 border-none bg-transparent text-gray-950 outline-none placeholder:text-gray-400'
               placeholder={props.placeholder}
               value={props.value as string}
               onChange={props.onChange}
@@ -119,7 +138,7 @@ const Input = ({
             {dateIcon && (
               <button
                 type='button'
-                className='absolute right-20 top-50 cursor-pointer'
+                className='absolute top-50 right-20 cursor-pointer'
                 tabIndex={-1}
                 onClick={onDateIconClick}
               >
@@ -144,7 +163,7 @@ const Input = ({
       </div>
 
       {/* 에러 메시지 */}
-      {error && <p className='mt-6 ml-8 text-12-m text-red'>{error}</p>}
+      {error && <p className='text-12-m text-red mt-6 ml-8'>{error}</p>}
     </div>
   );
 };
