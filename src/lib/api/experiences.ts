@@ -1,7 +1,4 @@
-import api from './axios'; // 기존 axios 인스턴스 사용
 import axios from 'axios'; // 프록시용 별도 인스턴스
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 // 프록시용 axios 인스턴스 (baseURL 없음)
 const proxyApi = axios.create({
@@ -11,7 +8,7 @@ const proxyApi = axios.create({
 // 프록시용 인터셉터 - 토큰 자동 추가
 proxyApi.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
+    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
