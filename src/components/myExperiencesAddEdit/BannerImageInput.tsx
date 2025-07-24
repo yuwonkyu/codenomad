@@ -5,16 +5,22 @@ interface BannerImageInputProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRemove: () => void;
   banner: File | null;
+  isEdit?: boolean; // edit 페이지인지 구분하는 props 추가
 }
 
-const BannerImageInput = ({ bannerPreview, onChange, onRemove, banner }: BannerImageInputProps) => {
+const BannerImageInput = ({
+  bannerPreview,
+  onChange,
+  onRemove,
+  banner,
+  isEdit = false,
+}: BannerImageInputProps) => {
   return (
     <div className='mb-30'>
       <div className='text-16-b mb-10'>배너 이미지 등록</div>
       <div className='flex gap-12 md:gap-14'>
         <label
-          className={`relative size-80 md:size-126 lg:size-128 bg-white border border-gray-100 rounded-[8px] flex items-center justify-center cursor-pointer
-        ${bannerPreview ? 'pointer-events-none' : ''}`}
+          className={`relative flex size-80 cursor-pointer items-center justify-center rounded-[8px] border border-gray-100 bg-white md:size-126 lg:size-128 ${bannerPreview ? 'pointer-events-none' : ''}`}
         >
           <div className='absolute inset-0 flex flex-col items-center justify-center gap-2 md:gap-10'>
             <Image src='/icons/icon_gray_plus.svg' alt='배너 이미지 추가' width={40} height={40} />
@@ -23,19 +29,19 @@ const BannerImageInput = ({ bannerPreview, onChange, onRemove, banner }: BannerI
           <input
             type='file'
             accept='image/*'
-            className='absolute inset-0 opacity-0 cursor-pointer'
+            className='absolute inset-0 cursor-pointer opacity-0'
             onChange={onChange}
             disabled={!!banner}
-            required
+            required={!isEdit && !bannerPreview} // edit 페이지에서는 기존 이미지가 있으면 required 해제
           />
         </label>
         {bannerPreview && (
-          <div className='relative size-80 md:size-126 lg:size-128 rounded-[8px] border border-gray-100 flex-shrink-0'>
+          <div className='relative size-80 flex-shrink-0 rounded-[8px] border border-gray-100 md:size-126 lg:size-128'>
             <Image
               src={bannerPreview}
               alt='배너 이미지 미리보기'
               fill
-              className='object-cover rounded-[8px]'
+              className='rounded-[8px] object-cover'
             />
             <button type='button' className='absolute -top-5 -right-5 z-10' onClick={onRemove}>
               <Image
@@ -43,7 +49,7 @@ const BannerImageInput = ({ bannerPreview, onChange, onRemove, banner }: BannerI
                 alt='삭제'
                 width={20}
                 height={20}
-                className='md:w-[26px] md:h-[26px] w-[20px] h-[20px]'
+                className='h-[20px] w-[20px] md:h-[26px] md:w-[26px]'
               />
             </button>
           </div>
