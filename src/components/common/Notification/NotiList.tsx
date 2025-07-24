@@ -17,10 +17,6 @@ interface NotiListProps {
 }
 
 const fetchNotifications = async () => {
-  const token = localStorage.getItem('accessToken');
-  if (!token) {
-    return { notifications: [], totalCount: 0 };
-  }
   const res = await axios.get('/my-notifications');
   return res.data;
 };

@@ -7,8 +7,10 @@ import Input from '@/components/common/Input';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import { useRouter } from 'next/navigation';
 import { loginApi } from '@/lib/api/auth';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const LoginPage = () => {
+  const { setAccessToken, setRefreshToken, setUser } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -39,9 +41,9 @@ const LoginPage = () => {
       const res = await loginApi({ email, password });
       const { user, accessToken, refreshToken } = res;
 
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-      localStorage.setItem('user', JSON.stringify(user));
+      setAccessToken(accessToken);
+      setRefreshToken(refreshToken);
+      setUser(user);
       window.dispatchEvent(new Event('user-update'));
 
       // 성공 시 이동, 에러 시 모달
@@ -60,7 +62,7 @@ const LoginPage = () => {
   };
 
   return (
-    <main className='min-h-screen flex justify-center px-1 pt-60 lg:pt-100'>
+    <main className='flex min-h-screen justify-center px-1 pt-60 lg:pt-100'>
       <ConfirmModal
         isOpen={isModalOpen}
         message={errorMessage}
@@ -69,7 +71,7 @@ const LoginPage = () => {
 
       <form
         onSubmit={handleSubmit}
-        className='w-full max-w-376 md:max-w-640 flex flex-col space-y-24 p-24 md:p-32 bg-white rounded-16'
+        className='rounded-16 flex w-full max-w-376 flex-col space-y-24 bg-white p-24 md:max-w-640 md:p-32'
       >
         {/* 로고 */}
         <div>
@@ -108,7 +110,7 @@ const LoginPage = () => {
 
         {/* 로그인 버튼 */}
         <button
-          className='w-full h-48 rounded-[16px] text-white text-16-m bg-primary-500 disabled:bg-gray-300 cursor-pointer'
+          className='text-16-m bg-primary-500 h-48 w-full cursor-pointer rounded-[16px] text-white disabled:bg-gray-300'
           disabled={!isFormValid}
           type='submit'
         >
@@ -116,20 +118,20 @@ const LoginPage = () => {
         </button>
 
         {/* or */}
-        <div className='flex items-center justify-center w-full'>
+        <div className='flex w-full items-center justify-center'>
           <hr className='flex-grow border-t border-gray-300' />
-          <span className='px-16 text-16-m text-gray-500 whitespace-nowrap'>or</span>
+          <span className='text-16-m px-16 whitespace-nowrap text-gray-500'>or</span>
           <hr className='flex-grow border-t border-gray-300' />
         </div>
 
         {/* 카카오 로그인 */}
-        <button className='w-full h-48 border border-gray-300 rounded-[16px] flex justify-center items-center text-gray-600 text-16-m cursor-pointer hover:bg-gray-100 transition-colors duration-200'>
-          <img src='/icons/icon_kakao.svg' alt='kakaoicon' className='w-20 h-20 mr-8' />
+        <button className='text-16-m flex h-48 w-full cursor-pointer items-center justify-center rounded-[16px] border border-gray-300 text-gray-600 transition-colors duration-200 hover:bg-gray-100'>
+          <img src='/icons/icon_kakao.svg' alt='kakaoicon' className='mr-8 h-20 w-20' />
           카카오 로그인
         </button>
 
         {/* 회원가입 링크 */}
-        <p className='text-center text-13-m text-gray-600'>
+        <p className='text-13-m text-center text-gray-600'>
           회원이 아니신가요?{' '}
           <Link href='/signup' className='text-13-b text-gray-600 underline'>
             회원가입하기
