@@ -22,16 +22,7 @@ const CategoryInput = ({ value, onChange, options }: CategoryInputProps) => {
 
   const selected = options.find((opt) => opt.value === value);
 
-  // 디버깅 로그
-  console.log('CategoryInput 렌더링:', {
-    value,
-    selected,
-    open,
-    optionsLength: options.length,
-  });
-
   const handleCategorySelect = (selectedValue: string) => {
-    console.log('카테고리 선택됨:', selectedValue);
     onChange(selectedValue);
     setOpen(false);
   };
@@ -43,7 +34,6 @@ const CategoryInput = ({ value, onChange, options }: CategoryInputProps) => {
         type='button'
         className='shadow-custom-5 flex h-54 w-327 items-center justify-between rounded-[16px] bg-white px-20 py-16 outline-1 outline-offset-[-1px] outline-gray-100 md:w-684 lg:w-700'
         onClick={() => {
-          console.log('드롭다운 버튼 클릭, 현재 open:', open);
           setOpen((v) => !v);
         }}
       >

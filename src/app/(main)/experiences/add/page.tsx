@@ -53,11 +53,10 @@ const ExperienceAddPage = () => {
   const [lastSubmitTime, setLastSubmitTime] = useState<number>(0);
   const router = useRouter();
 
-  // 컴포넌트 마운트 시 API 연결 테스트
+  // 컴포넌트 마운트 시 토큰 확인
   useEffect(() => {
     // 토큰 확인
     const token = localStorage.getItem('accessToken');
-    console.log('현재 토큰:', token ? '있음' : '없음');
 
     if (!token) {
       console.warn('로그인 토큰이 없습니다. 로그인이 필요할 수 있습니다.');
@@ -159,9 +158,6 @@ const ExperienceAddPage = () => {
         subImageUrls: subImageUploads.map((upload) => upload.activityImageUrl),
       };
 
-      console.log('전송할 체험 데이터:', experienceData);
-      console.log('선택된 카테고리:', category);
-
       // 4. 체험 등록 API 호출
       await createExperience(experienceData);
 
@@ -260,7 +256,6 @@ const ExperienceAddPage = () => {
         <CategoryInput
           value={category}
           onChange={(newCategory) => {
-            console.log('카테고리 변경됨:', newCategory);
             setCategory(newCategory);
           }}
           options={categoryOptions}

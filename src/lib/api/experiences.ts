@@ -98,15 +98,6 @@ const compressImage = (
 
             const compressedSizeMB = compressedFile.size / 1024 / 1024;
 
-            console.log('이미지 압축 완료:', {
-              original: `${(file.size / 1024 / 1024).toFixed(2)}MB`,
-              compressed: `${compressedSizeMB.toFixed(2)}MB`,
-              ratio: `${((1 - compressedFile.size / file.size) * 100).toFixed(1)}% 감소`,
-              quality: quality,
-              resolution: `${newWidth}x${newHeight}`,
-              type: mimeType,
-            });
-
             resolve(compressedFile);
           } else {
             console.error('압축 실패, 원본 파일 사용');
@@ -168,12 +159,6 @@ export interface CreateExperienceResponse {
 
 // 이미지 업로드 함수 (프록시 사용 + 압축)
 export const uploadImage = async (file: File): Promise<{ activityImageUrl: string }> => {
-  console.log('uploadImage 호출됨:', {
-    fileName: file.name,
-    fileSize: file.size,
-    fileType: file.type,
-  });
-
   // 파일 유효성 검사
   const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
   if (!allowedTypes.includes(file.type)) {
@@ -191,19 +176,11 @@ export const uploadImage = async (file: File): Promise<{ activityImageUrl: strin
   const fileSizeMB = file.size / 1024 / 1024;
 
   if (fileSizeMB > 2) {
-    console.log('파일 크기가 2MB를 초과하여 압축을 적용합니다.');
     uploadFile = await compressImage(file, 2, 0.8);
   }
 
   const formData = new FormData();
   formData.append('image', uploadFile);
-
-  console.log('FormData 디버깅:', {
-    fieldName: 'image',
-    fileName: uploadFile.name,
-    fileSize: uploadFile.size,
-    fileType: uploadFile.type,
-  });
 
   try {
     const response = await proxyApi.post('/api/proxy/activities/image', formData);
@@ -249,8 +226,6 @@ export const uploadImage = async (file: File): Promise<{ activityImageUrl: strin
 export const createExperience = async (
   data: CreateExperienceRequest,
 ): Promise<CreateExperienceResponse> => {
-  console.log('createExperience 호출됨:', data);
-
   try {
     const response = await proxyApi.post('/api/proxy/activities', data);
 
