@@ -1,3 +1,4 @@
+import { useAuthStore } from '@/store/useAuthStore';
 import axios, { AxiosError } from 'axios';
 import { refreshAccessToken } from './auth';
 
@@ -11,9 +12,9 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const accessToken = useAuthStore.getState().accessToken;
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
   },
@@ -26,26 +27,29 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (res) => res,
   async (error: AxiosError) => {
-    const originalRequest = error.config as any;
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        const newAccessToken = await refreshAccessToken();
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return instance(originalRequest);
-      } catch (err) {
-        console.error('토큰 재발급 실패, 로그아웃 처리');
-        localStorage.clear();
-        window.location.href = '/login';
-        return Promise.reject(err);
-      }
-    }
-
     if (error.response) {
-      const { status, data, statusText } = error.response;
+      const { status, data } = error.response;
+      const refreshToken = useAuthStore.getState().refreshToken;
+      const clearAuthStore = useAuthStore.getState().clearAuthStore;
+      const setAccessToken = useAuthStore.getState().setAccessToken;
+      const setRefreshToken = useAuthStore.getState().setRefreshToken;
+      const accessToken = useAuthStore.getState().accessToken;
       console.error(`🩺 API Error ${status}:`, data);
+
+      console.log('토큰 재발급:', accessToken, refreshToken);
+      if (status === 401 && refreshToken !== null) {
+        try {
+          const res = await refreshAccessToken(refreshToken);
+          setAccessToken(res.accessToken);
+          setRefreshToken(res.refreshToken);
+          console.log('재발급:', res.accessToken, res.refreshToken);
+        } catch (err) {
+          console.error('토큰 재발급 실패, 로그아웃 처리');
+          clearAuthStore();
+          useAuthStore.persist.clearStorage();
+          window.location.href = '/login';
+        }
+      }
     }
 
     return Promise.reject(error);
