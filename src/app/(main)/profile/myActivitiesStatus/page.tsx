@@ -299,6 +299,20 @@ export default function ReservationStatusPage() {
 
   const loadReservations = async (activityId: number, scheduleId: number | string) => {
     try {
+      // 🔄 'dashboard' 같은 임시 ID는 무시
+      if (
+        scheduleId === 'dashboard' ||
+        scheduleId === '시간' ||
+        String(scheduleId).includes('undefined')
+      ) {
+        console.log('🚫 임시 스케줄 ID로 예약 내역 조회 불가:', scheduleId);
+        console.log(
+          '💡 getReservedSchedule이 빈 응답을 주는 날짜의 모달에서는 예약 내역을 표시할 수 없습니다.',
+        );
+        setReservationDetails([]);
+        return;
+      }
+
       const numericScheduleId = parseInt(String(scheduleId), 10);
       if (isNaN(numericScheduleId)) {
         console.error('Invalid scheduleId:', scheduleId);
