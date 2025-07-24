@@ -15,10 +15,15 @@ instance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // FormData인 경우 Content-Type 헤더 제거 (자동 설정되도록)
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
+
     return config;
   },
   (error) => {
-    console.error('request interceptor error');
     return Promise.reject(error);
   },
 );
@@ -36,16 +41,11 @@ instance.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return instance(originalRequest);
       } catch (err) {
-        console.error('토큰 재발급 실패, 로그아웃 처리');
+        // 토큰 재발급 실패 시 로그아웃 처리
         localStorage.clear();
         window.location.href = '/login';
         return Promise.reject(err);
       }
-    }
-
-    if (error.response) {
-      const { status, data, statusText } = error.response;
-      console.error(`🩺 API Error ${status}:`, data);
     }
 
     return Promise.reject(error);
