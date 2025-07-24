@@ -1,25 +1,4 @@
-import axios from 'axios'; // 프록시용 별도 인스턴스
-
-// 프록시용 axios 인스턴스 (baseURL 없음)
-const proxyApi = axios.create({
-  // Content-Type 헤더를 기본으로 설정하지 않음 (FormData 사용 시 자동 설정됨)
-});
-
-// 프록시용 인터셉터 - 토큰 자동 추가
-proxyApi.interceptors.request.use(
-  (config) => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    // JSON 요청에만 Content-Type 설정
-    if (config.data && !(config.data instanceof FormData)) {
-      config.headers['Content-Type'] = 'application/json';
-    }
-    return config;
-  },
-  (error) => Promise.reject(error),
-);
+import instance from './axios'; // 직접 API 호출로 변경
 
 // 이미지 압축 함수 (매우 보수적 압축)
 const compressImage = (
@@ -109,8 +88,8 @@ const compressImage = (
 
             resolve(compressedFile);
           } else {
-            console.error('압축 실패, 원본 파일 사용');
-            resolve(file); // 압축 실패 시 원본 반환
+            // 압축 실패 시 원본 반환
+            resolve(file);
           }
         },
         outputMimeType, // 원본 포맷 유지 (PNG, WebP 등)
@@ -119,8 +98,8 @@ const compressImage = (
     };
 
     img.onerror = () => {
-      console.error('이미지 로드 실패, 원본 파일 사용');
-      resolve(file); // 로드 실패 시 원본 반환
+      // 이미지 로드 실패 시 원본 반환
+      resolve(file);
     };
 
     img.src = URL.createObjectURL(file);
@@ -166,7 +145,7 @@ export interface CreateExperienceResponse {
   updatedAt: string;
 }
 
-// 이미지 업로드 함수 (프록시 사용 + 압축)
+// 이미지 업로드 함수 (직접 API 호출 + 압축)
 export const uploadImage = async (file: File): Promise<{ activityImageUrl: string }> => {
   // 파일 유효성 검사
   const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
@@ -201,46 +180,48 @@ export const uploadImage = async (file: File): Promise<{ activityImageUrl: strin
     uploadFile = await compressImage(uploadFile, 0.8, 0.5); // 최대 압축
   }
 
-  const formData = new FormData();
-  formData.append('image', uploadFile);
+  // 다양한 필드명으로 시도
+  const fieldNames = ['imageFile', 'image', 'file', 'activityImage', 'upload'];
 
-  try {
-    const response = await proxyApi.post('/api/proxy/activities/image', formData);
+  for (const fieldName of fieldNames) {
+    const formData = new FormData();
+    formData.append(fieldName, uploadFile);
 
-    return response.data;
-  } catch (error: any) {
-    console.error('이미지 업로드 실패:', error);
-
-    // axios 에러 처리
-    if (error.response) {
-      const status = error.response.status;
-      const errorData = error.response.data;
-      console.error('업로드 실패 상세:', {
-        status,
-        statusText: error.response.statusText,
-        data: errorData,
-        headers: error.response.headers,
-      });
-
-      if (status === 413) {
-        throw new Error('파일 크기가 너무 큽니다. 더 작은 이미지를 선택해주세요.');
+    try {
+      const response = await instance.post('/activities/image', formData);
+      return response.data;
+    } catch (error: any) {
+      // 마지막 필드명이 아니면 다음 필드명 시도
+      if (fieldName !== fieldNames[fieldNames.length - 1]) {
+        continue;
       }
 
-      if (status === 401) {
-        throw new Error('로그인이 필요합니다.');
+      // 마지막 시도도 실패하면 에러 처리
+      if (error.response) {
+        const status = error.response.status;
+        const errorData = error.response.data;
+
+        if (status === 413) {
+          throw new Error('파일 크기가 너무 큽니다. 더 작은 이미지를 선택해주세요.');
+        }
+
+        if (status === 401) {
+          throw new Error('로그인이 필요합니다.');
+        }
+
+        if (status === 400) {
+          const message = errorData?.message || errorData?.error || '잘못된 요청입니다.';
+          throw new Error(`업로드 실패: ${message}`);
+        }
+
+        throw new Error(`업로드 실패: ${status} - ${errorData?.message || '알 수 없는 오류'}`);
       }
 
-      if (status === 400) {
-        // 400 에러의 구체적인 메시지 확인
-        const message = errorData?.message || errorData?.error || '잘못된 요청입니다.';
-        throw new Error(`업로드 실패: ${message}`);
-      }
-
-      throw new Error(`업로드 실패: ${status} - ${errorData?.message || '알 수 없는 오류'}`);
+      throw error;
     }
-
-    throw error;
   }
+
+  throw new Error('모든 필드명 시도 실패');
 };
 
 // 체험 등록 함수 (프록시 사용)
@@ -248,17 +229,12 @@ export const createExperience = async (
   data: CreateExperienceRequest,
 ): Promise<CreateExperienceResponse> => {
   try {
-    const response = await proxyApi.post('/api/proxy/activities', data);
+    const response = await instance.post('/activities', data);
 
-    console.log('체험 등록 성공:', response.data);
     return response.data;
   } catch (error: any) {
-    console.error('체험 등록 실패:', error);
-
-    // axios 에러 처리
     if (error.response) {
       const status = error.response.status;
-      console.error('체험 등록 실패:', status, error.response.data);
 
       if (status === 401) {
         throw new Error('로그인이 필요합니다.');
@@ -274,20 +250,17 @@ export const createExperience = async (
 // API 연결 테스트 함수 (필요시에만 사용)
 export const testApiConnection = async () => {
   try {
-    const response = await proxyApi.get('/api/proxy/activities', {
+    const response = await instance.get('/activities', {
       params: {
         method: 'cursor',
         size: 1,
       },
     });
 
-    console.log('API 연결 테스트 성공:', response.data);
     return true;
   } catch (error: any) {
-    console.error('API 연결 테스트 실패:', error);
-
     if (error.response) {
-      console.error('응답 상태:', error.response.status);
+      // 응답 에러 상태코드만 확인
     }
 
     return false;
