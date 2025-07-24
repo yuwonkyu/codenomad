@@ -100,7 +100,8 @@ const ReservationContent = ({ activity }: ReservationContentProps) => {
         <ModalTrigger
           {...reservationControlProps}
           activityData={activityData}
-          onReservationReset={resetReservation}
+          onReservationSubmit={handleReservationConfirm}
+          onReservationReset={resetReservation} // 모달을 작성하다가 닫았을 때 필요
         />
       )}
 

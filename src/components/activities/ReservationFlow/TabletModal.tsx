@@ -20,20 +20,17 @@ const TabletModal = ({
 }: BaseModalProps) => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
+  // ✅ scheduleId에서 selectedDate 파생 (MobileModal과 동일)
   useEffect(() => {
     const date = getDateFromScheduleId(schedules, scheduleId);
     setSelectedDate(date);
   }, [scheduleId, schedules]);
 
-  useEffect(() => {
-    if (!isOpen) {
-      setSelectedDate(null);
-    }
-  }, [isOpen]);
+  // ✅ 열릴 때는 별도 초기화 안 함 (Mobile도 step만 초기화했음)
 
   const handleDateSelect = (date: string) => {
     setSelectedDate(date);
-    onChangeSchedule(null);
+    onChangeSchedule(null); // 날짜 변경 시 시간 초기화
   };
 
   const handleTimeSelect = (id: number) => {
@@ -57,6 +54,7 @@ const TabletModal = ({
         <div className='mb-6 flex items-center justify-between'>
           <h3 className='text-18-b'>날짜</h3>
         </div>
+
         <div className='flex max-h-492 justify-center gap-24'>
           <CalendarStep
             schedules={schedules}
@@ -71,6 +69,7 @@ const TabletModal = ({
               scheduleId={scheduleId}
               onTimeSelect={handleTimeSelect}
             />
+
             {selectedDate && (
               <PersonStep
                 variant='tablet'
@@ -81,6 +80,7 @@ const TabletModal = ({
             )}
           </div>
         </div>
+
         <button
           className={clsx(
             'text-16-b mt-30 h-50 w-full rounded-[0.875rem] py-15',

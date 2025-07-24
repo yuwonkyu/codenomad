@@ -24,25 +24,22 @@ const MobileModal = ({
   const [step, setStep] = useState<ModalStep>('calendar');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
+  // ✅ scheduleId로부터 날짜 계산
   useEffect(() => {
     const date = getDateFromScheduleId(schedules, scheduleId);
     setSelectedDate(date);
-    if (date) {
-      console.log('[MobileModal] scheduleId → selectedDate 세팅:', date);
-    }
   }, [scheduleId, schedules]);
 
+  // ✅ 열릴 때 스텝만 초기화
   useEffect(() => {
     if (isOpen) {
       setStep('calendar');
-      setSelectedDate(null);
-      console.log('[MobileModal] isOpen true → step 초기화 및 selectedDate 초기화');
     }
   }, [isOpen]);
 
   const handleDateSelect = (date: string) => {
     setSelectedDate(date);
-    onChangeSchedule(null); // 날짜 변경 시 선택된 시간 초기화
+    onChangeSchedule(null); // 날짜 변경 시 시간 초기화
   };
 
   const handleTimeSelect = (id: number) => {
@@ -61,7 +58,7 @@ const MobileModal = ({
 
   const handleReservationConfirm = () => {
     if (scheduleId) {
-      onConfirm(); // 확인 버튼으로 닫을 때는 상태 유지
+      onConfirm();
     }
   };
 
@@ -73,7 +70,7 @@ const MobileModal = ({
     <>
       <div className='fixed inset-0 z-40 bg-black/50' onClick={onClose} />
       {/* 캘린더 부분 추가 시 아래 스타일 수정 예정 */}
-      <div className='fixed bottom-0 left-0 z-50 max-h-699 w-full overflow-y-auto rounded-t-3xl bg-white p-24'>
+      <div className='fixed bottom-0 left-0 z-50 h-auto w-full rounded-t-3xl bg-white p-24'>
         <div className='mb-30'>
           {step === 'calendar' ? (
             <h3 className='text-18-b'>날짜</h3>
