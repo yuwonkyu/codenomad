@@ -5,7 +5,8 @@ interface Props {
 }
 
 const ActivityPage = async ({ params }: Props) => {
-  const { id } = await params;
+  const { id: idStr } = await params;
+  const id = Number(idStr);
 
   return <ClientActivitesPage id={id} />;
 };
