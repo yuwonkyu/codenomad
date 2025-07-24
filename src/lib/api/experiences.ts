@@ -36,18 +36,24 @@ const compressImage = (
       // 원본 크기 계산
       const { width, height } = img;
 
-      // 해상도는 거의 그대로 유지 (매우 큰 경우만 축소)
-      let maxWidth = 3840; // 4K 해상도까지 허용
-      let maxHeight = 2160;
+      // 해상도 적극적 축소 - 파일 크기에 따른 단계적 축소
+      let maxWidth = 1920; // 기본 FHD 해상도
+      let maxHeight = 1080;
 
-      // 정말 큰 이미지만 축소
+      // 파일 크기에 따른 해상도 제한
       const originalSizeMB = file.size / 1024 / 1024;
-      if (originalSizeMB > 15) {
-        maxWidth = 2560;
+      if (originalSizeMB > 8) {
+        maxWidth = 1280; // HD 해상도
+        maxHeight = 720;
+      } else if (originalSizeMB > 5) {
+        maxWidth = 1600; // 중간 해상도
+        maxHeight = 900;
+      } else if (originalSizeMB > 3) {
+        maxWidth = 1920; // FHD 해상도
+        maxHeight = 1080;
+      } else {
+        maxWidth = 2560; // 큰 해상도 허용 (작은 파일)
         maxHeight = 1440;
-      } else if (originalSizeMB > 10) {
-        maxWidth = 3200;
-        maxHeight = 1800;
       }
 
       let newWidth = width;
@@ -174,12 +180,25 @@ export const uploadImage = async (file: File): Promise<{ activityImageUrl: strin
     throw new Error('파일 크기가 10MB를 초과합니다.');
   }
 
-  // 큰 파일은 압축 적용
+  // 적극적인 압축 적용 - 단계적 압축
   let uploadFile = file;
   const fileSizeMB = file.size / 1024 / 1024;
 
+  // 1단계: 기본 압축 (2MB 이상)
   if (fileSizeMB > 2) {
     uploadFile = await compressImage(file, 2, 0.8);
+  }
+
+  // 2단계: 압축 후에도 여전히 큰 경우 추가 압축
+  const compressedSizeMB = uploadFile.size / 1024 / 1024;
+  if (compressedSizeMB > 1.5) {
+    uploadFile = await compressImage(uploadFile, 1, 0.6); // 더 강한 압축
+  }
+
+  // 3단계: 최종 안전장치 - 1MB 이상이면 최대 압축
+  const finalSizeMB = uploadFile.size / 1024 / 1024;
+  if (finalSizeMB > 1) {
+    uploadFile = await compressImage(uploadFile, 0.8, 0.5); // 최대 압축
   }
 
   const formData = new FormData();
