@@ -27,7 +27,7 @@ proxyApi.interceptors.request.use(
 // 이미지 압축 함수 (매우 보수적 압축)
 const compressImage = (
   file: File,
-  maxSizeMB: number = 4,
+  maxSizeMB: number = 2,
   quality: number = 0.95,
 ): Promise<File> => {
   return new Promise((resolve) => {
@@ -73,26 +73,32 @@ const compressImage = (
       // 이미지 그리기
       ctx.drawImage(img, 0, 0, newWidth, newHeight);
 
+      // 원본 확장자에 따른 MIME 타입 결정
+      const extension = file.name.split('.').pop()?.toLowerCase();
+      let outputMimeType = 'image/jpeg';
+
+      // PNG나 WebP는 원본 포맷 유지
+      if (extension === 'png') {
+        outputMimeType = 'image/png';
+      } else if (extension === 'webp') {
+        outputMimeType = 'image/webp';
+      }
+
       // 단일 품질로 압축 (반복 압축 제거)
       canvas.toBlob(
         (blob) => {
           if (blob) {
-            // 원본 확장자 유지 시도
-            const extension = file.name.split('.').pop()?.toLowerCase();
-            let mimeType = 'image/jpeg';
+            // 파일명 설정
             let fileName = file.name.replace(/\.[^/.]+$/, '.jpg');
 
-            // PNG나 WebP는 원본 포맷 유지
             if (extension === 'png') {
-              mimeType = 'image/png';
-              fileName = file.name;
+              fileName = file.name; // PNG는 원본 이름 유지
             } else if (extension === 'webp') {
-              mimeType = 'image/webp';
-              fileName = file.name;
+              fileName = file.name; // WebP는 원본 이름 유지
             }
 
             const compressedFile = new File([blob], fileName, {
-              type: mimeType,
+              type: outputMimeType,
               lastModified: Date.now(),
             });
 
@@ -104,7 +110,7 @@ const compressImage = (
             resolve(file); // 압축 실패 시 원본 반환
           }
         },
-        'image/jpeg', // JPEG로 통일하여 호환성 확보
+        outputMimeType, // 원본 포맷 유지 (PNG, WebP 등)
         quality,
       );
     };
@@ -185,7 +191,6 @@ export const uploadImage = async (file: File): Promise<{ activityImageUrl: strin
   try {
     const response = await proxyApi.post('/api/proxy/activities/image', formData);
 
-    console.log('이미지 업로드 성공:', response.data);
     return response.data;
   } catch (error: any) {
     console.error('이미지 업로드 실패:', error);

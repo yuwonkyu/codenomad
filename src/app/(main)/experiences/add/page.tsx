@@ -55,14 +55,16 @@ const ExperienceAddPage = () => {
 
   // 컴포넌트 마운트 시 토큰 확인
   useEffect(() => {
-    // 토큰 확인
-    const token = localStorage.getItem('accessToken');
+    // 클라이언트 사이드에서만 localStorage 접근
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('accessToken');
 
-    if (!token) {
-      console.warn('로그인 토큰이 없습니다. 로그인이 필요할 수 있습니다.');
-      // alert('체험 등록을 위해 로그인이 필요합니다.');
-      // router.push('/login');
-      // return;
+      if (!token) {
+        console.warn('로그인 토큰이 없습니다. 로그인이 필요할 수 있습니다.');
+        // alert('체험 등록을 위해 로그인이 필요합니다.');
+        // router.push('/login');
+        // return;
+      }
     }
 
     // API 연결 테스트 제거 (등록이 잘 작동하므로 불필요)
