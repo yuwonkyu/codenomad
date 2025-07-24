@@ -732,7 +732,7 @@ export default function ReservationStatusPage() {
                           {selectedTab === '신청' ? (
                             <>
                               <button
-                                className='flex-1 rounded-lg border border-gray-300 bg-white px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-50'
+                                className='flex-1 rounded-lg border border-blue-500 bg-blue-100 px-[20px] py-[8px] text-sm font-semibold text-blue-600 transition-colors hover:bg-blue-600'
                                 onClick={() =>
                                   handleApproveReservation(r.id, parseInt(String(r.scheduleId), 10))
                                 }
@@ -740,7 +740,7 @@ export default function ReservationStatusPage() {
                                 승인하기
                               </button>
                               <button
-                                className='mt-2 flex-1 rounded-lg border border-gray-300 bg-gray-100 px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-200'
+                                className='mt-2 flex-1 rounded-lg border border-red-500 bg-red-100 px-[20px] py-[8px] text-sm font-semibold text-red-600 transition-colors hover:bg-red-600'
                                 onClick={() =>
                                   handleDeclineReservation(r.id, parseInt(String(r.scheduleId), 10))
                                 }
@@ -848,7 +848,7 @@ export default function ReservationStatusPage() {
                             {selectedTab === '신청' ? (
                               <>
                                 <button
-                                  className='flex-1 rounded-lg border border-gray-300 bg-white px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-50'
+                                  className='flex-1 rounded-lg border border-blue-500 bg-blue-500 px-[20px] py-[8px] text-sm font-semibold text-white transition-colors hover:bg-blue-600'
                                   onClick={() =>
                                     handleApproveReservation(
                                       r.id,
@@ -859,7 +859,7 @@ export default function ReservationStatusPage() {
                                   승인하기
                                 </button>
                                 <button
-                                  className='mt-2 flex-1 rounded-lg border border-gray-300 bg-gray-100 px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-200'
+                                  className='mt-2 flex-1 rounded-lg border border-red-500 bg-red-500 px-[20px] py-[8px] text-sm font-semibold text-white transition-colors hover:bg-red-600'
                                   onClick={() =>
                                     handleDeclineReservation(
                                       r.id,
@@ -970,7 +970,7 @@ export default function ReservationStatusPage() {
                             {selectedTab === '신청' ? (
                               <>
                                 <button
-                                  className='flex-1 rounded-lg border border-gray-300 bg-white px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-50'
+                                  className='flex-1 rounded-lg border border-blue-500 bg-blue-500 px-[20px] py-[8px] text-sm font-semibold text-white transition-colors hover:bg-blue-600'
                                   onClick={() =>
                                     handleApproveReservation(
                                       r.id,
@@ -981,7 +981,7 @@ export default function ReservationStatusPage() {
                                   승인하기
                                 </button>
                                 <button
-                                  className='mt-2 flex-1 rounded-lg border border-gray-300 bg-gray-100 px-[20px] py-[8px] text-sm font-semibold text-gray-500 transition-colors hover:bg-gray-200'
+                                  className='mt-2 flex-1 rounded-lg border border-red-500 bg-red-500 px-[20px] py-[8px] text-sm font-semibold text-white transition-colors hover:bg-red-600'
                                   onClick={() =>
                                     handleDeclineReservation(
                                       r.id,
