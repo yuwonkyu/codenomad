@@ -12,9 +12,10 @@ const cn = (...inputs: (string | undefined)[]) => twMerge(clsx(inputs));
 // 예약 상태 뱃지 컴포넌트
 const StatusBadge = ({ status, count }: { status: string; count: number }) => {
   const colorMap: Record<string, string> = {
-    예약: 'bg-blue-100 text-blue-600',
-    승인: 'bg-yellow-100 text-yellow-700',
+    예약: 'bg-yellow-100 text-yellow-700',
+    승인: 'bg-blue-100 text-blue-600',
     거절: 'bg-red-100 text-red-600',
+    완료: 'bg-green-100 text-green-600',
   };
 
   return (
@@ -315,7 +316,7 @@ const ReservationCalendar = ({
             const key = formatDate(date);
             const reservations = reservationData[key] || [];
             const hasStatus = reservations.length > 0;
-            const statusList = ['예약', '승인', '거절'];
+            const statusList = ['예약', '승인', '거절', '완료'];
 
             // 현재 달 여부 판별
             const isCurrentMonth =
@@ -352,9 +353,13 @@ const ReservationCalendar = ({
                 {/* 예약 상태 뱃지들 */}
                 <div className='mt-1 flex w-full flex-1 flex-col items-center gap-5 overflow-x-hidden overflow-y-auto'>
                   {statusList.map((status) => {
-                    const count = reservations.filter((r) => r.status === status).length;
-                    return count > 0 ? (
-                      <StatusBadge key={status} status={status} count={count} />
+                    // 해당 상태의 모든 count 값을 합산
+                    const totalCount = reservations
+                      .filter((r) => r.status === status)
+                      .reduce((sum, r) => sum + (r.count || 1), 0);
+
+                    return totalCount > 0 ? (
+                      <StatusBadge key={status} status={status} count={totalCount} />
                     ) : null;
                   })}
                 </div>

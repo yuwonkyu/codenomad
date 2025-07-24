@@ -115,6 +115,9 @@ export default function ReservationStatusPage() {
       );
 
       setApiReservationData(finalGroupedData);
+
+      // 🎯 getReservedSchedule로 각 날짜별 완전한 상태 정보 가져오기
+      await loadStatusBadgesWithReservedSchedule(activityId, Object.keys(finalGroupedData));
     } catch (err) {
       setError('예약 현황을 불러오는데 실패했습니다.');
       console.error('Failed to load reservation dashboard:', err);
@@ -123,18 +126,88 @@ export default function ReservationStatusPage() {
     }
   };
 
+  // ✨ 새로운 함수: getReservedSchedule로 상태 뱃지 정보 로드
+  const loadStatusBadgesWithReservedSchedule = async (activityId: number, dates: string[]) => {
+    try {
+      const statusBadgeData: { [date: string]: { [status: string]: number } } = {};
+
+      for (const date of dates) {
+        try {
+          console.log(`🔄 ${date} 상태 정보 조회 중...`);
+          const schedules = await getReservedSchedule(activityId, date);
+
+          // 날짜별 상태 카운트 집계
+          const dateCounts = { pending: 0, confirmed: 0, declined: 0, completed: 0 };
+
+          schedules.forEach((schedule: any) => {
+            if (schedule.count) {
+              dateCounts.pending += schedule.count.pending || 0;
+              dateCounts.confirmed += schedule.count.confirmed || 0;
+              dateCounts.declined += schedule.count.declined || 0;
+              // completed는 API에 없을 수 있으므로 기본값 0
+            }
+          });
+
+          statusBadgeData[date] = dateCounts;
+          console.log(`✅ ${date} 상태:`, dateCounts);
+        } catch (err) {
+          console.warn(`Failed to load status for ${date}:`, err);
+        }
+      }
+
+      // 전역 변수에 저장 (기존 방식과 호환성 유지)
+      (window as any).statusBadgeData = statusBadgeData;
+
+      // 캘린더 리렌더링
+      if (Object.keys(statusBadgeData).length > 0) {
+        setApiReservationData((prev) => ({ ...prev }));
+      }
+    } catch (err) {
+      console.error('Failed to load status badges:', err);
+    }
+  };
+
   const loadReservedSchedule = async (activityId: number, date: string) => {
     try {
       setLoading(true);
       setError(null);
+      console.log('loadReservedSchedule called with:', { activityId, date });
       const schedulesFromApi = await getReservedSchedule(activityId, date);
+      console.log('getReservedSchedule raw response:', schedulesFromApi);
 
       const transformedSchedules = schedulesFromApi.map((s: any) => ({
         ...s,
         timeSlot: `${s.startTime} - ${s.endTime}`,
       }));
 
-      setScheduleDetails(transformedSchedules || []);
+      console.log('Transformed schedules:', transformedSchedules);
+
+      // API 응답이 비어있거나 timeSlot이 제대로 생성되지 않은 경우
+      if (
+        transformedSchedules.length === 0 ||
+        transformedSchedules[0].timeSlot.includes('undefined')
+      ) {
+        console.log('API response is empty or invalid, using calendar data as fallback');
+
+        // 캘린더 데이터에서 해당 날짜의 스케줄 정보 생성
+        const calendarData = apiReservationData[date];
+        if (calendarData && calendarData.length > 0) {
+          const fallbackSchedules = calendarData.map((schedule) => ({
+            id: schedule.id,
+            scheduleId: schedule.id,
+            timeSlot: schedule.timeSlot || '시간 미정',
+            startTime: schedule.startTime || '시간',
+            endTime: schedule.endTime || '미정',
+            reservations: schedule.reservations || [], // 기존 예약 정보 유지
+          }));
+          console.log('Using fallback schedules from calendar data:', fallbackSchedules);
+          setScheduleDetails(fallbackSchedules);
+        } else {
+          setScheduleDetails([]);
+        }
+      } else {
+        setScheduleDetails(transformedSchedules);
+      }
     } catch (err) {
       setError('예약 스케줄을 불러오는데 실패했습니다.');
       console.error('Failed to load reserved schedule:', err);
@@ -165,6 +238,7 @@ export default function ReservationStatusPage() {
       for (const status of statuses) {
         try {
           const data = await getReservations(activityId, numericScheduleId, status);
+          console.log(`API response for ${status}:`, data);
           if (data.reservations && data.reservations.length > 0) {
             allReservations.push(...data.reservations);
           }
@@ -174,6 +248,7 @@ export default function ReservationStatusPage() {
       }
 
       console.log('All reservations loaded:', allReservations);
+      console.log('Setting reservationDetails to:', allReservations);
       setReservationDetails(allReservations);
     } catch (err) {
       setError('예약 내역을 불러오는데 실패했습니다.');
@@ -247,9 +322,12 @@ export default function ReservationStatusPage() {
 
   useEffect(() => {
     // 날짜에 대한 스케줄이 로드되면, 첫 번째 시간을 기본 선택값으로 설정
+    console.log('scheduleDetails updated:', scheduleDetails);
     if (scheduleDetails.length > 0 && scheduleDetails[0].timeSlot) {
+      console.log('Setting selectedTime to first schedule timeSlot:', scheduleDetails[0].timeSlot);
       setSelectedTime(scheduleDetails[0].timeSlot);
     } else {
+      console.log('No schedules available, keeping default selectedTime');
       setReservationDetails([]); // 스케줄이 없으면 예약 내역도 비움
     }
   }, [scheduleDetails]);
@@ -293,10 +371,22 @@ export default function ReservationStatusPage() {
     if (!selectedActivity) return;
     const key = formatDate(clickedDate);
 
+    console.log('handleDayClick called with:', {
+      clickedDate,
+      key,
+      hasData: !!apiReservationData[key],
+    });
+
     if (apiReservationData[key]) {
+      console.log('Setting selectedDate to:', clickedDate);
       setSelectedDate(clickedDate);
       setSelectedTab('신청');
       setSelectedTime('14:00 - 15:00');
+
+      console.log('About to call loadReservedSchedule with:', {
+        activityId: selectedActivity.id,
+        key,
+      });
       loadReservedSchedule(selectedActivity.id, key);
 
       if (window.innerWidth >= 1024 && event?.target) {
@@ -308,6 +398,8 @@ export default function ReservationStatusPage() {
           height: rect.height,
         });
       }
+    } else {
+      console.log('No data found for date:', key);
     }
   };
 
@@ -384,71 +476,87 @@ export default function ReservationStatusPage() {
 
           const convertedData: Record<string, CalendarReservationData[]> = {};
 
-          Object.entries(apiReservationData).forEach(([date, schedules]) => {
-            const dateReservations: CalendarReservationData[] = [];
+          // ✨ 새로운 방식: statusBadgeData 사용 (getReservedSchedule 기반)
+          const statusBadgeData = (window as any).statusBadgeData;
 
-            schedules.forEach((schedule) => {
-              if (schedule.reservations) {
-                if (Array.isArray(schedule.reservations)) {
-                  // 배열 형태의 reservations (기존 구조)
-                  schedule.reservations.forEach((r) => {
-                    dateReservations.push({
-                      status: API_STATUS_TO_KOREAN[r.status] || r.status,
-                      count: r.headCount,
-                      nickname: r.nickname,
-                    });
-                  });
-                } else {
-                  // 객체 형태의 reservations (새로운 구조)
-                  const reservationCounts = schedule.reservations as any;
+          if (statusBadgeData) {
+            Object.entries(statusBadgeData).forEach(([date, counts]: [string, any]) => {
+              const dateReservations: CalendarReservationData[] = [];
 
-                  // pending -> 예약
-                  if (reservationCounts.pending > 0) {
-                    dateReservations.push({
-                      status: '예약',
-                      count: reservationCounts.pending,
-                      nickname: 'Unknown',
-                    });
-                  }
-
-                  // confirmed -> 승인
-                  if (reservationCounts.confirmed > 0) {
-                    dateReservations.push({
-                      status: '승인',
-                      count: reservationCounts.confirmed,
-                      nickname: 'Unknown',
-                    });
-                  }
-
-                  // completed/declined -> 거절
-                  const declinedCount =
-                    (reservationCounts.completed || 0) + (reservationCounts.declined || 0);
-                  if (declinedCount > 0) {
-                    dateReservations.push({
-                      status: '거절',
-                      count: declinedCount,
-                      nickname: 'Unknown',
-                    });
-                  }
-                }
+              // 각 상태별로 뱃지 생성
+              if (counts.pending > 0) {
+                dateReservations.push({ status: '예약', count: counts.pending, nickname: 'User' });
               }
+              if (counts.confirmed > 0) {
+                dateReservations.push({
+                  status: '승인',
+                  count: counts.confirmed,
+                  nickname: 'User',
+                });
+              }
+              if (counts.declined > 0) {
+                dateReservations.push({ status: '거절', count: counts.declined, nickname: 'User' });
+              }
+              if (counts.completed > 0) {
+                dateReservations.push({
+                  status: '완료',
+                  count: counts.completed,
+                  nickname: 'User',
+                });
+              }
+
+              convertedData[date] = dateReservations;
             });
+          } else {
+            // 🔄 Fallback: 기존 방식 (statusBadgeData가 아직 로드되지 않은 경우)
+            Object.entries(apiReservationData).forEach(([date, schedules]) => {
+              const dateReservations: CalendarReservationData[] = [];
 
-            convertedData[date] = dateReservations;
-          });
+              schedules.forEach((schedule) => {
+                if (schedule.reservations && Array.isArray(schedule.reservations)) {
+                  (schedule.reservations as any[]).forEach((reservationGroup) => {
+                    if (
+                      reservationGroup.reservations &&
+                      typeof reservationGroup.reservations === 'object'
+                    ) {
+                      const counts = reservationGroup.reservations;
 
-          console.log('Original API data:', apiReservationData);
-          console.log('API date keys:', Object.keys(apiReservationData));
-          console.log('Converted reservation data for calendar:', convertedData);
-          console.log('Calendar date keys:', Object.keys(convertedData));
-          console.log('Has any data?', Object.keys(convertedData).length > 0);
+                      if (counts.pending > 0) {
+                        dateReservations.push({
+                          status: '예약',
+                          count: counts.pending,
+                          nickname: 'User',
+                        });
+                      }
+                      if (counts.confirmed > 0) {
+                        dateReservations.push({
+                          status: '승인',
+                          count: counts.confirmed,
+                          nickname: 'User',
+                        });
+                      }
+                      if (counts.completed > 0) {
+                        dateReservations.push({
+                          status: '완료',
+                          count: counts.completed,
+                          nickname: 'User',
+                        });
+                      }
+                      if (counts.declined > 0) {
+                        dateReservations.push({
+                          status: '거절',
+                          count: counts.declined,
+                          nickname: 'User',
+                        });
+                      }
+                    }
+                  });
+                }
+              });
 
-          // 각 날짜별 상세 정보 출력
-          Object.entries(convertedData).forEach(([dateKey, reservations]) => {
-            if (reservations.length > 0) {
-              console.log(`Date key: ${dateKey}, reservations:`, reservations);
-            }
-          });
+              convertedData[date] = dateReservations;
+            });
+          }
 
           return convertedData;
         })()}
