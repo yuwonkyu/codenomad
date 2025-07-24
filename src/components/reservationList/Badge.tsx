@@ -14,7 +14,9 @@ const Badge = ({ children, setFilter, selected }: BadgeType) => {
           selected && selectedStyle
         }`,
       )}
-      onClick={() => setFilter()}
+      onClick={() => {
+        setFilter();
+      }}
     >
       {children}
     </span>
