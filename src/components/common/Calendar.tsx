@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import Calendar from 'react-calendar';
 // 기본 스타일 제거 - 커스텀 스타일만 사용
 // import 'react-calendar/dist/Calendar.css';
@@ -12,6 +12,8 @@ const cn = (...inputs: (string | undefined)[]) => twMerge(clsx(inputs));
 
 // 캘린더 타입 정의
 type CalendarValue = Date | null;
+// react-calendar의 정확한 Value 타입 (Range와 ValuePiece 포함)
+type ReactCalendarValue = Date | null | Date[] | [Date | null, Date | null]; // Range 타입도 포함
 
 export interface CalendarProps {
   selectedDate?: CalendarValue;
@@ -51,17 +53,26 @@ const CalendarComponent = ({
     () => `calendar-styles-${Math.random().toString(36).substring(2, 11)}`,
   );
 
+  // ========== 2025.07 추가: 성능 최적화를 위한 날짜 전처리 ==========
+  // 비활성화할 날짜들을 문자열 Set으로 전처리 (성능 향상)
+  const disabledDatesSet = useMemo(
+    () => new Set(disabledDates.map((date) => new Date(date).toDateString())),
+    [disabledDates],
+  );
+
+  // 강조 표시할 날짜들을 문자열 Set으로 전처리 (성능 향상)
+  const highlightedDatesSet = useMemo(
+    () => new Set(highlightedDates.map((date) => new Date(date).toDateString())),
+    [highlightedDates],
+  );
+
   // ========== 2025.07 추가: 날짜 비활성화 로직 ==========
   // react-calendar의 tileDisabled 콜백 함수 - 특정 날짜를 비활성화
   const tileDisabled = ({ date, view }: { date: Date; view: string }) => {
     if (view !== 'month') return false;
 
-    // 1. disabledDates 배열에 포함된 날짜 비활성화
-    if (
-      disabledDates.some(
-        (disabledDate) => date.toDateString() === new Date(disabledDate).toDateString(),
-      )
-    ) {
+    // 1. disabledDatesSet을 사용한 효율적인 날짜 비활성화 검사
+    if (disabledDatesSet.has(date.toDateString())) {
       return true;
     }
 
@@ -80,12 +91,8 @@ const CalendarComponent = ({
 
     let classes = '';
 
-    // 1. highlightedDates 배열에 있는 날짜에 강조 스타일 적용
-    const isHighlighted = highlightedDates.some(
-      (highlightedDate) => date.toDateString() === new Date(highlightedDate).toDateString(),
-    );
-
-    if (isHighlighted) {
+    // 1. highlightedDatesSet을 사용한 효율적인 강조 날짜 검사
+    if (highlightedDatesSet.has(date.toDateString())) {
       classes += ' highlighted-date'; // CSS에서 정의된 노란색 배경 클래스
     }
 
@@ -100,11 +107,11 @@ const CalendarComponent = ({
     return classes.trim();
   };
 
-  // ========== 2025.07 추가: 향상된 클릭 이벤트 처리 ==========
-  // 기존 onChange를 대체하는 고급 클릭 핸들러 - 유효성 검사 및 커스텀 로직 포함
-  const handleDateClick = (value: any, event: React.MouseEvent<HTMLButtonElement>) => {
+  // ========== 2025.07 추가: 향상된 날짜 변경 처리 ==========
+  // 기존 onChange를 대체하는 고급 변경 핸들러 - 유효성 검사 및 커스텀 로직 포함
+  const handleDateChange = (value: unknown, event: React.MouseEvent<HTMLButtonElement>) => {
     // react-calendar의 Value 타입 안전성 검사 (Date | Date[] | null 가능)
-    if (!value || value instanceof Array || !(value instanceof Date)) {
+    if (!value || Array.isArray(value) || !(value instanceof Date)) {
       return;
     }
 
@@ -375,7 +382,7 @@ const CalendarComponent = ({
     <div ref={calendarRef} className={cn('inline-block', className)}>
       <Calendar
         value={selectedDate}
-        onChange={handleDateClick} // 2025.07 수정: 기본 handleDateChange → 고급 handleDateClick으로 변경
+        onChange={handleDateChange} // 2025.07 수정: 기본 onChange → 고급 handleDateChange로 변경
         locale='ko-KR'
         calendarType='gregory'
         showNeighboringMonth={true}
