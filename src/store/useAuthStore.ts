@@ -1,0 +1,20 @@
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { AuthState, UserType } from './useAuthStore.types';
+
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      accessToken: null,
+      refreshToken: null,
+      user: null,
+      isLoggedIn: false,
+      setAccessToken: (token) => set({ accessToken: token, isLoggedIn: true }),
+      setRefreshToken: (token: string) => set({ refreshToken: token }),
+      clearAuthStore: () =>
+        set({ accessToken: null, refreshToken: null, user: null, isLoggedIn: false }),
+      setUser: (user: UserType) => set({ user: user }),
+    }),
+    { name: 'auth-storage' },
+  ),
+);
