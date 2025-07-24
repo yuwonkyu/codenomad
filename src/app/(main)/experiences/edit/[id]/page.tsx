@@ -127,21 +127,24 @@ const ExperienceEditPage = () => {
           end: schedule.endTime,
         }));
 
-        setReserveTimes(
-          convertedSchedules.length > 0 ? convertedSchedules : [{ date: '', start: '', end: '' }],
-        );
+        // 첫 번째 줄은 항상 빈 줄(새로운 시간 추가용), 기존 스케줄들은 두 번째 줄부터
+        const reserveTimesWithEmptyFirst =
+          convertedSchedules.length > 0
+            ? [{ date: '', start: '', end: '' }, ...convertedSchedules]
+            : [{ date: '', start: '', end: '' }];
 
-        // 초기값 저장
+        setReserveTimes(reserveTimesWithEmptyFirst);
+
+        // 초기값 저장 (변경사항 감지용)
         setInitialData({
           title: data.title,
-          category: data.category, // API에서 받은 한글 카테고리 직접 사용
+          category: data.category,
           desc: data.description,
           price: data.price.toLocaleString() + '원',
           address: data.address,
           bannerPreview: data.bannerImageUrl,
           introPreviews: subImageUrls,
-          reserveTimes:
-            convertedSchedules.length > 0 ? convertedSchedules : [{ date: '', start: '', end: '' }],
+          reserveTimes: reserveTimesWithEmptyFirst,
         });
       } catch (err: any) {
         console.error('체험 데이터 불러오기 실패:', err);
@@ -193,6 +196,9 @@ const ExperienceEditPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // 유효한 예약 시간들만 필터링 (첫 번째 항목은 제외 - 새로운 시간 추가용)
+    const validReserveTimes = reserveTimes.slice(1).filter((rt) => rt.date && rt.start && rt.end);
+
     if (
       !title ||
       !category ||
@@ -200,10 +206,12 @@ const ExperienceEditPage = () => {
       !price ||
       !address ||
       !bannerPreview ||
-      reserveTimes.some((rt) => !rt.date || !rt.start || !rt.end) ||
+      validReserveTimes.length === 0 || // 최소 하나의 유효한 예약 시간 필요 (첫 번째 제외)
       isDuplicateTime()
     ) {
-      alert('필수 항목을 모두 입력해 주세요.\n(중복된 예약 시간대도 확인)');
+      alert(
+        '필수 항목을 모두 입력해 주세요.\n최소 하나의 예약 시간이 필요하며, 중복된 시간대는 불가능합니다.',
+      );
       return;
     }
 
@@ -307,10 +315,13 @@ const ExperienceEditPage = () => {
     setLeaveModalOpen(false);
   };
 
-  // 예약시간 중복 체크
+  // 예약시간 중복 체크 (첫 번째 항목 제외 - 새로운 시간 추가용)
   const isDuplicateTime = () => {
-    const times = reserveTimes.map((rt) => `${rt.date}-${rt.start}-${rt.end}`);
-    return new Set(times).size !== times.length;
+    const validTimes = reserveTimes
+      .slice(1) // 첫 번째 항목 제외
+      .filter((rt) => rt.date && rt.start && rt.end) // 빈 값 제외
+      .map((rt) => `${rt.date}-${rt.start}-${rt.end}`);
+    return new Set(validTimes).size !== validTimes.length;
   };
 
   // 이미지 핸들러
@@ -410,9 +421,10 @@ const ExperienceEditPage = () => {
               reserveTimes.map((item, i) => (i === idx ? { ...item, [key]: value } : item)),
             )
           }
-          onAdd={() => setReserveTimes([...reserveTimes, { date: '', start: '', end: '' }])}
+          onAdd={() => setReserveTimes([{ date: '', start: '', end: '' }, ...reserveTimes])}
           onRemove={(idx) => setReserveTimes(reserveTimes.filter((_, i) => i !== idx))}
           isDuplicateTime={isDuplicateTime}
+          isEdit={true}
         />
         <BannerImageInput
           bannerPreview={bannerPreview}
