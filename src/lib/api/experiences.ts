@@ -70,13 +70,16 @@ const compressImage = (
       canvas.toBlob(
         (blob) => {
           if (blob) {
-            // 파일명 설정
-            let fileName = file.name.replace(/\.[^/.]+$/, '.jpg');
+            // 파일명 설정 - 포맷에 따라 적절한 확장자 사용
+            const baseFileName = file.name.replace(/\.[^/.]+$/, '');
+            let fileName;
 
             if (extension === 'png') {
-              fileName = file.name; // PNG는 원본 이름 유지
+              fileName = `${baseFileName}.png`;
             } else if (extension === 'webp') {
-              fileName = file.name; // WebP는 원본 이름 유지
+              fileName = `${baseFileName}.webp`;
+            } else {
+              fileName = `${baseFileName}.jpg`;
             }
 
             const compressedFile = new File([blob], fileName, {
