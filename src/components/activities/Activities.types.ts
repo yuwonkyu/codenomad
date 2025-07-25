@@ -88,6 +88,7 @@ export interface DesktopCardProps extends ReservationControlProps {
 export interface ModalTriggerProps extends ReservationControlProps {
   activityData: ReservationActivityData;
   onReservationReset?: () => void;
+  onReservationSubmit: (data: ConfirmedReservation) => void;
 }
 
 // 모달 공통 Props

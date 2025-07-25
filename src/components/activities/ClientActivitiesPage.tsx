@@ -13,11 +13,11 @@ import type { ActivityDetail } from '@/components/activities/Activities.types';
 import { fetchActivitiesDetails } from '@/lib/api/activities';
 import { useAuthStore } from '@/store/useAuthStore';
 
-interface ClientActivitesPageProps {
+interface ClientActivitiesPageProps {
   id: number;
 }
 
-const ClientActivitesPage = ({ id }: ClientActivitesPageProps) => {
+const ClientActivitiesPage = ({ id }: ClientActivitiesPageProps) => {
   const screenSize = useResponsive();
   const [activity, setActivity] = useState<ActivityDetail | null>(null);
   const [loading, setLoading] = useState(false);
@@ -101,4 +101,4 @@ const ClientActivitesPage = ({ id }: ClientActivitesPageProps) => {
   );
 };
 
-export default ClientActivitesPage;
+export default ClientActivitiesPage;
