@@ -42,7 +42,7 @@ const KakaoSignupPage = () => {
 
       setUser(user);
 
-      router.replace('/');
+      router.push('/');
     } catch (error: any) {
       const serverMessage = error?.response?.data?.message ?? '회원가입에 실패했습니다.';
       setErrorMessage(serverMessage);
