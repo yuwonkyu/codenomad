@@ -16,10 +16,15 @@ instance.interceptors.request.use(
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
+
+    // FormData인 경우 Content-Type 헤더 제거 (자동 설정되도록)
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
+
     return config;
   },
   (error) => {
-    console.error('request interceptor error');
     return Promise.reject(error);
   },
 );

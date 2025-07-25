@@ -14,7 +14,6 @@ import CommonModal from '@/components/common/CancelModal';
 import { useRouter } from 'next/navigation';
 
 const categoryOptions = [
-  { value: '', label: '카테고리를 선택해 주세요' },
   { value: 'culture', label: '문화 · 예술' },
   { value: 'food', label: '식음료' },
   { value: 'sports', label: '스포츠' },
@@ -164,14 +163,14 @@ const ExperienceEditPage = () => {
   };
 
   return (
-    <div className='flex justify-center items-center'>
+    <div className='flex items-center justify-center'>
       <form
-        className='w-375 md:w-744 lg:w-700 px-24 md:px-30 lg:px-0 py-30 md:pt-40 md:pb-53 lg:pb-102 flex flex-col'
+        className='flex w-375 flex-col px-24 py-30 md:w-744 md:px-30 md:pt-40 md:pb-53 lg:w-700 lg:px-0 lg:pb-102'
         onSubmit={handleSubmit}
         autoComplete='off'
       >
         {/* 뒤로가기 */}
-        <div className='flex items-center mb-24'>
+        <div className='mb-24 flex items-center'>
           <button
             type='button'
             className='mr-8 md:hidden'
@@ -216,7 +215,7 @@ const ExperienceEditPage = () => {
         <div className='flex justify-center'>
           <button
             type='submit'
-            className='w-120 h-41 py-12 bg-primary-500 text-white text-14-b rounded-[12px]'
+            className='bg-primary-500 text-14-b h-41 w-120 rounded-[12px] py-12 text-white'
           >
             수정하기
           </button>
@@ -234,7 +233,7 @@ const ExperienceEditPage = () => {
       {/* 나가기 확인 모달 */}
       <CommonModal
         open={leaveModalOpen}
-        icon={<img src='/icons/icon_alert.svg' alt='경고' className='w-full h-full' />}
+        icon={<img src='/icons/icon_alert.svg' alt='경고' className='h-full w-full' />}
         text={'저장되지 않았습니다.<br />정말 뒤로 가시겠습니까?'}
         cancelText='아니오'
         confirmText='네'
