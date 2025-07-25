@@ -1,6 +1,7 @@
 import Calendar from '@/components/common/Calendar';
 import { Schedule } from '../Activities.types';
 import { useMemo } from 'react';
+import { parseISO } from 'date-fns';
 
 interface CalendarStepProps {
   schedules: Schedule[];
@@ -10,7 +11,7 @@ interface CalendarStepProps {
 
 const CalendarStep = ({ schedules, selectedDate, onDateSelect }: CalendarStepProps) => {
   // 날짜 변환 함수
-  const stringToDate = (dateStr: string): Date => new Date(dateStr + 'T12:00:00.000Z');
+  const stringToDate = (dateStr: string): Date => parseISO(dateStr);
 
   const dateToString = (date: Date): string => {
     const year = date.getFullYear();

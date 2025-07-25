@@ -51,8 +51,8 @@ const ReservationContent = ({ activity }: ReservationContentProps) => {
       setIsConfirmModalOpen(true);
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        const data = err.response?.data as { message?: string } | undefined;
-        const message = data?.message || err.message || '예약에 실패했습니다.';
+        const errorData = err.response?.data as { message?: string } | undefined;
+        const message = errorData?.message || err.message || '예약에 실패했습니다.';
         alert(message);
       } else {
         alert('알 수 없는 에러가 발생했습니다.'); // 임시 alert

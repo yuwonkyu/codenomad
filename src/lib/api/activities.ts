@@ -30,14 +30,21 @@ export const fetchActivitiesDetails = async (activityId: number): Promise<Activi
   return res.data;
 };
 
-export const fetchActivityReviews = async (activityId: number, page = 1, size = 3) => {
+export const fetchActivityReviews = async (
+  activityId: number,
+  page = 1,
+  size = 3,
+): Promise<ReviewResponse> => {
   const res = await instance.get<ReviewResponse>(`/activities/${activityId}/reviews`, {
     params: { page, size },
   });
   return res.data;
 };
 
-export const postReservation = async (activityId: number, data: ReservationRequest) => {
+export const postReservation = async (
+  activityId: number,
+  data: ReservationRequest,
+): Promise<ReservationResponse> => {
   const res = await instance.post<ReservationResponse>(
     `/activities/${activityId}/reservations`,
     data,
