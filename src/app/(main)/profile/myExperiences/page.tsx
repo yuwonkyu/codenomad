@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import ExperienceCard from '@/components/profile/ExperienceCard';
-import { getMyActivities, MyActivity, deleteMyActivity } from '@/lib/api/profile/my-activities';
+import { getMyActivities, MyActivity, deleteMyActivity } from '@/lib/api/profile/myActivities';
 import { ProfileMobileContext } from '../layout';
 import { useContext } from 'react';
 
