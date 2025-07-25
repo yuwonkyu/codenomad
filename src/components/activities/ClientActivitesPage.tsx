@@ -21,7 +21,7 @@ const ClientActivitesPage = ({ id }: ClientActivitesPageProps) => {
   const screenSize = useResponsive();
   const [activity, setActivity] = useState<ActivityDetail | null>(null);
   const [loading, setLoading] = useState(false);
-
+  const { user } = useAuthStore();
   useEffect(() => {
     const loadActivity = async () => {
       try {
@@ -44,7 +44,7 @@ const ClientActivitesPage = ({ id }: ClientActivitesPageProps) => {
   if (!activity) return null; // 추후 조건부 렌더링으로 스켈레톤 적용 예정
 
   const isDesktop = screenSize === 'lg';
-  const { user } = useAuthStore();
+
   const isOwner = user?.id === activity.userId;
 
   return (

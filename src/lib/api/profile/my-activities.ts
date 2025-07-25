@@ -1,4 +1,4 @@
-import axios from '../axios';
+import instance from '../axios';
 
 // 내 체험 목록 응답 타입
 export interface MyActivitiesResponse {
@@ -29,17 +29,13 @@ export const getMyActivities = async (
   cursorId?: number,
   size: number = 5,
 ): Promise<MyActivitiesResponse> => {
-  const token = localStorage.getItem('accessToken');
   const params = new URLSearchParams();
   if (cursorId) {
     params.append('cursorId', String(cursorId));
   }
   params.append('size', String(size));
 
-  const response = await axios.get('/my-activities', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+  const response = await instance.get('/my-activities', {
     params,
   });
   return response.data;
@@ -47,10 +43,5 @@ export const getMyActivities = async (
 
 // 내 체험 삭제
 export const deleteMyActivity = async (activityId: number) => {
-  const token = localStorage.getItem('accessToken');
-  await axios.delete(`/my-activities/${activityId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  await instance.delete(`/my-activities/${activityId}`);
 };
