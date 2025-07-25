@@ -15,6 +15,7 @@ import ConfirmModal from '@/components/common/ConfirmModal';
 import CommonModal from '@/components/common/CancelModal';
 import instance from '@/lib/api/axios';
 import { uploadImage } from '@/lib/api/experiences';
+import { notFound } from 'next/navigation';
 
 const categoryOptions = [
   { value: '문화 · 예술', label: '문화 · 예술' },
@@ -148,11 +149,10 @@ const ExperienceEditPage = () => {
         });
       } catch (err: any) {
         console.error('체험 데이터 불러오기 실패:', err);
-        setError(
-          err.response?.status === 404
-            ? '존재하지 않는 체험입니다.'
-            : '데이터를 불러오는데 실패했습니다.',
-        );
+        if (err.response?.status === 404) {
+          notFound();
+        }
+        setError('데이터를 불러오는데 실패했습니다.');
       } finally {
         setLoading(false);
       }
@@ -225,8 +225,13 @@ const ExperienceEditPage = () => {
       let finalBannerUrl = bannerPreview;
       if (banner) {
         // 새로운 배너 이미지가 업로드된 경우
-        const bannerUpload = await uploadImage(banner);
-        finalBannerUrl = bannerUpload.activityImageUrl;
+        try {
+          const bannerUpload = await uploadImage(banner);
+          finalBannerUrl = bannerUpload.activityImageUrl;
+        } catch (uploadError) {
+          console.error('배너 이미지 업로드 실패:', uploadError);
+          throw new Error('배너 이미지 업로드에 실패했습니다. 다시 시도해 주세요.');
+        }
       }
 
       // 새로 추가할 소개 이미지 URL들
@@ -237,8 +242,13 @@ const ExperienceEditPage = () => {
           // 새로 업로드된 이미지인 경우 서버에 업로드
           const file = imageUrlMap.get(preview);
           if (file) {
-            const upload = await uploadImage(file);
-            subImageUrlsToAdd.push(upload.activityImageUrl);
+            try {
+              const upload = await uploadImage(file);
+              subImageUrlsToAdd.push(upload.activityImageUrl);
+            } catch (uploadError) {
+              console.error('소개 이미지 업로드 실패:', uploadError);
+              throw new Error('이미지 업로드에 실패했습니다. 다시 시도해 주세요.');
+            }
           }
         }
       }
