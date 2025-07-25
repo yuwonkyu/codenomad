@@ -34,28 +34,27 @@ instance.interceptors.response.use(
       const accessToken = useAuthStore.getState().accessToken;
       const setAccessToken = useAuthStore.getState().setAccessToken;
       const setRefreshToken = useAuthStore.getState().setRefreshToken;
+      const clearAuthStore = useAuthStore.getState().clearAuthStore;
+
       if (status === 401 && refreshToken && !originalRequest._retry) {
         try {
-          // 1. 토큰 재발급
           const res = await refreshAccessToken(refreshToken);
           setAccessToken(res.accessToken);
           setRefreshToken(res.refreshToken);
 
-          // 2. Authorization 헤더를 새 토큰으로 바꿔줌
-          if (originalRequest && accessToken) {
-            // 이 부분은 아래처럼 그냥 주셔도 될 거 같아요
-            originalRequest._retry = true;
+          originalRequest._retry = true;
+          originalRequest.headers = {
+            ...originalRequest.headers,
+            Authorization: `Bearer ${accessToken}`,
+          };
 
-            originalRequest.headers = {
-              ...originalRequest.headers,
-              Authorization: `Bearer ${accessToken}`,
-            };
-            // 3. 같은 요청을 다시 보냄 (재귀 아님)
-            return instance(originalRequest);
-          }
+          return instance(originalRequest);
         } catch (err) {
           // 리프레시 토큰도 만료 시 로그아웃 등 추가 처리
           console.error('토큰 재발급 실패, 로그아웃 처리');
+          clearAuthStore();
+          useAuthStore.persist.clearStorage();
+          window.location.href = '/login';
         }
       }
     }
