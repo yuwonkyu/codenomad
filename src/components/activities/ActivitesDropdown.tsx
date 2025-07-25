@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Dropdown from '@/components/common/Dropdown/Dropdown';
 import CommonModal from '@/components/common/CancelModal';
 import { useRouter } from 'next/navigation';
-import { deleteMyActivity } from '@/lib/api/profile/my-activities';
+import { deleteMyActivity } from '@/lib/api/profile/myActivities';
 
 interface DropdownMenuProps {
   activityId: number;
