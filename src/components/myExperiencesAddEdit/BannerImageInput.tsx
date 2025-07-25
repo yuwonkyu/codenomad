@@ -49,7 +49,7 @@ const BannerImageInput = ({
                 alt='삭제'
                 width={20}
                 height={20}
-                className='h-[20px] w-[20px] md:h-[26px] md:w-[26px]'
+                className='size-20 md:size-26'
               />
             </button>
           </div>
