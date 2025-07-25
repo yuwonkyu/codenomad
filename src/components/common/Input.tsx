@@ -124,7 +124,7 @@ const Input = ({
           </div>
         ) : (
           // 기본 input 타입
-          <>
+          <div className='relative flex w-full items-center'>
             <input
               ref={inputRef}
               type={inputType}
@@ -141,7 +141,7 @@ const Input = ({
             {dateIcon && (
               <button
                 type='button'
-                className='absolute top-50 right-20 cursor-pointer'
+                className='ml-8 flex cursor-pointer items-center justify-center'
                 tabIndex={-1}
                 onClick={onDateIconClick}
               >
@@ -161,7 +161,7 @@ const Input = ({
                 />
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
 

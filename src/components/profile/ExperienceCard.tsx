@@ -37,7 +37,7 @@ export default function ExperienceCard({
           </div>
         </div>
         <div className='mb-40 flex gap-8'>
-          <Link href={`/experiences/edit?id=${id}`}>
+          <Link href={`/experiences/edit/${id}`}>
             <button className='text-14-m h-30 w-70 rounded-lg border border-gray-300 bg-white text-black'>
               수정하기
             </button>

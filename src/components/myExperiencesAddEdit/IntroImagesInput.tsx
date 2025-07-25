@@ -6,7 +6,7 @@ interface IntroImagesInputProps {
   onRemove: (idx: number) => void;
 }
 
-const IntroImagesInput = ({ introPreviews, onChange, onRemove }: IntroImagesInputProps) => {
+const IntroImagesInput = ({ introPreviews = [], onChange, onRemove }: IntroImagesInputProps) => {
   return (
     <div className='mb-24'>
       <div className='text-16-b mb-10'>소개 이미지 등록</div>

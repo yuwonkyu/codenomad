@@ -12,6 +12,7 @@
     "axios": "^1.10.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "lodash": "^4.17.21",
     "next": "15.3.5",
     "react": "^19.0.0",
     "react-calendar": "^6.0.0",
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.1.11",
+    "@types/lodash": "^4.17.20",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-calendar": "^4.1.0",
