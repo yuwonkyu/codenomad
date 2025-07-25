@@ -1,20 +1,30 @@
 import ReviewModal from '@/components/reservationList/ReviewModal';
 
 type Props = {
-  params: { reservationId: string };
+  params: {
+    reservationId: string;
+  };
+  searchParams: {
+    title: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    headCount: string;
+  };
 };
 
-export default async function page({ params }: Props) {
+export default async function page({ params, searchParams }: Props) {
   const { reservationId } = params;
-  console.log(reservationId);
+  const { title, date, startTime, endTime, headCount } = searchParams;
   return (
     <>
       <ReviewModal
-        title='title'
-        date='0000. 00. 00'
-        startTime='12:00'
-        endTime='13:30'
-        headCount={30}
+        title={title}
+        date={date}
+        startTime={startTime}
+        endTime={endTime}
+        headCount={Number(headCount)}
+        reservationId={Number(reservationId)}
       />
     </>
   );

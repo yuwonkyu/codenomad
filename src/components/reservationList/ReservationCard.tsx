@@ -2,7 +2,6 @@ import Image from 'next/image';
 import StatusBadge, { StatusType } from './StatusBadge';
 import { useRouter } from 'next/navigation';
 import { formatPrice } from '@/utils/formatPrice';
-import ConfirmModal from '../common/ConfirmModal';
 
 interface ReservationCardType {
   status: StatusType;
@@ -14,6 +13,7 @@ interface ReservationCardType {
   headCount: number;
   bannerUrl: string;
   reservationId: number;
+  reviewSubmitted: boolean;
 }
 
 const ReservationCard = ({
@@ -26,11 +26,20 @@ const ReservationCard = ({
   headCount,
   bannerUrl,
   reservationId,
+  reviewSubmitted,
 }: ReservationCardType) => {
   const router = useRouter();
   const openReviewModal = () => {
-    router.push(`/profile/reservations/review/${reservationId}`);
+    const query = new URLSearchParams({
+      title: title,
+      date: date,
+      startTime: startTime,
+      endTime: endTime,
+      headCount: String(headCount),
+    });
+    router.push(`/profile/reservations/review/${reservationId}?${query.toString()}`);
   };
+
   const openConfirmModal = () => {
     router.push(`/profile/reservations/confirm/${reservationId}`);
   };
@@ -55,7 +64,7 @@ const ReservationCard = ({
               {headCount}명
             </p>
             <div className='hidden lg:block'>
-              {status === 'completed' && (
+              {status === 'completed' && !reviewSubmitted && (
                 <button
                   onClick={openReviewModal}
                   className='bg-primary-500 text-14-m rounded-lg px-10 py-6 text-white'
