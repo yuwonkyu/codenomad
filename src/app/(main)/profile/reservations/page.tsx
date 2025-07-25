@@ -108,6 +108,7 @@ const Page = () => {
             headCount={item.headCount}
             bannerUrl={item.activity.bannerImageUrl}
             reservationId={item.id}
+            reviewSubmitted={item.reviewSubmitted}
           />
         ))
       )}
