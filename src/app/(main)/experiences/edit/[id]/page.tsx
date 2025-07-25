@@ -272,8 +272,6 @@ const ExperienceEditPage = () => {
         schedulesToAdd,
       };
 
-      console.log('Update data:', updateData);
-
       // PATCH 메서드로 요청 (baseURL에 이미 팀ID 포함됨)
       await instance.patch(`/my-activities/${experienceId}`, updateData);
       setModalOpen(true);
