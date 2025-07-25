@@ -12,10 +12,10 @@ const cn = (...inputs: (string | undefined)[]) => twMerge(clsx(inputs));
 // 예약 상태 뱃지 컴포넌트
 const StatusBadge = ({ status, count }: { status: string; count: number }) => {
   const colorMap: Record<string, string> = {
-    완료: 'bg-gray-100 text-gray-600',
-    예약: 'bg-blue-100 text-blue-600',
-    승인: 'bg-yellow-100 text-yellow-700',
+    예약: 'bg-yellow-100 text-yellow-700',
+    승인: 'bg-blue-100 text-blue-600',
     거절: 'bg-red-100 text-red-600',
+    완료: 'bg-green-100 text-green-600',
   };
 
   return (
@@ -52,6 +52,8 @@ interface ReservationCalendarProps {
   selectedExperienceId?: string;
   /** 체험 변경 콜백 */
   onExperienceChange?: (experienceId: string) => void;
+  /** 월 변경 콜백 */
+  onMonthChange?: (newDate: Date) => void;
 }
 
 const ReservationCalendar = ({
@@ -62,6 +64,7 @@ const ReservationCalendar = ({
   experiences = [{ id: 'default', title: '함께 배우면 즐거운 스트릿 댄스' }],
   selectedExperienceId = 'default',
   onExperienceChange,
+  onMonthChange,
 }: ReservationCalendarProps) => {
   const [date, setDate] = useState<Date | null>(selectedDate || new Date());
   const calendarRef = useRef<HTMLDivElement>(null);
@@ -124,7 +127,16 @@ const ReservationCalendar = ({
   }, [date]); // date가 변경될 때마다 다시 적용
 
   // 날짜를 yyyy-mm-dd 문자열로 변환
-  const formatDate = (date: Date | null) => (date ? date.toISOString().split('T')[0] : '');
+  const formatDate = (date: Date | null) => {
+    if (!date) return '';
+
+    // 로컬 시간대 기준으로 YYYY-MM-DD 형식 생성 (page.tsx와 동일)
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  };
 
   // 날짜 변경 핸들러
   const handleDateChange = (newDate: Date) => {
@@ -169,6 +181,9 @@ const ReservationCalendar = ({
         <Calendar
           value={date}
           onChange={(value) => handleDateChange(value as Date)}
+          onActiveStartDateChange={({ activeStartDate }) =>
+            activeStartDate && onMonthChange?.(activeStartDate)
+          }
           calendarType='gregory'
           className={cn(
             // 이 부분이 캘린더 전체 컨테이너를 제어
@@ -338,9 +353,13 @@ const ReservationCalendar = ({
                 {/* 예약 상태 뱃지들 */}
                 <div className='mt-1 flex w-full flex-1 flex-col items-center gap-5 overflow-x-hidden overflow-y-auto'>
                   {statusList.map((status) => {
-                    const count = reservations.filter((r) => r.status === status).length;
-                    return count > 0 ? (
-                      <StatusBadge key={status} status={status} count={count} />
+                    // 해당 상태의 모든 count 값을 합산
+                    const totalCount = reservations
+                      .filter((r) => r.status === status)
+                      .reduce((sum, r) => sum + (r.count || 1), 0);
+
+                    return totalCount > 0 ? (
+                      <StatusBadge key={status} status={status} count={totalCount} />
                     ) : null;
                   })}
                 </div>

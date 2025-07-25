@@ -12,6 +12,11 @@ interface SignupPayload {
   nickname: string;
 }
 
+interface ReloadAccessTokenType {
+  accessToken: string;
+  refreshToken: string;
+}
+
 export const loginApi = async ({ email, password }: LoginPayload) => {
   const res = await instance.post('/auth/login', { email, password });
   return res.data;
@@ -22,27 +27,15 @@ export const signupApi = async (data: SignupPayload) => {
   return res.data;
 };
 
-export const refreshAccessToken = async (): Promise<string> => {
-  const refreshToken = localStorage.getItem('refreshToken');
-  if (!refreshToken) {
-    throw new Error('리프레시 토큰이 없습니다');
-  }
-
+export const refreshAccessToken = async (token: string): Promise<ReloadAccessTokenType> => {
   const res = await axios.post(
-    '/auth/tokens',
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}auth/tokens`,
     {},
     {
-      baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
       headers: {
-        Authorization: `Bearer ${refreshToken}`,
+        Authorization: `Bearer ${token}`,
       },
     },
   );
-
-  const { accessToken, refreshToken: newRefreshToken } = res.data;
-
-  localStorage.setItem('accessToken', accessToken);
-  localStorage.setItem('refreshToken', newRefreshToken);
-
-  return accessToken;
+  return res.data;
 };

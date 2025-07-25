@@ -11,6 +11,7 @@ import { useState, useEffect } from 'react';
 import ReviewSection from '@/components/activities/ReviewSection';
 import type { ActivityDetail } from '@/components/activities/Activities.types';
 import { fetchActivitiesDetails } from '@/lib/api/activities';
+import { useAuthStore } from '@/store/useAuthStore';
 
 interface ClientActivitesPageProps {
   id: number;
@@ -20,7 +21,7 @@ const ClientActivitesPage = ({ id }: ClientActivitesPageProps) => {
   const screenSize = useResponsive();
   const [activity, setActivity] = useState<ActivityDetail | null>(null);
   const [loading, setLoading] = useState(false);
-
+  const { user } = useAuthStore();
   useEffect(() => {
     const loadActivity = async () => {
       try {
@@ -43,8 +44,8 @@ const ClientActivitesPage = ({ id }: ClientActivitesPageProps) => {
   if (!activity) return null; // 추후 조건부 렌더링으로 스켈레톤 적용 예정
 
   const isDesktop = screenSize === 'lg';
-  const user = JSON.parse(localStorage.getItem('user') ?? '{}');
-  const isOwner = user.id === activity.userId;
+
+  const isOwner = user?.id === activity.userId;
 
   return (
     <>
