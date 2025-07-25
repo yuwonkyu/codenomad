@@ -29,7 +29,7 @@ export const signupApi = async (data: SignupPayload) => {
 
 export const refreshAccessToken = async (token: string): Promise<ReloadAccessTokenType> => {
   const res = await axios.post(
-    '/auth/tokens',
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}auth/tokens`,
     {},
     {
       headers: {
