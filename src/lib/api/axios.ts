@@ -50,7 +50,7 @@ instance.interceptors.response.use(
           originalRequest._retry = true;
           originalRequest.headers = {
             ...originalRequest.headers,
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${res.accessToken}`,
           };
 
           return instance(originalRequest);
