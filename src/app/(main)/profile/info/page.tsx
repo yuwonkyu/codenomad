@@ -145,7 +145,7 @@ const InformationPage = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className='rounded-16 w-full max-w-376 space-y-24 bg-white p-24 md:max-w-640 md:p-32'
+      className='rounded-16 mx-auto w-full max-w-376 space-y-24 bg-white p-24 md:max-w-640 md:p-32'
     >
       {/* 모바일: 상단에 Vector.png + 내 정보 (클릭 시 onCancel) */}
       <div
