@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import StatusBadge, { StatusType } from './StatusBadge';
 import { useRouter } from 'next/navigation';
+import { formatPrice } from '@/utils/formatPrice';
 
 interface ReservationCardType {
   status: StatusType;
@@ -30,9 +31,9 @@ const ReservationCard = ({
     router.push(`/profile/reservations/review?reservationId=${reservationId}`);
   };
   return (
-    <div className='static mb-20 md:w-640'>
+    <div className='static mb-20'>
       <h1 className='text-16-b mb-12 text-gray-800 lg:hidden'>{date}</h1>
-      <div className='shadow-card h-136 lg:h-181'>
+      <div className='h-136 lg:h-181'>
         <div className='shadow-card absolute z-10 inline-block h-136 w-229 rounded-3xl bg-white p-20 md:w-360 lg:h-181 lg:w-485'>
           <StatusBadge status={status} />
           <h2 className='text-14-b lg:text-18-b mt-8 mb-4 text-shadow-gray-950 lg:mt-12 lg:mb-10'>
@@ -46,7 +47,7 @@ const ReservationCard = ({
           </div>
           <div className='flex justify-between'>
             <p className='text-14-m lg:text-16-m text-gray-400'>
-              <strong className='text-16-b lg:text-18-b text-gray-950'>&#8361; {price}</strong>{' '}
+              <strong className='text-16-b lg:text-18-b text-gray-950'>{formatPrice(price)}</strong>{' '}
               {headCount}명
             </p>
             <div className='hidden lg:block'>
@@ -72,7 +73,7 @@ const ReservationCard = ({
             </div>
           </div>
         </div>
-        <div className='relative left-40 h-full w-300 overflow-hidden rounded-3xl bg-gray-50 md:left-200 lg:left-350'>
+        <div className='shadow-card relative left-40 h-full w-300 overflow-hidden rounded-3xl bg-gray-50 md:left-200 lg:left-350'>
           <Image src={bannerUrl} fill alt='banner_image' className='object-cover' />
         </div>
       </div>
@@ -95,7 +96,7 @@ const ReservationCard = ({
           </div>
         )}
       </div>
-      <hr className='mt-30 border-1 border-t border-gray-50'></hr>
+      <hr className='mt-30 border-1 border-t border-gray-50 lg:hidden'></hr>
     </div>
   );
 };
