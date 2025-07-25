@@ -2,6 +2,7 @@ import Image from 'next/image';
 import StatusBadge, { StatusType } from './StatusBadge';
 import { useRouter } from 'next/navigation';
 import { formatPrice } from '@/utils/formatPrice';
+import ConfirmModal from '../common/ConfirmModal';
 
 interface ReservationCardType {
   status: StatusType;
@@ -28,7 +29,10 @@ const ReservationCard = ({
 }: ReservationCardType) => {
   const router = useRouter();
   const openReviewModal = () => {
-    router.push(`/profile/reservations/review?reservationId=${reservationId}`);
+    router.push(`/profile/reservations/review/${reservationId}`);
+  };
+  const openConfirmModal = () => {
+    router.push(`/profile/reservations/confirm/${reservationId}`);
   };
   return (
     <div className='static mb-20'>
@@ -60,12 +64,15 @@ const ReservationCard = ({
                 </button>
               )}
 
-              {status === 'confirmed' && (
+              {status === 'pending' && (
                 <div className='flex w-160 gap-8'>
                   <button className='text-14-m w-full rounded-lg border-1 border-gray-50 bg-white px-10 py-6 text-gray-600'>
                     예약 변경
                   </button>
-                  <button className='text-14-m w-full rounded-lg bg-gray-50 px-10 py-6 text-gray-600'>
+                  <button
+                    className='text-14-m w-full rounded-lg bg-gray-50 px-10 py-6 text-gray-600'
+                    onClick={openConfirmModal}
+                  >
                     예약 취소
                   </button>
                 </div>
@@ -87,12 +94,17 @@ const ReservationCard = ({
           </button>
         )}
 
-        {status === 'confirmed' && (
+        {status === 'pending' && (
           <div className='flex gap-8'>
             <button className='w-full rounded-lg border-1 border-gray-50 bg-white py-10 text-gray-600'>
               예약 변경
             </button>
-            <button className='w-full rounded-lg bg-gray-50 py-10 text-gray-600'>예약 취소</button>
+            <button
+              className='w-full rounded-lg bg-gray-50 py-10 text-gray-600'
+              onClick={openConfirmModal}
+            >
+              예약 취소
+            </button>
           </div>
         )}
       </div>
