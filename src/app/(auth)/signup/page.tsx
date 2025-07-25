@@ -7,6 +7,7 @@ import Input from '@/components/common/Input';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import axios from 'axios';
 import { signupApi } from '@/lib/api/auth';
+import { redirectToKakaoOAuth } from '@/lib/utils/kakao';
 
 const SignupPage = () => {
   const [email, setEmail] = useState('');
@@ -83,8 +84,12 @@ const SignupPage = () => {
     }
   };
 
+  const handleKakaoSignup = () => {
+    redirectToKakaoOAuth();
+  };
+
   return (
-    <main className='min-h-screen flex justify-center px-1 pt-60 lg:pt-100'>
+    <main className='flex min-h-screen justify-center px-1 pt-60 lg:pt-100'>
       {/* 가입 완료 모달 */}
       <ConfirmModal
         isOpen={isSuccessModalOpen}
@@ -103,7 +108,7 @@ const SignupPage = () => {
 
       <form
         onSubmit={handleSubmit}
-        className='w-full max-w-376 md:max-w-640 space-y-24 p-24 md:p-32 bg-white rounded-16'
+        className='rounded-16 w-full max-w-376 space-y-24 bg-white p-24 md:max-w-640 md:p-32'
       >
         {/* 로고 */}
         <div>
@@ -162,34 +167,37 @@ const SignupPage = () => {
         <button
           type='submit'
           disabled={!isFormValid}
-          className='w-full h-48 py-3 rounded-[12px] text-white text-16-m bg-primary-500 disabled:bg-gray-300 cursor-pointer hover:shadow-md hover:shadow-brand-blue/60 transition-all duration-200'
+          className='text-16-m bg-primary-500 hover:shadow-brand-blue/60 h-48 w-full cursor-pointer rounded-[12px] py-3 text-white transition-all duration-200 hover:shadow-md disabled:bg-gray-300'
         >
           회원가입 하기
         </button>
 
         {/* or */}
-        <div className='flex items-center justify-center w-full '>
+        <div className='flex w-full items-center justify-center'>
           <hr className='flex-grow border-t border-gray-300' />
-          <span className='px-16 text-16-m text-gray-500 whitespace-nowrap'>
+          <span className='text-16-m px-16 whitespace-nowrap text-gray-500'>
             sns 계정으로 회원가입하기
           </span>
           <hr className='flex-grow border-t border-gray-300' />
         </div>
 
-        {/* 카카오 로그인 */}
-        <button className='w-full py-12 border border-gray-300 rounded-[12px] flex justify-center items-center text-gray-600 text-16-m cursor-pointer hover:bg-gray-100 transition-colors duration-200'>
+        {/* 카카오 회원가입 */}
+        <button
+          onClick={handleKakaoSignup}
+          className='text-16-m flex w-full cursor-pointer items-center justify-center rounded-[12px] border border-gray-300 py-12 text-gray-600 transition-colors duration-200 hover:bg-gray-100'
+        >
           <img
             src='/icons/icon_kakao.svg'
             alt='kakaoicon'
-            className='text-gray-600 text-13-m w-20 h-20 mr-8'
+            className='text-13-m mr-8 h-20 w-20 text-gray-600'
           />
           카카오 회원가입
         </button>
 
         {/* 로그인 링크 */}
-        <p className='text-center text-13-m text-gray-600'>
+        <p className='text-13-m text-center text-gray-600'>
           회원이신가요?{' '}
-          <Link href='/login' className='text-gray-600 text-13-b underline'>
+          <Link href='/login' className='text-13-b text-gray-600 underline'>
             로그인하기
           </Link>
         </p>
