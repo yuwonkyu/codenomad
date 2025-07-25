@@ -20,6 +20,7 @@ interface ReserveTimesInputProps {
   onAdd: () => void;
   onRemove: (idx: number) => void;
   isDuplicateTime: () => boolean;
+  isEdit?: boolean; // edit 페이지인지 구분하는 prop
 }
 
 const ReserveTimesInput = ({
@@ -28,6 +29,7 @@ const ReserveTimesInput = ({
   onAdd,
   onRemove,
   isDuplicateTime,
+  isEdit = false, // 기본값은 false (add 페이지)
 }: ReserveTimesInputProps) => {
   const [calendarOpenIdx, setCalendarOpenIdx] = useState<number | null>(null);
 
@@ -45,9 +47,9 @@ const ReserveTimesInput = ({
                 type='text'
                 value={rt.date}
                 readOnly
-                dateIcon={idx === 0}
+                dateIcon={isEdit ? true : idx === 0} // edit 페이지에서는 모든 항목에, add 페이지에서는 첫 번째만
                 onDateIconClick={
-                  idx === 0
+                  isEdit || idx === 0
                     ? () => {
                         setCalendarOpenIdx(idx);
                       }
@@ -55,7 +57,7 @@ const ReserveTimesInput = ({
                 }
               />
               {/* 달력 아이콘 클릭 시 CalendarModal 노출 */}
-              {calendarOpenIdx === idx && idx === 0 && (
+              {calendarOpenIdx === idx && (isEdit || idx === 0) && (
                 <div
                   className='fixed inset-0 z-[9999] flex items-center justify-center bg-black/50'
                   onClick={(e) => {
