@@ -2,46 +2,25 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Dropdown from './Dropdown/Dropdown';
+import NotiBell from './Notification/NotiBell';
 import clsx from 'clsx';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const Header = () => {
-  const [user, setUser] = useState<{ nickname: string; profileImageUrl?: string } | null>(null);
   const router = useRouter();
   const pathname = usePathname();
 
   const isHome = pathname === '/';
   const isSearch = pathname.startsWith('/search');
+  const { user, clearAuthStore } = useAuthStore();
 
   // 유저 정보 로드
-  useEffect(() => {
-    const loadUser = () => {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        try {
-          setUser(JSON.parse(storedUser));
-        } catch {
-          setUser(null);
-        }
-      } else {
-        setUser(null);
-      }
-    };
-
-    loadUser();
-    window.addEventListener('user-update', loadUser);
-    return () => {
-      window.removeEventListener('user-update', loadUser);
-    };
-  }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
-    window.dispatchEvent(new Event('user-update')); // 헤더 갱신을 위해 이벤트 발생
+    clearAuthStore();
+    useAuthStore.persist.clearStorage();
     router.push('/');
   };
 
@@ -65,13 +44,7 @@ const Header = () => {
         {user ? (
           <div className='relative flex items-center gap-4'>
             {/* 알림 아이콘 */}
-            <Image
-              src={hasNewNotification ? '/icons/icon_bell_on.svg' : '/icons/icon_bell_off.svg'}
-              alt='알림'
-              width={24}
-              height={24}
-              className='cursor-pointer text-gray-600 transition-opacity duration-200 hover:opacity-80'
-            />
+            <NotiBell />
             {/* 구분선 */}
             <div className='h-14 w-px bg-gray-200' />
 

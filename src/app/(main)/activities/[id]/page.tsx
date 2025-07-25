@@ -1,13 +1,14 @@
-import ClientActivitesPage from '@/components/activities/ClientActivitesPage';
+import ClientActivitiesPage from '@/components/activities/ClientActivitiesPage';
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
 const ActivityPage = async ({ params }: Props) => {
-  const { id } = await params;
+  const { id: idStr } = await params;
+  const id = Number(idStr);
 
-  return <ClientActivitesPage id={id} />;
+  return <ClientActivitiesPage id={id} />;
 };
 
 export default ActivityPage;

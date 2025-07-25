@@ -2,10 +2,35 @@
 import Badge from '@/components/reservationList/Badge';
 import ReservationCard from '@/components/reservationList/ReservationCard';
 import { StatusType } from '@/components/reservationList/StatusBadge';
-import { useState } from 'react';
+import { getReservationList, getReservationListStatus } from '@/lib/api/profile/reservationList';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+
+interface reservationsType {
+  activity: {
+    bannerImageUrl: string;
+    id: number;
+    title: string;
+  };
+  createdAt: string;
+  date: string;
+  endTime: string;
+  headCount: number;
+  id: number;
+  reviewSubmitted: boolean;
+  scheduleId: number;
+  startTime: string;
+  status: StatusType;
+  teamId: string;
+  totalPrice: number;
+  updatedAt: string;
+  userId: number;
+}
 
 const Page = () => {
   const [filter, setFilter] = useState<StatusType | null>(null);
+  const [reservationList, setReservationList] = useState([]);
   const statusList: { text: string; value: StatusType }[] = [
     { text: '예약 신청', value: 'pending' },
     { text: '예약 취소', value: 'canceled' },
@@ -13,10 +38,30 @@ const Page = () => {
     { text: '예약 거절', value: 'declined' },
     { text: '체험 완료', value: 'completed' },
   ];
+  useEffect(() => {
+    const getData = async () => {
+      const data = await getReservationList();
+      console.log(data.reservations);
+
+      setReservationList(data.reservations);
+    };
+    getData();
+  }, []);
+
+  useEffect(() => {
+    const getFilteredData = async (status: StatusType) => {
+      const data = await getReservationListStatus(status);
+      setReservationList(data.reservations);
+    };
+    if (filter) {
+      getFilteredData(filter);
+    }
+  }, [filter]);
   return (
-    <div className='flex w-full flex-col p-24'>
+    <div className='mx-auto flex w-full flex-col justify-center p-24'>
       <h1 className='text-18-b text-gray-950'>예약 내역</h1>
       <h2 className='text-14-m my-10 text-gray-500'>예약 내역을 변경 및 취소 할 수 있습니다.</h2>
+
       <div className='scrollbar-hide overflow-x-scroll'>
         <div className='my-14 flex w-max grow-0 gap-8'>
           {statusList.map((item) => {
@@ -32,33 +77,40 @@ const Page = () => {
           })}
         </div>
       </div>
-      <ReservationCard
-        status='pending'
-        title='title'
-        date='0000.00.00'
-        startTime='11:00'
-        endTime='12:00'
-        price={35000}
-        headCount={30}
-      />
-      <ReservationCard
-        status='completed'
-        title='title'
-        date='0000.00.00'
-        startTime='11:00'
-        endTime='12:00'
-        price={35000}
-        headCount={30}
-      />
-      <ReservationCard
-        status='confirmed'
-        title='title'
-        date='0000.00.00'
-        startTime='11:00'
-        endTime='12:00'
-        price={35000}
-        headCount={30}
-      />
+
+      {reservationList.length === 0 ? (
+        filter === null ? (
+          <div className='mt-40 flex flex-col items-center justify-center'>
+            <div className='flex justify-center'>
+              <Image src={'/imgs/earth.svg'} width={122} height={122} alt='우는 지구 이미지' />
+            </div>
+            <p className='text-18-m my-30 text-center text-gray-600'>아직 예약한 체험이 없어요</p>
+            <Link
+              href={'/'}
+              className='bg-primary-500 text-16-b h-54 w-182 grow-0 rounded-2xl px-63 py-17 text-white'
+            >
+              둘러보기
+            </Link>
+          </div>
+        ) : (
+          <p className='mt-40 text-center text-gray-500'>해당 상태의 예약이 없습니다.</p>
+        )
+      ) : (
+        reservationList.map((item: reservationsType) => (
+          <ReservationCard
+            key={item.id}
+            status={item.status}
+            title={item?.activity?.title}
+            startTime={item.startTime}
+            date={item.date}
+            endTime={item.endTime}
+            price={item.totalPrice}
+            headCount={item.headCount}
+            bannerUrl={item.activity.bannerImageUrl}
+            reservationId={item.id}
+          />
+        ))
+      )}
     </div>
   );
 };

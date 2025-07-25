@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useResponsive } from '@/hooks/useResponsive';
-import ConfirmModal from '@/components/common/ConfirmModal';
 import TabletModal from './TabletModal';
 import MobileModal from './MobileModal';
 import type { ModalTriggerProps } from '@/components/activities/Activities.types';
@@ -14,10 +13,10 @@ const ModalTrigger = ({
   onChangeSchedule,
   headCount,
   onChangeHeadCount,
+  onReservationSubmit,
   onReservationReset,
 }: ModalTriggerProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const breakpoint = useResponsive();
 
   const price = formatPrice(activityData.price);
@@ -29,8 +28,11 @@ const ModalTrigger = ({
 
   const handleCloseModal = () => {
     setIsOpen(false);
-    // 모달 중간에 닫을 때 예약 상태 초기화
-    onReservationReset?.();
+
+    const isNoReservationSelected = scheduleId === null || headCount < 1;
+    if (isNoReservationSelected) {
+      onReservationReset?.();
+    }
   };
 
   const handleModalConfirm = () => {
@@ -40,25 +42,12 @@ const ModalTrigger = ({
 
   const handleTriggerReservation = () => {
     if (selectedSchedule) {
-      console.log('ModalTrigger 예약 확정:', {
+      onReservationSubmit({
         scheduleId: selectedSchedule.id,
-        headCount: headCount,
+        headCount,
       });
-      setIsConfirmModalOpen(true);
     } else {
-      handleOpenModal();
-    }
-  };
-
-  const handleConfirmModalClose = () => {
-    setIsConfirmModalOpen(false);
-    onReservationReset?.(); // 상태 초기화
-    if (selectedSchedule) {
-      console.log('예약 완료:', {
-        scheduleId: selectedSchedule.id,
-        headCount: headCount,
-      });
-      // TODO: 실제 예약 API 호출
+      handleOpenModal(); // 날짜 안 골랐으면 모달 띄움
     }
   };
 
@@ -116,12 +105,6 @@ const ModalTrigger = ({
           onChangeHeadCount={onChangeHeadCount}
         />
       )}
-
-      <ConfirmModal
-        message='예약이 완료되었습니다!'
-        isOpen={isConfirmModalOpen}
-        onClose={handleConfirmModalClose}
-      />
     </>,
     document.body,
   );

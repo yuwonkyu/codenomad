@@ -10,7 +10,7 @@ const menuItems = [
   { icon: '/icons/icon_user.svg', label: '내 정보', href: '/profile/info' },
   { icon: '/icons/icon_list.svg', label: '예약내역', href: '/profile/reservations' },
   { icon: '/icons/icon_setting.svg', label: '내 체험 관리', href: '/profile/myExperiences' },
-  { icon: '/icons/icon_calendar.svg', label: '예약 현황', href: '/profile/reservationStatus' },
+  { icon: '/icons/icon_calendar.svg', label: '예약 현황', href: '/profile/myActivitiesStatus' },
 ];
 
 interface ProfileMenuProps {
@@ -58,10 +58,10 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
   };
 
   return (
-    <div className='shadow-custom-5 mx-auto flex w-[327px] flex-col items-center rounded-2xl bg-white px-6 py-8 md:w-[178px] md:px-4 md:py-6 lg:w-[290px] lg:px-8 lg:py-10'>
+    <div className='shadow-custom-5 mx-auto mt-20 flex h-453 w-327 flex-col items-center rounded-2xl bg-white px-6 py-8 md:w-[178px] md:px-4 md:py-6 lg:w-[290px] lg:px-8 lg:py-10'>
       {/* 프로필 이미지 */}
       <div className='relative mb-8'>
-        <div className='flex h-[120px] w-[120px] items-center justify-center overflow-hidden rounded-full bg-blue-100'>
+        <div className='mt-30 mb-20 flex h-[120px] w-[120px] items-center justify-center overflow-hidden rounded-full bg-blue-100'>
           <Image
             src={imageUrl}
             alt='프로필'
@@ -73,7 +73,7 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
         </div>
         {/* 연필 아이콘 */}
         <button
-          className='shadow-custom-5 absolute right-2 bottom-2 rounded-full border border-gray-200 bg-gray-300 p-1'
+          className='shadow-custom-5 absolute right-2 bottom-2 mb-15 rounded-full border border-gray-200 bg-gray-300 p-1'
           aria-label='프로필 수정'
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}
@@ -105,7 +105,7 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
         )}
       </div>
       {/* 메뉴 리스트 */}
-      <ul className='flex w-full flex-col gap-6'>
+      <ul className='flex w-full flex-col gap-10'>
         {menuItems.map((item) => {
           const isActive = pathname === item.href;
           if (onMenuClick) {
