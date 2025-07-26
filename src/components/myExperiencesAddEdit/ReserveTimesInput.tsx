@@ -69,23 +69,31 @@ const ReserveTimesInput = ({
       {/* 라벨: 테블릿 이상에서만 보임 */}
       <div className='text-16-m mb-8 hidden items-center md:mb-10 md:flex'>
         <span className='lg:w-356.79 w-360'>날짜</span>
-        <span className='lg:w-134.21 w-145 text-start'>시작 시간</span>
+        <span className='lg:w-134.21 w-145 text-start md:mx-0 lg:ml-16'>시작 시간</span>
         <span className='w-122 text-start lg:w-122'>종료 시간</span>
       </div>
       {reserveTimes.map((rt, idx) => (
-        <div key={idx} className='mb-18'>
-          {/* 모바일: 세로, 테블릿 이상: 가로 */}
+        <div key={idx} className='mb-16 md:mb-20'>
+          {/* 구분선: "추가 인풋"과 "첫 번째 실제 일정" 사이에만 표시 */}
+          {idx === 1 && (
+            <>
+              {/* 모바일 */}
+              <div className='my-16 h-1 w-327 bg-gray-100 md:hidden' />
+              {/* 테블릿 이상 */}
+              <div className='my-20 hidden h-1 w-684 bg-gray-100 md:block' />
+            </>
+          )}
           <div className='flex flex-col items-center gap-4 md:flex-row md:gap-8'>
             {/* 날짜 인풋 */}
             <div className='w-327 md:w-344 lg:w-360'>
               <Input
-                label='' // 모바일에서는 label 숨김
+                label=''
                 placeholder='yyyy/mm/dd'
                 className='text-16-m mb-10 w-full md:mb-0'
                 type='text'
                 value={rt.date}
                 readOnly
-                dateIcon={isEdit ? true : idx === 0} // edit 페이지에서는 모든 항목에, add 페이지에서는 첫 번째만
+                dateIcon={isEdit ? true : idx === 0}
                 onDateIconClick={isEdit || idx === 0 ? () => setCalendarOpenIdx(idx) : undefined}
               />
               {/* 달력 아이콘 클릭 시 CalendarModal 노출 */}
@@ -231,14 +239,16 @@ const ReserveTimesInput = ({
           </div>
           {/* 유효성 검사 메시지 */}
           {!isValidTime(rt.start, rt.end) && (
-            <div className='text-8 ml-8 text-gray-400'>
+            <div className='ml-8 text-sm text-gray-400'>
               종료 시간은 시작 시간보다 늦거나, 다음날로 간주됩니다.
             </div>
           )}
         </div>
       ))}
       {isDuplicateTime() && (
-        <div className='text-8 text-red ml-8'>같은 시간대에는 1개의 체험만 생성할 수 있습니다.</div>
+        <div className='text-red ml-8 text-sm'>
+          같은 시간대에는 1개의 체험만 생성할 수 있습니다.
+        </div>
       )}
     </div>
   );
