@@ -17,38 +17,37 @@ export const DEFAULT_PLACE: Place = {
 };
 
 export const fetchKakaoPlace = async (query: string): Promise<Place | null> => {
-  const encodedQuery = encodeURIComponent(query.trim());
+  const trimmedQuery = query.replace(/\s\d+(-\d+)?$/g, '').trim();
 
-  try {
-    const res = await kakaoMapsClient.get(DEFAULT_URL + encodedQuery);
-    const docs = res.data.documents;
+  const trySearch = async (q: string): Promise<Place | null> => {
+    const encodedQuery = encodeURIComponent(q.trim());
+    try {
+      const res = await kakaoMapsClient.get(DEFAULT_URL + encodedQuery);
+      const docs = res.data.documents;
 
-    if (!Array.isArray(docs) || docs.length === 0) {
-      console.warn('⚠️ 주소 검색 결과 없음');
-      return DEFAULT_PLACE;
+      if (!Array.isArray(docs) || docs.length === 0) return null;
+
+      const found = docs[0];
+      const target = found.road_address ?? found.address;
+      if (!target) return null;
+
+      const lat = Number(target.y);
+      const lng = Number(target.x);
+      const title = target.address_name ?? null;
+
+      return {
+        lat,
+        lng,
+        title,
+        url: `https://map.kakao.com/link/map/${encodeURIComponent(title)},${lat},${lng}`,
+      };
+    } catch {
+      return null;
     }
+  };
+  const result = await trySearch(query);
+  if (result) return result;
 
-    const found = docs[0];
-    const target = found.road_address ?? found.address;
-    console.log(found);
-
-    if (!target) {
-      console.warn('⚠️ 유효한 주소 정보 없음');
-      return DEFAULT_PLACE;
-    }
-
-    const lat = Number(target.y);
-    const lng = Number(target.x);
-    const title = target.address_name ?? null;
-
-    return {
-      lat,
-      lng,
-      title,
-      url: `https://map.kakao.com/link/map/${encodeURIComponent(title)},${lat},${lng}`,
-    };
-  } catch (error) {
-    console.error('❌ 주소 검색 요청 실패:', error);
-    return DEFAULT_PLACE;
-  }
+  const fallbackResult = await trySearch(trimmedQuery);
+  return fallbackResult ?? DEFAULT_PLACE;
 };
