@@ -81,7 +81,7 @@ const ClientActivitiesPage = ({ id }: ClientActivitiesPageProps) => {
           <section className='flex flex-col gap-8 border-b-1 border-gray-100'>
             <h2 className='text-18-b text-gray-950'>오시는 길</h2>
             <p className='text-[0.875rem] font-semibold text-gray-950'>{activity.address}</p>
-            <MapView address={activity.address} />
+            <MapView address={activity.address} category={activity.category} />
           </section>
 
           <ReviewSection activityId={id} />
