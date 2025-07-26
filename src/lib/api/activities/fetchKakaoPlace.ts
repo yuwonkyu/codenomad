@@ -8,10 +8,11 @@ export interface Place {
 }
 
 const DEFAULT_URL = '/search/address.json?query=';
-const DEFAULT_PLACE: Place = {
+
+export const DEFAULT_PLACE: Place = {
   lat: 37.566826, // 서울시청
   lng: 126.9786567,
-  title: '서울 중구 세종대로 110',
+  title: '주소를 불러오지 못했습니다.',
   url: 'https://map.kakao.com/link/map/서울 중구 세종대로 110,37.566826,126.9786567',
 };
 
