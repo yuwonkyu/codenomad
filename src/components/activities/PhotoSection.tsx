@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { clsx } from 'clsx';
 import type { SubImage } from './Activities.types';
+import SafeImage from '@/components/common/SafeImage';
 
 interface PhotoSectionProps {
   bannerImages: string;
@@ -9,15 +10,19 @@ interface PhotoSectionProps {
 
 const PhotoSection = ({ bannerImages, subImages }: PhotoSectionProps) => {
   const renderImageSection = () => {
-    const images = subImages.slice(0, 4);
-    const length = images.length;
+    const length = subImages.length;
 
     if (length === 0) return null;
 
     if (length === 1) {
       return (
         <figure className='relative h-full w-full overflow-hidden'>
-          <Image src={images[0].imageUrl} alt='서브 이미지 1' fill className='object-cover' />
+          <SafeImage
+            src={subImages[0].imageUrl}
+            alt='서브 이미지 1'
+            fill
+            className='object-cover'
+          />
         </figure>
       );
     }
@@ -30,7 +35,7 @@ const PhotoSection = ({ bannerImages, subImages }: PhotoSectionProps) => {
 
     return (
       <div className={gridClass}>
-        {images.map((img, index) => (
+        {subImages.map((img, index) => (
           <figure
             key={img.id}
             className={clsx(
@@ -38,7 +43,7 @@ const PhotoSection = ({ bannerImages, subImages }: PhotoSectionProps) => {
               length === 3 && index === 2 && 'col-span-2',
             )}
           >
-            <Image
+            <SafeImage
               src={img.imageUrl}
               alt={`서브 이미지 ${index + 1}`}
               fill
@@ -53,7 +58,7 @@ const PhotoSection = ({ bannerImages, subImages }: PhotoSectionProps) => {
   return (
     <section className='flex h-245 w-auto items-center justify-center gap-12 overflow-hidden rounded-3xl sm:h-400 lg:h-600'>
       <figure className='relative h-full w-full overflow-hidden'>
-        <Image className='object-cover' src={bannerImages} alt='메인 이미지' fill />
+        <SafeImage className='object-cover' src={bannerImages} alt='메인 이미지' fill />
       </figure>
       {renderImageSection()}
     </section>
