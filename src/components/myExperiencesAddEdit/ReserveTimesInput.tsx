@@ -23,6 +23,36 @@ interface ReserveTimesInputProps {
   isEdit?: boolean; // edit 페이지인지 구분하는 prop
 }
 
+// 시간 문자열을 분(minute) 단위로 변환
+const timeToMinutes = (time: string) => {
+  const [h, m] = time.split(':').map(Number);
+  return h * 60 + m;
+};
+
+// 유효성 검사 함수
+const isValidTime = (start: string, end: string) => {
+  if (!start || !end) return true;
+  const startMin = timeToMinutes(start);
+  const endMin = timeToMinutes(end);
+  // 종료가 시작보다 늦으면 true (같으면 false)
+  return endMin > startMin;
+};
+
+// 다음날 여부 판단 함수
+const isNextDay = (start: string, end: string) => {
+  if (!start || !end) return false;
+  const startMin = timeToMinutes(start);
+  const endMin = timeToMinutes(end);
+  // 종료가 시작보다 빠르면 다음날
+  return endMin <= startMin;
+};
+
+const newReserveTime: ReserveTime = {
+  date: '',
+  start: '00:00',
+  end: '01:00',
+};
+
 const ReserveTimesInput = ({
   reserveTimes,
   onChange,
@@ -36,25 +66,27 @@ const ReserveTimesInput = ({
   return (
     <div className='mb-30'>
       <div className='text-16-b mb-18'>예약 가능한 시간대</div>
+      {/* 라벨: 테블릿 이상에서만 보임 */}
+      <div className='text-16-m mb-8 hidden items-center md:mb-10 md:flex'>
+        <span className='lg:w-356.79 w-360'>날짜</span>
+        <span className='lg:w-134.21 w-145 text-start'>시작 시간</span>
+        <span className='w-122 text-start lg:w-122'>종료 시간</span>
+      </div>
       {reserveTimes.map((rt, idx) => (
         <div key={idx} className='mb-18'>
-          <div className='flex flex-col gap-0 md:flex-row md:items-end md:gap-0'>
-            <div className='relative flex flex-1 flex-col md:mr-14 md:w-344 md:flex-row'>
+          {/* 모바일: 세로, 테블릿 이상: 가로 */}
+          <div className='flex flex-col items-center gap-4 md:flex-row md:gap-8'>
+            {/* 날짜 인풋 */}
+            <div className='w-327 md:w-344 lg:w-360'>
               <Input
-                label={idx === 0 ? '날짜' : ''}
+                label='' // 모바일에서는 label 숨김
                 placeholder='yyyy/mm/dd'
                 className='text-16-m mb-10 w-full md:mb-0'
                 type='text'
                 value={rt.date}
                 readOnly
                 dateIcon={isEdit ? true : idx === 0} // edit 페이지에서는 모든 항목에, add 페이지에서는 첫 번째만
-                onDateIconClick={
-                  isEdit || idx === 0
-                    ? () => {
-                        setCalendarOpenIdx(idx);
-                      }
-                    : undefined
-                }
+                onDateIconClick={isEdit || idx === 0 ? () => setCalendarOpenIdx(idx) : undefined}
               />
               {/* 달력 아이콘 클릭 시 CalendarModal 노출 */}
               {calendarOpenIdx === idx && (isEdit || idx === 0) && (
@@ -105,32 +137,26 @@ const ReserveTimesInput = ({
                 </div>
               )}
             </div>
-            {/* 시간 인풋/버튼 */}
-            <div className='mt-0 flex flex-1 flex-row items-center'>
-              {/* 시작 시간 */}
-              <div className='w-128.5 md:w-122'>
+            {/* 시작시간,종료시간 인풋 */}
+            <div className='flex items-center gap-14 md:gap-10'>
+              {/* 시작 시간 인풋 */}
+              <div className='w-124.5 md:w-122'>
                 <Input
-                  label={
-                    idx === 0 ? <span className='text-16-m hidden md:block'>시작 시간</span> : ''
-                  }
+                  label='' // 모바일에서는 label 숨김
                   as='select'
                   options={TIME_OPTIONS}
                   className='w-full'
-                  value={rt.start}
+                  value={rt.start ?? '00:00'}
                   onChange={(e) => onChange(idx, 'start', e.target.value)}
                   hideLabelOnMobile
                 />
               </div>
               {/* - 구분선 */}
-              <div className='text-20-b mx-10 flex w-8 items-center justify-center text-gray-800 md:mx-9 md:mt-25'>
-                -
-              </div>
-              {/* 종료 시간 */}
-              <div className='w-128.5 md:w-122'>
+              <div className='text-20-b w-8 text-gray-800'>-</div>
+              {/* 종료 시간 인풋 */}
+              <div className='w-124.5 md:w-122'>
                 <Input
-                  label={
-                    idx === 0 ? <span className='text-16-m hidden md:block'>종료 시간</span> : ''
-                  }
+                  label='' // 모바일에서는 label 숨김
                   as='select'
                   options={TIME_OPTIONS}
                   className='w-full'
@@ -145,7 +171,7 @@ const ReserveTimesInput = ({
                   <>
                     <button
                       type='button'
-                      className='ml-14 flex-shrink-0 cursor-pointer md:hidden'
+                      className='flex-shrink-0 cursor-pointer md:hidden'
                       onClick={onAdd}
                     >
                       <Image
@@ -158,7 +184,7 @@ const ReserveTimesInput = ({
                     </button>
                     <button
                       type='button'
-                      className='mt-25 ml-14 hidden flex-shrink-0 cursor-pointer items-center justify-center md:flex'
+                      className='hidden flex-shrink-0 cursor-pointer items-center justify-center md:flex'
                       onClick={onAdd}
                     >
                       <Image
@@ -174,21 +200,20 @@ const ReserveTimesInput = ({
                   <>
                     <button
                       type='button'
-                      className='ml-14 flex size-28 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-gray-50 md:hidden'
+                      className='flex flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-gray-50 md:hidden'
                       onClick={() => onRemove(idx)}
                     >
                       <Image
                         src='/icons/icon_gray_minus.svg'
                         alt='제거'
-                        width={24}
-                        height={24}
+                        width={28}
+                        height={28}
                         className='cursor-pointer'
                       />
                     </button>
                     <button
                       type='button'
-                      className='ml-14 hidden flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-gray-50 md:flex'
-                      style={{ width: 42, height: 42 }}
+                      className='hidden flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-gray-50 md:flex'
                       onClick={() => onRemove(idx)}
                     >
                       <Image
@@ -204,14 +229,16 @@ const ReserveTimesInput = ({
               </div>
             </div>
           </div>
-          {/* 구분선: 첫 번째와 두 번째 행 사이에만 표시 */}
-          {idx === 0 && reserveTimes.length > 1 && <hr className='my-20 border-gray-100' />}
+          {/* 유효성 검사 메시지 */}
+          {!isValidTime(rt.start, rt.end) && (
+            <div className='text-8 ml-8 text-gray-400'>
+              종료 시간은 시작 시간보다 늦거나, 다음날로 간주됩니다.
+            </div>
+          )}
         </div>
       ))}
       {isDuplicateTime() && (
-        <div className='text-12-m text-red ml-8'>
-          같은 시간대에는 1개의 체험만 생성할 수 있습니다.
-        </div>
+        <div className='text-8 text-red ml-8'>같은 시간대에는 1개의 체험만 생성할 수 있습니다.</div>
       )}
     </div>
   );
