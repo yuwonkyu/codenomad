@@ -16,7 +16,7 @@ const PhotoSection = ({ bannerImages, subImages }: PhotoSectionProps) => {
 
     if (length === 1) {
       return (
-        <figure className='relative h-full w-full overflow-hidden rounded-r-3xl'>
+        <figure className='relative h-full w-full overflow-hidden'>
           <Image src={images[0].imageUrl} alt='서브 이미지 1' fill className='object-cover' />
         </figure>
       );
@@ -35,12 +35,7 @@ const PhotoSection = ({ bannerImages, subImages }: PhotoSectionProps) => {
             key={img.id}
             className={clsx(
               'relative h-full overflow-hidden',
-              length === 2 && index === 0 && 'rounded-tr-3xl',
-              length === 2 && index === 1 && 'rounded-br-3xl',
-              length === 3 && index === 1 && 'rounded-tr-3xl',
-              length === 3 && index === 2 && 'col-span-2 rounded-br-3xl',
-              length === 4 && index === 1 && 'rounded-tr-3xl',
-              length === 4 && index === 3 && 'rounded-br-3xl',
+              length === 3 && index === 2 && 'col-span-2',
             )}
           >
             <Image
@@ -56,8 +51,8 @@ const PhotoSection = ({ bannerImages, subImages }: PhotoSectionProps) => {
   };
 
   return (
-    <section className='flex h-245 w-auto items-center justify-center gap-12 sm:h-400 lg:h-600'>
-      <figure className='relative h-full w-full overflow-hidden rounded-l-3xl'>
+    <section className='flex h-245 w-auto items-center justify-center gap-12 overflow-hidden rounded-3xl sm:h-400 lg:h-600'>
+      <figure className='relative h-full w-full overflow-hidden'>
         <Image className='object-cover' src={bannerImages} alt='메인 이미지' fill />
       </figure>
       {renderImageSection()}
