@@ -8,6 +8,7 @@ import ConfirmModal from '@/components/common/ConfirmModal';
 import { useRouter } from 'next/navigation';
 import { loginApi } from '@/lib/api/auth';
 import { useAuthStore } from '@/store/useAuthStore';
+import { redirectToKakaoOAuth } from '@/lib/utils/kakao';
 
 const LoginPage = () => {
   const { setAccessToken, setRefreshToken, setUser } = useAuthStore();
@@ -44,7 +45,6 @@ const LoginPage = () => {
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
       setUser(user);
-      window.dispatchEvent(new Event('user-update'));
 
       // 성공 시 이동, 에러 시 모달
       router.push('/');
@@ -59,6 +59,10 @@ const LoginPage = () => {
 
       setIsModalOpen(true); // 모달 오픈
     }
+  };
+
+  const handleKakaoLogin = () => {
+    redirectToKakaoOAuth();
   };
 
   return (
@@ -125,7 +129,10 @@ const LoginPage = () => {
         </div>
 
         {/* 카카오 로그인 */}
-        <button className='text-16-m flex h-48 w-full cursor-pointer items-center justify-center rounded-[16px] border border-gray-300 text-gray-600 transition-colors duration-200 hover:bg-gray-100'>
+        <button
+          onClick={handleKakaoLogin}
+          className='text-16-m flex h-48 w-full cursor-pointer items-center justify-center rounded-[16px] border border-gray-300 text-gray-600 transition-colors duration-200 hover:bg-gray-100'
+        >
           <img src='/icons/icon_kakao.svg' alt='kakaoicon' className='mr-8 h-20 w-20' />
           카카오 로그인
         </button>
