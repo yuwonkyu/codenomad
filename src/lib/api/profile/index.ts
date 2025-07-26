@@ -15,6 +15,7 @@ export interface UpdateProfileRequest {
   nickname?: string;
   email?: string;
   password?: string;
+  profileImageUrl?: string;
 }
 
 // 사용자 정보 조회

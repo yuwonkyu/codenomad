@@ -3,8 +3,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import React, { useState, useRef } from 'react';
-import { uploadProfileImage, getUserProfile } from '@/lib/api/profile';
+import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
+import { uploadProfileImage, getUserProfile, updateUserProfile } from '@/lib/api/profile';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const menuItems = [
   { icon: '/icons/icon_user.svg', label: '내 정보', href: '/profile/info' },
@@ -23,9 +24,10 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>('/icons/profile_default.svg');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { setUserProfileImage, user } = useAuthStore();
 
   // 최초 렌더링 시 프로필 이미지 불러오기
-  React.useEffect(() => {
+  useEffect(() => {
     (async () => {
       try {
         const profile = await getUserProfile();
@@ -37,19 +39,19 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
   }, []);
 
   // 이미지 업로드 핸들러
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setIsUploading(true);
     try {
       const updated = await uploadProfileImage(file);
-      // 업로드 후에만 캐시 버스터 쿼리 추가
       const updatedUrl = updated.profileImageUrl
         ? updated.profileImageUrl + '?t=' + Date.now()
         : '/icons/profile_default.svg';
-      setImageUrl(updatedUrl);
+      setUserProfileImage(updatedUrl);
+      updateUserProfile({ profileImageUrl: updatedUrl });
       alert('프로필 이미지가 변경되었습니다!');
-    } catch {
+    } catch (error) {
       alert('이미지 업로드에 실패했습니다.');
     } finally {
       setIsUploading(false);
@@ -63,12 +65,12 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
       <div className='relative mb-8'>
         <div className='mt-30 mb-20 flex h-[120px] w-[120px] items-center justify-center overflow-hidden rounded-full bg-blue-100'>
           <Image
-            src={imageUrl}
+            src={user?.profileImageUrl || '/icons/profile_default.svg'}
             alt='프로필'
             width={120}
             height={120}
             style={{ objectFit: 'cover' }}
-            key={imageUrl}
+            key={user?.profileImageUrl}
           />
         </div>
         {/* 연필 아이콘 */}
