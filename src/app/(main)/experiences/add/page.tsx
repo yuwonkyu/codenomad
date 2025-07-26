@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import TitleInput from '@/components/myExperiencesAddEdit/TitleInput';
 import CategoryInput from '@/components/myExperiencesAddEdit/CategoryInput';
@@ -12,11 +13,7 @@ import IntroImagesInput from '@/components/myExperiencesAddEdit/IntroImagesInput
 import ReserveTimesInput from '@/components/myExperiencesAddEdit/ReserveTimesInput';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import CommonModal from '@/components/common/CancelModal';
-import {
-  createExperience,
-  uploadImage,
-  CreateExperienceRequest,
-} from '@/lib/api/experiences/experiences';
+import { createExperience, uploadImage } from '@/lib/api/experiences/experiences';
 
 const categoryOptions = [
   { value: '문화 · 예술', label: '문화 · 예술' },
@@ -53,7 +50,7 @@ const ExperienceAddPage = () => {
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  // const [submitError, setSubmitError] = useState<string | null>(null); // 미사용 변수 제거
   const [lastSubmitTime, setLastSubmitTime] = useState<number>(0);
   const router = useRouter();
 
@@ -88,7 +85,7 @@ const ExperienceAddPage = () => {
   });
 
   // 변경사항 비교
-  const hasChanged = () => {
+  const hasChanged = useCallback(() => {
     if (isSubmitting) return false;
     return (
       title !== initialValues.current.title ||
@@ -101,7 +98,18 @@ const ExperienceAddPage = () => {
       JSON.stringify(introPreviews) !== JSON.stringify(initialValues.current.introPreviews) ||
       JSON.stringify(reserveTimes) !== initialValues.current.reserveTimes
     );
-  };
+  }, [
+    isSubmitting,
+    title,
+    category,
+    desc,
+    price,
+    address,
+    detailAddress,
+    bannerPreview,
+    introPreviews,
+    reserveTimes,
+  ]);
 
   // 등록하기
   const handleSubmit = async (e: React.FormEvent) => {
@@ -139,7 +147,7 @@ const ExperienceAddPage = () => {
     }
 
     setIsSubmitting(true);
-    setSubmitError(null);
+    // setSubmitError(null); // 미사용 변수 제거
 
     try {
       // 1. 배너 이미지 업로드
@@ -149,7 +157,7 @@ const ExperienceAddPage = () => {
       const subImageUploads = await Promise.all(introImages.map((image) => uploadImage(image)));
 
       // 3. 체험 등록 데이터 준비
-      const experienceData: CreateExperienceRequest = {
+      const experienceData = {
         title,
         category,
         description: desc,
@@ -171,7 +179,7 @@ const ExperienceAddPage = () => {
       setModalOpen(true);
     } catch (error) {
       console.error('체험 등록 실패:', error);
-      setSubmitError(error instanceof Error ? error.message : '체험 등록에 실패했습니다.');
+      // setSubmitError(error instanceof Error ? error.message : '체험 등록에 실패했습니다.'); // 미사용 변수 제거
       alert('체험 등록에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsSubmitting(false);
@@ -196,7 +204,7 @@ const ExperienceAddPage = () => {
         e.returnValue = '';
       }
     },
-    [title, category, desc, price, address, bannerPreview, introPreviews, reserveTimes],
+    [hasChanged],
   );
 
   useEffect(() => {
@@ -254,7 +262,7 @@ const ExperienceAddPage = () => {
             onClick={handleBackClick}
             aria-label='뒤로가기'
           >
-            <img src='/icons/icon_back.svg' alt='뒤로가기' width={24} height={24} />
+            <Image src='/icons/icon_back.svg' alt='뒤로가기' width={24} height={24} />
           </button>
           <h2 className='text-18-b'>내 체험 등록</h2>
         </div>
@@ -328,7 +336,15 @@ const ExperienceAddPage = () => {
       {/* 나가기 확인 모달 */}
       <CommonModal
         open={leaveModalOpen}
-        icon={<img src='/icons/icon_alert.svg' alt='경고' className='h-full w-full' />}
+        icon={
+          <Image
+            src='/icons/icon_alert.svg'
+            alt='경고'
+            width={24}
+            height={24}
+            className='h-full w-full'
+          />
+        }
         text={'저장되지 않았습니다.<br />정말 뒤로 가시겠습니까?'}
         cancelText='아니오'
         confirmText='네'
