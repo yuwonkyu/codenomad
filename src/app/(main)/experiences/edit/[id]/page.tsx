@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import isEqual from 'lodash/isEqual';
 import TitleInput from '@/components/myExperiencesAddEdit/TitleInput';
@@ -13,8 +14,11 @@ import IntroImagesInput from '@/components/myExperiencesAddEdit/IntroImagesInput
 import ReserveTimesInput from '@/components/myExperiencesAddEdit/ReserveTimesInput';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import CommonModal from '@/components/common/CancelModal';
-import instance from '@/lib/api/axios';
-import { uploadImage } from '@/lib/api/experiences';
+import {
+  uploadImage,
+  updateExperience,
+  getExperienceDetail,
+} from '@/lib/api/experiences/experiences';
 import { notFound } from 'next/navigation';
 
 const categoryOptions = [
@@ -105,8 +109,7 @@ const ExperienceEditPage = () => {
         setLoading(true);
         setError(null);
 
-        const response = await instance.get(`/activities/${experienceId}`);
-        const data: ExperienceData = response.data;
+        const data: ExperienceData = await getExperienceDetail(experienceId);
 
         // subImages에서 imageUrl만 추출
         const subImageUrls = data.subImages?.map((img) => img.imageUrl) || [];
@@ -147,10 +150,18 @@ const ExperienceEditPage = () => {
           introPreviews: subImageUrls,
           reserveTimes: reserveTimesWithEmptyFirst,
         });
-      } catch (err: any) {
-        console.error('체험 데이터 불러오기 실패:', err);
-        if (err.response?.status === 404) {
-          notFound();
+      } catch (error: unknown) {
+        console.error('체험 데이터 불러오기 실패:', error);
+        // 타입가드로 error가 AxiosError 타입인지 확인
+        if (
+          typeof error === 'object' &&
+          error !== null &&
+          'response' in error &&
+          typeof (error as { response?: { status?: number } }).response?.status === 'number'
+        ) {
+          if ((error as { response: { status: number } }).response.status === 404) {
+            notFound();
+          }
         }
         setError('데이터를 불러오는데 실패했습니다.');
       } finally {
@@ -188,9 +199,9 @@ const ExperienceEditPage = () => {
   ]);
 
   // 변경사항 비교 (단순화)
-  const hasChanged = () => {
+  const hasChanged = useCallback(() => {
     return isModified && !isSubmitting && !loading;
-  };
+  }, [isModified, isSubmitting, loading]);
 
   // 수정하기
   const handleSubmit = async (e: React.FormEvent) => {
@@ -206,7 +217,7 @@ const ExperienceEditPage = () => {
       !price ||
       !address ||
       !bannerPreview ||
-      validReserveTimes.length === 0 || // 최소 하나의 유효한 예약 시간 필요 (첫 번째 제외)
+      validReserveTimes.length === 0 || // 최소 하나의 예약 시간 필요 (첫 번째 제외)
       isDuplicateTime()
     ) {
       alert(
@@ -253,20 +264,39 @@ const ExperienceEditPage = () => {
         }
       }
 
-      // 제거할 스케줄 ID들과 새로 추가할 스케줄들 계산
-      const currentScheduleIds = initialData.reserveTimes.filter((rt) => rt.id).map((rt) => rt.id!);
+      // 기존 스케줄 중 변경된 항목을 삭제 후 재생성 방식으로 처리
+      const currentInitialSchedules = initialData.reserveTimes.filter((rt) => rt.id);
+      const currentInitialSchedulesMap = new Map(currentInitialSchedules.map((rt) => [rt.id, rt]));
 
+      // 삭제할 스케줄: 기존에 있었으나 현재 없는 id
       const newScheduleIds = reserveTimes.filter((rt) => rt.id).map((rt) => rt.id!);
+      const scheduleIdsToRemove = currentInitialSchedules
+        .map((rt) => rt.id!)
+        .filter((id) => !newScheduleIds.includes(id));
 
-      const scheduleIdsToRemove = currentScheduleIds.filter((id) => !newScheduleIds.includes(id));
+      // 변경된 스케줄: id가 있고, 기존값과 date/start/end가 달라진 경우
+      const changedSchedules = reserveTimes.filter((rt) => {
+        if (!rt.id) return false;
+        const initial = currentInitialSchedulesMap.get(rt.id);
+        return (
+          initial &&
+          (initial.date !== rt.date || initial.start !== rt.start || initial.end !== rt.end)
+        );
+      });
 
-      const schedulesToAdd = reserveTimes
-        .filter((rt) => rt.date && rt.start && rt.end && !rt.id) // ID가 없는 새로운 스케줄들
-        .map((rt) => ({
-          date: rt.date,
-          startTime: rt.start,
-          endTime: rt.end,
-        }));
+      // schedulesToAdd: (1) id가 없는 새 스케줄 + (2) 변경된 기존 스케줄(삭제 후 재생성)
+      const schedulesToAdd = [
+        ...reserveTimes.filter((rt) => rt.date && rt.start && rt.end && !rt.id),
+        ...changedSchedules,
+      ].map((rt) => ({
+        date: rt.date,
+        startTime: rt.start,
+        endTime: rt.end,
+      }));
+
+      // 변경된 기존 스케줄은 삭제도 같이 해줘야 함
+      const changedScheduleIds = changedSchedules.map((rt) => rt.id!);
+      const finalScheduleIdsToRemove = [...scheduleIdsToRemove, ...changedScheduleIds];
 
       // API 스펙에 맞는 데이터 구조
       const updateData = {
@@ -278,16 +308,29 @@ const ExperienceEditPage = () => {
         bannerImageUrl: finalBannerUrl,
         subImageIdsToRemove: [], // 현재는 제거 기능이 없으므로 빈 배열
         subImageUrlsToAdd,
-        scheduleIdsToRemove,
+        scheduleIdsToRemove: finalScheduleIdsToRemove,
         schedulesToAdd,
       };
 
-      // PATCH 메서드로 요청 (baseURL에 이미 팀ID 포함됨)
-      await instance.patch(`/my-activities/${experienceId}`, updateData);
+      // updateExperience 함수로 요청 (API 스펙 적용)
+      await updateExperience(experienceId, updateData);
       setModalOpen(true);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('체험 수정 실패:', error);
-      alert(error.response?.data?.message || '수정에 실패했습니다. 다시 시도해 주세요.');
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'response' in error &&
+        typeof (error as { response?: { data?: { message?: string } } }).response?.data?.message ===
+          'string'
+      ) {
+        alert(
+          (error as { response: { data: { message: string } } }).response.data.message ||
+            '수정에 실패했습니다. 다시 시도해 주세요.',
+        );
+      } else {
+        alert('수정에 실패했습니다. 다시 시도해 주세요.');
+      }
       setIsSubmitting(false);
     }
   };
@@ -312,7 +355,7 @@ const ExperienceEditPage = () => {
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [isModified, isSubmitting, loading]);
+  }, [isModified, isSubmitting, loading, hasChanged]);
 
   // 모달 "네" 클릭
   const handleLeave = () => {
@@ -412,7 +455,7 @@ const ExperienceEditPage = () => {
             onClick={handleBackClick}
             aria-label='뒤로가기'
           >
-            <img src='/icons/icon_back.svg' alt='뒤로가기' width={24} height={24} />
+            <Image src='/icons/icon_back.svg' alt='뒤로가기' width={24} height={24} />
           </button>
           <h2 className='text-18-b'>내 체험 수정</h2>
         </div>
@@ -422,18 +465,7 @@ const ExperienceEditPage = () => {
         <DescriptionInput value={desc} onChange={setDesc} />
         <PriceInput value={price} onChange={setPrice} />
         <AddressInput value={address} onChange={setAddress} />
-        <ReserveTimesInput
-          reserveTimes={reserveTimes}
-          onChange={(idx, key, value) =>
-            setReserveTimes(
-              reserveTimes.map((item, i) => (i === idx ? { ...item, [key]: value } : item)),
-            )
-          }
-          onAdd={() => setReserveTimes([{ date: '', start: '', end: '' }, ...reserveTimes])}
-          onRemove={(idx) => setReserveTimes(reserveTimes.filter((_, i) => i !== idx))}
-          isDuplicateTime={isDuplicateTime}
-          isEdit={true}
-        />
+        <ReserveTimesInput value={reserveTimes} onChange={setReserveTimes} isEdit={true} />
         <BannerImageInput
           bannerPreview={bannerPreview}
           onChange={handleBannerChange}
@@ -477,7 +509,15 @@ const ExperienceEditPage = () => {
       {/* 나가기 확인 모달 */}
       <CommonModal
         open={leaveModalOpen}
-        icon={<img src='/icons/icon_alert.svg' alt='경고' className='h-full w-full' />}
+        icon={
+          <Image
+            src='/icons/icon_alert.svg'
+            alt='경고'
+            width={24}
+            height={24}
+            className='size-full'
+          />
+        }
         text={'저장되지 않았습니다.<br />정말 뒤로 가시겠습니까?'}
         cancelText='아니오'
         confirmText='네'

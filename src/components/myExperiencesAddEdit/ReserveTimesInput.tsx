@@ -1,12 +1,20 @@
+import React, { useState } from 'react';
 import Input from '@/components/common/Input';
 import Image from 'next/image';
 import CalendarComponent from '@/components/common/Calendar';
-import { useState } from 'react';
 
 const TIME_OPTIONS = Array.from({ length: 25 }, (_, i) => {
   const hour = i.toString().padStart(2, '0');
   return { value: `${hour}:00`, label: `${hour}:00` };
 });
+// 종료시간 셀렉트: 00:00~23:00 + 24:00
+const TIME_OPTIONS_END = [
+  ...Array.from({ length: 24 }, (_, i) => {
+    const hour = i.toString().padStart(2, '0');
+    return { value: `${hour}:00`, label: `${hour}:00` };
+  }),
+  { value: '24:00', label: '24:00' },
+];
 
 interface ReserveTime {
   date: string;
@@ -15,11 +23,8 @@ interface ReserveTime {
 }
 
 interface ReserveTimesInputProps {
-  reserveTimes: ReserveTime[];
-  onChange: (idx: number, key: keyof ReserveTime, value: string) => void;
-  onAdd: () => void;
-  onRemove: (idx: number) => void;
-  isDuplicateTime: () => boolean;
+  value: ReserveTime[];
+  onChange: (value: ReserveTime[]) => void;
   isEdit?: boolean; // edit 페이지인지 구분하는 prop
 }
 
@@ -30,12 +35,19 @@ const timeToMinutes = (time: string) => {
 };
 
 // 유효성 검사 함수
-const isValidTime = (start: string, end: string) => {
-  if (!start || !end) return true;
-  const startMin = timeToMinutes(start);
-  const endMin = timeToMinutes(end);
-  // 종료가 시작보다 늦으면 true (같으면 false)
-  return endMin > startMin;
+// const isValidTime = (start: string, end: string) => {
+//   if (!start || !end) return true;
+//   const startMin = timeToMinutes(start);
+//   const endMin = timeToMinutes(end);
+//   // 시작과 종료가 같으면 false
+//   if (startMin === endMin) return false;
+//   return true;
+// };
+
+// 시작=종료 여부
+const isSameTime = (start: string, end: string) => {
+  if (!start || !end) return false;
+  return timeToMinutes(start) === timeToMinutes(end);
 };
 
 // 다음날 여부 판단 함수
@@ -47,21 +59,41 @@ const isNextDay = (start: string, end: string) => {
   return endMin <= startMin;
 };
 
-const newReserveTime: ReserveTime = {
-  date: '',
-  start: '00:00',
-  end: '01:00',
-};
-
-const ReserveTimesInput = ({
-  reserveTimes,
-  onChange,
-  onAdd,
-  onRemove,
-  isDuplicateTime,
-  isEdit = false, // 기본값은 false (add 페이지)
-}: ReserveTimesInputProps) => {
+const ReserveTimesInput = ({ value, onChange, isEdit = false }: ReserveTimesInputProps) => {
+  const [reserveTimes, setReserveTimes] = useState<ReserveTime[]>(value);
   const [calendarOpenIdx, setCalendarOpenIdx] = useState<number | null>(null);
+
+  // 외부 value prop이 바뀌면 내부 state도 동기화
+  React.useEffect(() => {
+    setReserveTimes(value);
+  }, [value]);
+
+  // 변경 시 부모에 알림
+  const handleChange = (next: ReserveTime[]) => {
+    setReserveTimes(next);
+    onChange(next);
+  };
+
+  // 시간/날짜 변경
+  const handleTimeChange = (idx: number, key: keyof ReserveTime, v: string) => {
+    handleChange(reserveTimes.map((item, i) => (i === idx ? { ...item, [key]: v } : item)));
+  };
+  // 추가
+  const handleAdd = () => {
+    handleChange([{ date: '', start: '', end: '' }, ...reserveTimes]);
+  };
+  // 삭제
+  const handleRemove = (idx: number) => {
+    handleChange(reserveTimes.filter((_, i) => i !== idx));
+  };
+  // 중복 체크
+  const isDuplicateTime = () => {
+    const validTimes = reserveTimes
+      .slice(1)
+      .filter((rt) => rt.date && rt.start && rt.end)
+      .map((rt) => `${rt.date}-${rt.start}-${rt.end}`);
+    return new Set(validTimes).size !== validTimes.length;
+  };
 
   return (
     <div className='mb-30'>
@@ -127,7 +159,7 @@ const ReserveTimesInput = ({
                             const month = (date.getMonth() + 1).toString().padStart(2, '0');
                             const day = date.getDate().toString().padStart(2, '0');
                             const dateString = `${year}-${month}-${day}`;
-                            onChange(idx, 'date', dateString);
+                            handleTimeChange(idx, 'date', dateString);
                             setCalendarOpenIdx(null); // 날짜 선택 후 모달 닫기
                           }
                         }}
@@ -155,7 +187,7 @@ const ReserveTimesInput = ({
                   options={TIME_OPTIONS}
                   className='w-full'
                   value={rt.start ?? '00:00'}
-                  onChange={(e) => onChange(idx, 'start', e.target.value)}
+                  onChange={(e) => handleTimeChange(idx, 'start', e.target.value)}
                   hideLabelOnMobile
                 />
               </div>
@@ -166,10 +198,10 @@ const ReserveTimesInput = ({
                 <Input
                   label='' // 모바일에서는 label 숨김
                   as='select'
-                  options={TIME_OPTIONS}
+                  options={TIME_OPTIONS_END}
                   className='w-full'
                   value={rt.end}
-                  onChange={(e) => onChange(idx, 'end', e.target.value)}
+                  onChange={(e) => handleTimeChange(idx, 'end', e.target.value)}
                   hideLabelOnMobile
                 />
               </div>
@@ -180,7 +212,7 @@ const ReserveTimesInput = ({
                     <button
                       type='button'
                       className='flex-shrink-0 cursor-pointer md:hidden'
-                      onClick={onAdd}
+                      onClick={handleAdd}
                     >
                       <Image
                         src='/icons/icon_blue_plus.svg'
@@ -193,7 +225,7 @@ const ReserveTimesInput = ({
                     <button
                       type='button'
                       className='hidden flex-shrink-0 cursor-pointer items-center justify-center md:flex'
-                      onClick={onAdd}
+                      onClick={handleAdd}
                     >
                       <Image
                         src='/icons/icon_blue_plus.svg'
@@ -209,7 +241,7 @@ const ReserveTimesInput = ({
                     <button
                       type='button'
                       className='flex flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-gray-50 md:hidden'
-                      onClick={() => onRemove(idx)}
+                      onClick={() => handleRemove(idx)}
                     >
                       <Image
                         src='/icons/icon_gray_minus.svg'
@@ -222,7 +254,7 @@ const ReserveTimesInput = ({
                     <button
                       type='button'
                       className='hidden flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-gray-50 md:flex'
-                      onClick={() => onRemove(idx)}
+                      onClick={() => handleRemove(idx)}
                     >
                       <Image
                         src='/icons/icon_gray_minus.svg'
@@ -238,9 +270,14 @@ const ReserveTimesInput = ({
             </div>
           </div>
           {/* 유효성 검사 메시지 */}
-          {!isValidTime(rt.start, rt.end) && (
+          {isSameTime(rt.start, rt.end) && (
+            <div className='ml-8 text-sm text-red-500'>
+              시작 시간과 종료 시간이 같을 수 없습니다.
+            </div>
+          )}
+          {!isSameTime(rt.start, rt.end) && isNextDay(rt.start, rt.end) && (
             <div className='ml-8 text-sm text-gray-400'>
-              종료 시간은 시작 시간보다 늦거나, 다음날로 간주됩니다.
+              종료 시간이 시작 시간보다 빠르면, 다음날로 간주됩니다.
             </div>
           )}
         </div>

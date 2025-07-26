@@ -12,7 +12,11 @@ import IntroImagesInput from '@/components/myExperiencesAddEdit/IntroImagesInput
 import ReserveTimesInput from '@/components/myExperiencesAddEdit/ReserveTimesInput';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import CommonModal from '@/components/common/CancelModal';
-import { createExperience, uploadImage, CreateExperienceRequest } from '@/lib/api/experiences';
+import {
+  createExperience,
+  uploadImage,
+  CreateExperienceRequest,
+} from '@/lib/api/experiences/experiences';
 
 const categoryOptions = [
   { value: '문화 · 예술', label: '문화 · 예술' },
@@ -270,17 +274,7 @@ const ExperienceAddPage = () => {
           detailAddress={detailAddress}
           onDetailAddressChange={setDetailAddress}
         />
-        <ReserveTimesInput
-          reserveTimes={reserveTimes}
-          onChange={(idx, key, value) =>
-            setReserveTimes(
-              reserveTimes.map((item, i) => (i === idx ? { ...item, [key]: value } : item)),
-            )
-          }
-          onAdd={() => setReserveTimes([{ date: '', start: '', end: '' }, ...reserveTimes])}
-          onRemove={(idx) => setReserveTimes(reserveTimes.filter((_, i) => i !== idx))}
-          isDuplicateTime={isDuplicateTime}
-        />
+        <ReserveTimesInput value={reserveTimes} onChange={setReserveTimes} />
         <BannerImageInput
           bannerPreview={bannerPreview}
           onChange={(e) => {
