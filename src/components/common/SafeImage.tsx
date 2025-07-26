@@ -6,7 +6,7 @@ import { useState } from 'react';
 interface SafeImageProps extends Omit<ImageProps, 'src'> {
   src: string;
   fallbackSrc?: string;
-  onClickImage?: (src: string) => void;
+  onClickImage?: (info: { src: string; alt: string }) => void;
 }
 
 const FALLBACK_IMAGE = '/icons/empty.svg';
@@ -27,7 +27,7 @@ const SafeImage = ({
       {...props}
       onClick={(e) => {
         props.onClick?.(e); // 기본 onClick
-        onClickImage?.(imageSrc); // 선택적으로 imgSrc 넘기는 기능
+        onClickImage?.({ src: imageSrc, alt: errorAlt }); // 선택적으로 imgSrc 넘기는 기능
       }}
       src={imageSrc}
       alt={errorAlt}
