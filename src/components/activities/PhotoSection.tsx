@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { clsx } from 'clsx';
 import type { SubImage } from './Activities.types';
 import SafeImage from '@/components/common/SafeImage';
