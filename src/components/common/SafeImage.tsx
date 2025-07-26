@@ -20,6 +20,7 @@ const SafeImage = ({
 }: SafeImageProps) => {
   const [error, setError] = useState(false);
   const imageSrc = error ? fallbackSrc : src;
+  const errorAlt = error ? alt : '이미지를 불러오는데 실패하였습니다.';
 
   return (
     <Image
@@ -29,7 +30,7 @@ const SafeImage = ({
         onClickImage?.(imageSrc); // 선택적으로 imgSrc 넘기는 기능
       }}
       src={imageSrc}
-      alt={alt}
+      alt={errorAlt}
       onError={() => setError(true)}
     />
   );
