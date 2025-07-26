@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import instance from '@/lib/api/axios';
 import { useAuthStore } from '@/store/useAuthStore';
+import Image from 'next/image';
 
 const KakaoCallbackPage = () => {
   const router = useRouter();
@@ -41,7 +42,20 @@ const KakaoCallbackPage = () => {
     fetchKakaoToken();
   }, [router, setAccessToken, setRefreshToken, setUser]);
 
-  return <div>카카오 로그인 처리 중...</div>;
+  return (
+    <main className='flex min-h-screen w-full flex-col items-center justify-start bg-white px-4 pt-[25vh]'>
+      <Image
+        src='/icons/logoHorizon.svg'
+        alt='Logo'
+        width={255}
+        height={255}
+        className='mb-6 h-[120] w-[120] animate-bounce object-contain sm:h-[255] sm:w-[255]'
+      />
+
+      <h2 className='text-18-b mb-2 text-gray-800'>카카오 로그인 처리 중...</h2>
+      <p className='text-14-m text-gray-500'>잠시만 기다려주세요 😊</p>
+    </main>
+  );
 };
 
 export default KakaoCallbackPage;
