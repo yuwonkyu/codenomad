@@ -10,7 +10,7 @@ import { useResponsive } from '@/hooks/useResponsive';
 import { useState, useEffect } from 'react';
 import ReviewSection from '@/components/activities/ReviewSection';
 import type { ActivityDetail } from '@/components/activities/Activities.types';
-import { fetchActivitiesDetails } from '@/lib/api/activities';
+import { fetchActivitiesDetails } from '@/lib/api/activities/index';
 import { useAuthStore } from '@/store/useAuthStore';
 
 interface ClientActivitiesPageProps {
