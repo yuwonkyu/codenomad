@@ -16,18 +16,19 @@ const SafeImage = ({
   onClickImage,
   ...props
 }: SafeImageProps) => {
-  const [imgSrc, setImgSrc] = useState(src);
+  const [error, setError] = useState(false);
+  const imageSrc = error ? fallbackSrc : src;
 
   return (
     <Image
       {...props}
       onClick={(e) => {
         props.onClick?.(e); // 기본 onClick
-        onClickImage?.(imgSrc); // 선택적으로 imgSrc 넘기는 기능
+        onClickImage?.(imageSrc); // 선택적으로 imgSrc 넘기는 기능
       }}
-      src={imgSrc}
+      src={imageSrc}
       alt={alt}
-      onError={() => setImgSrc(fallbackSrc!)}
+      onError={() => setError(true)}
     />
   );
 };
