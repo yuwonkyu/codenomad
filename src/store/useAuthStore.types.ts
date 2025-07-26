@@ -27,4 +27,5 @@ export interface AuthState {
   setRefreshToken: (token: string) => void;
   clearAuthStore: () => void;
   setUser: (user: UserType) => void;
+  setUserProfileImage: (newUrl: string) => void;
 }
