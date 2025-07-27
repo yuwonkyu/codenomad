@@ -13,7 +13,7 @@ import IntroImagesInput from '@/components/myExperiencesAddEdit/IntroImagesInput
 import ReserveTimesInput from '@/components/myExperiencesAddEdit/ReserveTimesInput';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import CommonModal from '@/components/common/CancelModal';
-import { createExperience, uploadImage } from '@/lib/api/experiences/experiences';
+import { createExperience, uploadImage } from '@/lib/api/experiences';
 
 const categoryOptions = [
   { value: '문화 · 예술', label: '문화 · 예술' },

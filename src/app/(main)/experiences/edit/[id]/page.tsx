@@ -14,11 +14,7 @@ import IntroImagesInput from '@/components/myExperiencesAddEdit/IntroImagesInput
 import ReserveTimesInput from '@/components/myExperiencesAddEdit/ReserveTimesInput';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import CommonModal from '@/components/common/CancelModal';
-import {
-  uploadImage,
-  updateExperience,
-  getExperienceDetail,
-} from '@/lib/api/experiences/experiences';
+import { uploadImage, updateExperience, getExperienceDetail } from '@/lib/api/experiences';
 import { notFound } from 'next/navigation';
 
 const categoryOptions = [
