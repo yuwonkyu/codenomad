@@ -5,7 +5,6 @@ import axios from '@/lib/api/axios';
 import type { Activity } from './LandingCard';
 import LandingCard from './LandingCard';
 
-
 const MostCommentedActivities = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
 
@@ -28,11 +27,11 @@ const MostCommentedActivities = () => {
   useEffect(() => {
     fetchMostCommentedActivities();
   }, []);
-  
+
   return (
-    <section className='mt-80 mb-60 '>
-      <h2 className='text-20-b md:text-24-b mb-30'>🔥 인기 체험</h2>
-      <div className='flex gap-16 sm:gap-24 overflow-x-auto no-scrollbar overflow-hidden'>
+    <section className='-mx-24 mt-80 mb-60 w-screen md:-mx-30 lg:-mx-40'>
+      <h2 className='text-20-b md:text-24-b mb-30 px-24 md:px-30 lg:px-40'>🔥 인기 체험</h2>
+      <div className='no-scrollbar flex gap-16 overflow-hidden overflow-x-auto px-24 sm:gap-24 md:px-30 lg:px-40'>
         {activities.map((item) => (
           <LandingCard key={item.id} activity={item} />
         ))}
