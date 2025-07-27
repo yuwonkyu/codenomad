@@ -64,7 +64,7 @@ const AllActivities = () => {
         />
       </div>
       {/* 카드 목록 */}
-      <div className='no-scrollbar grid grid-cols-2 gap-16 sm:grid-cols-2 sm:gap-24 lg:grid-cols-4'>
+      <div className='grid grid-cols-2 gap-x-16 gap-y-40 sm:grid-cols-2 lg:grid-cols-4'>
         {activities.map((item) => (
           <LandingCard key={item.id} activity={item} />
         ))}
