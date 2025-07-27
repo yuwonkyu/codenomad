@@ -9,6 +9,7 @@ const Banner = () => {
         src='/imgs/baanner.jpg'
         alt='메인 배너 이미지'
         fill
+        sizes='(max-width: 768) 100vw, 50vw'
         className='object-cover'
         priority
       />
