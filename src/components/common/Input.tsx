@@ -145,7 +145,7 @@ const Input = ({
                 tabIndex={-1}
                 onClick={onDateIconClick}
               >
-                <img src='/icons/icon_calendar.svg' alt='달력' width={24} height={24} />
+                <Image src='/icons/icon_calendar.svg' alt='달력' width={24} height={24} />
               </button>
             )}
             {/* 비밀번호 보기/숨기기 토글 */}
