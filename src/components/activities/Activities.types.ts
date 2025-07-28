@@ -97,4 +97,5 @@ export interface BaseModalProps extends ReservationControlProps {
   onClose: () => void;
   onConfirm: () => void;
   schedules: Schedule[];
+  price: number;
 }
