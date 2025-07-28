@@ -23,5 +23,5 @@ export default function ProfilePage() {
   }
 
   // PC/태블릿: 리다이렉트 중 로딩 표시
-  return <LoadingSpinner message='페이지를 불러오는 중...' />;
+  return <LoadingSpinner message='페이지를 불러오는 중...' useLogo={true} />;
 }

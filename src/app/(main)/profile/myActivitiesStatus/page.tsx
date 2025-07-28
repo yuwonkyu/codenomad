@@ -539,7 +539,7 @@ export default function ReservationStatusPage() {
   };
 
   if (loading && !selectedActivity) {
-    return <LoadingSpinner />;
+    return <LoadingSpinner message='체험 목록을 불러오는 중...' useLogo={true} />;
   }
 
   if (error) {

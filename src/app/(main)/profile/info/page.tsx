@@ -134,7 +134,12 @@ const InformationPage = () => {
 
   // ⏳ 로딩 상태: 공통 LoadingSpinner 컴포넌트 사용
   if (isLoadingProfile) {
-    return <LoadingSpinner message='사용자 정보를 불러오는 중...' />;
+    return <LoadingSpinner message='사용자 정보를 불러오는 중...' useLogo={true} />;
+  }
+
+  // ⏳ 폼 제출 중 로딩 상태
+  if (isLoading) {
+    return <LoadingSpinner message='정보를 저장하는 중...' useLogo={true} />;
   }
 
   return (
