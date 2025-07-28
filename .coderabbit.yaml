@@ -11,6 +11,38 @@ reviews:
   poem: true
   review_status: true
   collapse_walkthrough: true
+  # 🎯 시퀀스 다이어그램 자동 생성을 위한 설정 추가
+  guidelines: |
+    모든 PR 리뷰 시 다음을 필수로 포함해주세요:
+
+    ## 📊 시퀀스 다이어그램
+    - 주요 변경사항에 대한 Mermaid 시퀀스 다이어그램 작성
+    - 사용자 액션부터 시스템 응답까지의 전체 플로우 시각화
+    - API 호출, 상태 변경, 에러 처리 흐름 포함
+    - 컴포넌트 간 상호작용 표현
+
+  # 🎯 경로별 시퀀스 다이어그램 생성 규칙
+  path_instructions:
+    - path: 'src/components/**/*.tsx'
+      instructions: |
+        React 컴포넌트 변경 시 다음을 반드시 포함해주세요:
+        - 컴포넌트 생명주기 시퀀스 다이어그램
+        - Props 전달과 상태 변경 흐름 시각화
+        - 사용자 이벤트 처리 과정 다이어그램
+
+    - path: 'src/**/*.ts'
+      instructions: |
+        TypeScript 파일 변경 시 다음을 반드시 포함해주세요:
+        - 함수 호출 체인 시퀀스 다이어그램
+        - 데이터 변환 과정 시각화
+        - 에러 처리 흐름 다이어그램
+
+    - path: 'src/api/**/*'
+      instructions: |
+        API 관련 파일 변경 시 다음을 반드시 포함해주세요:
+        - 클라이언트 요청부터 서버 응답까지의 전체 시퀀스
+        - 데이터베이스 상호작용 포함
+        - 에러 처리 및 예외 상황 시각화
   path_filters:
     - '!**/README.md'
     - '!**/.gitignore'

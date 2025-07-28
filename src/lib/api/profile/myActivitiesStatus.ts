@@ -1,9 +1,9 @@
-import axios from '@/lib/api/axios';
+import instance from '../axios';
 
 // 월별 예약 현황 조회
 export async function getReservationDashboard(activityId: number, year: string, month: string) {
   console.log('getReservationDashboard called with:', { activityId, year, month });
-  const res = await axios.get(`/my-activities/${activityId}/reservation-dashboard`, {
+  const res = await instance.get(`/my-activities/${activityId}/reservation-dashboard`, {
     params: { year, month },
   });
   console.log('getReservationDashboard response:', res.data);
@@ -13,7 +13,7 @@ export async function getReservationDashboard(activityId: number, year: string, 
 // 날짜별 예약 스케줄 조회
 export async function getReservedSchedule(activityId: number, date: string) {
   console.log('getReservedSchedule called with:', { activityId, date });
-  const res = await axios.get(`/my-activities/${activityId}/reserved-schedule`, {
+  const res = await instance.get(`/my-activities/${activityId}/reserved-schedule`, {
     params: { date },
   });
   console.log('getReservedSchedule response:', res.data);
@@ -27,7 +27,7 @@ export async function getReservations(
   status: string = 'pending',
 ) {
   console.log('getReservations called with:', { activityId, scheduleId, status });
-  const res = await axios.get(`/my-activities/${activityId}/reservations`, {
+  const res = await instance.get(`/my-activities/${activityId}/reservations`, {
     params: {
       scheduleId: scheduleId,
       status: status,
@@ -44,7 +44,7 @@ export async function updateReservationStatus(
   status: 'confirmed' | 'declined',
 ) {
   console.log('updateReservationStatus called with:', { activityId, reservationId, status });
-  const res = await axios.patch(`/my-activities/${activityId}/reservations/${reservationId}`, {
+  const res = await instance.patch(`/my-activities/${activityId}/reservations/${reservationId}`, {
     status,
   });
   console.log('updateReservationStatus response:', res.data);

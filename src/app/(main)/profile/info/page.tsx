@@ -92,7 +92,7 @@ const InformationPage = () => {
       const updateData: {
         nickname: string;
         email: string;
-        password?: string;
+        newPassword?: string;
       } = {
         nickname,
         email,
@@ -100,7 +100,7 @@ const InformationPage = () => {
 
       // 비밀번호가 입력된 경우에만 포함
       if (password) {
-        updateData.password = password;
+        updateData.newPassword = password;
       }
 
       await updateUserProfile(updateData);
@@ -182,6 +182,7 @@ const InformationPage = () => {
         error={emailError}
         type='email'
         autoComplete='email'
+        readOnly
       />
 
       <Input
