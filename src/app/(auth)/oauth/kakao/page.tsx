@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import instance from '@/lib/api/axios';
 import { useAuthStore } from '@/store/useAuthStore';
+import LoadingPage from '@/components/common/LoadingPage';
 
 const KakaoCallbackPage = () => {
   const router = useRouter();
@@ -41,18 +42,7 @@ const KakaoCallbackPage = () => {
     fetchKakaoToken();
   }, [router, setAccessToken, setRefreshToken, setUser]);
 
-  return (
-    <main className='flex min-h-screen w-full flex-col items-center justify-start bg-white px-4 pt-[25vh]'>
-      <img
-        src='/icons/kkotLoding.gif'
-        alt='로딩 중'
-        className='mb-6 h-[120px] w-[120px] object-contain sm:h-[255px] sm:w-[255px]'
-      />
-
-      <h2 className='text-18-b mb-2 text-gray-800'>카카오 로그인 처리 중...</h2>
-      <p className='text-14-m text-gray-500'>잠시만 기다려주세요 😊</p>
-    </main>
-  );
+  return <LoadingPage message='카카오 로그인 처리 중입니다...' />;
 };
 
 export default KakaoCallbackPage;
