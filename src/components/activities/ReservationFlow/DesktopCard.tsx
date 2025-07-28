@@ -45,7 +45,7 @@ const DesktopCard = ({
   const totalAmount = formatPrice(activityData.price * headCount);
 
   return (
-    <div className='shadow-custom-5 sticky top-20 max-w-410 rounded-3xl bg-white p-30'>
+    <div className='shadow-custom-5 sticky top-20 flex max-w-410 flex-col rounded-3xl bg-white p-30'>
       {/* 헤더 */}
 
       <p className='text-24-b mb-24 text-gray-950'>
@@ -53,7 +53,7 @@ const DesktopCard = ({
       </p>
 
       {/* 캘린더 섹션 */}
-      <div className='mb-24'>
+      <div className='mb-24 self-center'>
         <h4 className='text-16-b mb-8 text-gray-950'>날짜</h4>
         <CalendarStep
           schedules={activityData.schedules}
