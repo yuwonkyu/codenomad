@@ -6,13 +6,13 @@ export interface ReviewDataType {
   content: string;
 }
 
-export const getReservationList = async () => {
-  const res = await instance.get('my-reservations');
-  return res.data;
-};
-
-export const getReservationListStatus = async (status: StatusType) => {
-  const res = await instance.get(`my-reservations?status=${status}`);
+export const getReservationList = async (
+  cursorId: number | null = null,
+  status: StatusType | null = null,
+) => {
+  const cursorQuery = cursorId !== null ? `&cursorId=${cursorId}` : '';
+  const statusQuery = status !== null ? `&status=${status}` : '';
+  const res = await instance.get(`my-reservations?size=2&${cursorQuery + statusQuery}`);
   return res.data;
 };
 
