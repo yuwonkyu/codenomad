@@ -107,18 +107,21 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
         )}
       </div>
       {/* 메뉴 리스트 */}
-      <ul className='flex w-full flex-col gap-10'>
+      <ul className='w-full space-y-2'>
         {menuItems.map((item) => {
           const isActive = pathname === item.href;
+
+          // 🔄 모바일/데스크톱 분기 처리
           if (onMenuClick) {
-            // 모바일: 버튼 클릭 시 onMenuClick + router.push
+            // 📱 모바일 모드: onMenuClick prop이 전달된 경우
+            // 메뉴 클릭 시 → 1) onMenuClick() 실행으로 showContent=true → 2) 라우팅
             return (
               <li key={item.label} className='w-full'>
                 <button
                   type='button'
                   onClick={() => {
-                    onMenuClick();
-                    router.push(item.href);
+                    onMenuClick(); // 🎯 layout.tsx의 setShowContent(true) 실행
+                    router.push(item.href); // 🚀 해당 서브페이지로 라우팅
                   }}
                   className={`flex h-[54px] w-full cursor-pointer items-center gap-3 rounded-xl px-3 transition-colors md:px-30 ${isActive ? 'bg-blue-100 text-blue-500' : 'text-gray-600'} hover:bg-blue-100 hover:text-blue-500`}
                   style={{ boxSizing: 'border-box' }}
@@ -140,7 +143,9 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
               </li>
             );
           }
-          // PC/태블릿: 기존 Link 사용
+
+          // 💻 데스크톱 모드: onMenuClick prop이 없는 경우
+          // 일반적인 Link 컴포넌트로 라우팅만 처리 (화면 전환 없음)
           return (
             <li key={item.label} className='w-full'>
               <Link

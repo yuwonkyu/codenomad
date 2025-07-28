@@ -6,6 +6,8 @@ import ExperienceCard from '@/components/profile/ExperienceCard';
 import { getMyActivities, MyActivity, deleteMyActivity } from '@/lib/api/profile/myActivities';
 import { ProfileMobileContext } from '../layout';
 import { useContext } from 'react';
+// 🆕 공통 컴포넌트 import (파일명 변경: index.ts → components.ts)
+import { MobilePageHeader } from '@/components/profile/common/components';
 
 export default function MyExperiencesPage() {
   const [activities, setActivities] = useState<MyActivity[]>([]);
@@ -30,7 +32,7 @@ export default function MyExperiencesPage() {
       );
       setHasMore(data.activities.length > 0);
     } catch (err) {
-      console.error('체험 목록을 가져오는데 실패했습니다:', err);
+      // 에러는 조용히 처리 (사용자에게는 빈 상태로 표시됨)
     } finally {
       setIsLoading(false);
     }
@@ -73,43 +75,31 @@ export default function MyExperiencesPage() {
     }
   };
 
+  // 🎯 등록하기 버튼 컴포넌트 (actionButton으로 사용)
+  const addExperienceButton = (
+    <Link
+      href='/experiences/add'
+      className='flex h-[48px] w-[138px] items-center justify-center rounded-lg bg-blue-500 text-center text-base whitespace-nowrap text-white transition-colors hover:bg-blue-600'
+    >
+      <span className='flex h-full w-full items-center justify-center'>체험 등록하기</span>
+    </Link>
+  );
+
   return (
     <section className='mx-auto w-full max-w-2xl'>
-      {/* 상단 타이틀/설명 */}
-      <div className='relative mb-8 w-full'>
-        {/* PC/태블릿: 타이틀+설명 세로 정렬 */}
-        <div className='hidden md:flex md:flex-col'>
-          <h1 className='mb-1 text-xl font-bold'>내 체험 관리</h1>
-          <p className='mb-4 text-sm text-gray-500'>
-            내 체험에 예약된 내역들을 한 눈에 확인할 수 있습니다.
-          </p>
-        </div>
-        {/* PC/태블릿: 등록하기 버튼 */}
-        <Link
-          href='/experiences/add'
-          className='absolute top-0 right-0 flex hidden h-[48px] w-[138px] items-center justify-center rounded-lg bg-blue-500 text-center text-base whitespace-nowrap text-white transition-colors hover:bg-blue-600 md:block'
-        >
-          <span className='flex h-full w-full items-center justify-center'>체험 등록하기</span>
-        </Link>
-        {/* 모바일: 아이콘+텍스트, 클릭 시 onCancel */}
-        <button
-          type='button'
-          className='mb-1 block flex items-center gap-2 md:hidden'
-          onClick={mobileContext?.onCancel}
-          style={{ cursor: 'pointer' }}
-        >
-          <img src='/icons/Vector.png' alt='vector' width={20} height={20} />
-          <span className='text-xl font-bold'>내 체험 관리</span>
-          <p className='mb-4 text-sm text-gray-500'>
-            내 체험에 예약된 내역들을 한 눈에 확인할 수 있습니다.
-          </p>
-        </button>
-      </div>
-      {/* 중앙 카드 스타일 콘텐츠 */}
+      {/* 🆕 공통 MobilePageHeader 컴포넌트 사용 */}
+      <MobilePageHeader
+        title='내 체험 관리'
+        description='내 체험에 예약된 내역들을 한 눈에 확인할 수 있습니다.'
+        actionButton={addExperienceButton}
+      />
+
+      {/* 🎯 체험이 없는 경우: 빈 상태 표시 */}
       {activities.length === 0 && !isLoading ? (
         <div className='shadow-custom-5 mx-auto flex min-h-[40vh] w-full max-w-2xl flex-col items-center justify-center rounded-2xl bg-white p-4 md:p-8'>
           <img src='/icons/empty.svg' alt='empty' width={120} height={120} className='mb-6' />
           <p className='mb-4 text-lg text-gray-500'>아직 등록한 체험이 없어요</p>
+          {/* 📱 모바일에서만 보이는 등록 버튼 */}
           <Link
             href='/experiences/add'
             className='block flex h-[48px] w-[138px] items-center justify-center rounded-lg bg-blue-500 text-center text-base whitespace-nowrap text-white transition-colors hover:bg-blue-600 md:hidden'
@@ -119,7 +109,7 @@ export default function MyExperiencesPage() {
         </div>
       ) : null}
 
-      {/* 체험이 있을 때 ExperienceCard로 목록 렌더링 */}
+      {/* 📋 체험이 있을 때: ExperienceCard로 목록 렌더링 */}
       {activities.length > 0 && (
         <div className='flex w-full flex-col gap-6'>
           {activities.map((activity) => (
