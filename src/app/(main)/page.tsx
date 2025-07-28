@@ -5,7 +5,7 @@ import AllActivities from '@/components/landing/AllActivities';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'GlobalNomad',
+  title: 'Wazy',
   description: '코드노마드 팀프로젝트',
   icons: {
     icon: '/favicon.ico',
