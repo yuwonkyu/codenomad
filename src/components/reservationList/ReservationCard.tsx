@@ -94,7 +94,7 @@ const ReservationCard = ({
         </div>
       </div>
       <div className='mt-12 lg:hidden'>
-        {status === 'completed' && (
+        {status === 'completed' && !reviewSubmitted && (
           <button
             onClick={openReviewModal}
             className='bg-primary-500 text-14-m w-full rounded-lg p-10 text-white'
