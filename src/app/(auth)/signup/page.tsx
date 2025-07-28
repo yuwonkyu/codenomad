@@ -114,8 +114,8 @@ const SignupPage = () => {
         <div>
           <Link href='/'>
             <img
-              src='/icons/logoHorizon.svg'
-              alt='GlobalNomad Logo'
+              src='/icons/wazylogoHorizon.svg'
+              alt='Logo'
               className='mx-auto mb-32 w-144 md:w-255'
             />
           </Link>

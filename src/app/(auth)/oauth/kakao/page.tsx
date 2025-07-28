@@ -45,7 +45,7 @@ const KakaoCallbackPage = () => {
   return (
     <main className='flex min-h-screen w-full flex-col items-center justify-start bg-white px-4 pt-[25vh]'>
       <Image
-        src='/icons/logoHorizon.svg'
+        src='/icons/wazylogoHorizon.svg'
         alt='Logo'
         width={255}
         height={255}
