@@ -38,12 +38,12 @@ export default function ExperienceCard({
         </div>
         <div className='mb-40 flex gap-8'>
           <Link href={`/experiences/edit/${id}`}>
-            <button className='text-14-m h-30 w-70 rounded-lg border border-gray-300 bg-yellow-100 text-yellow-600'>
+            <button className='text-14-m h-30 w-70 rounded-lg border border-yellow-600 bg-yellow-100 text-yellow-600'>
               수정하기
             </button>
           </Link>
           <button
-            className='text-14-m h-30 w-70 rounded-lg border border-gray-300 bg-red-100 text-red-600'
+            className='text-14-m h-30 w-70 rounded-lg border border-red-600 bg-red-100 text-red-600'
             onClick={() => onDelete && onDelete(id)}
           >
             삭제하기

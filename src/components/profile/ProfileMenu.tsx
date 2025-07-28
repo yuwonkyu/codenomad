@@ -22,7 +22,7 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string>('/icons/profile_default.svg');
+  const [imageUrl, setImageUrl] = useState<string>('/imgs/profile_default.png');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { setUserProfileImage, user } = useAuthStore();
 
@@ -31,9 +31,9 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
     (async () => {
       try {
         const profile = await getUserProfile();
-        setImageUrl(profile.profileImageUrl || '/icons/profile_default.svg');
+        setImageUrl(profile.profileImageUrl || '/imgs/profile_default.png');
       } catch {
-        setImageUrl('/icons/profile_default.svg');
+        setImageUrl('/imgs/profile_default.png');
       }
     })();
   }, []);
@@ -47,7 +47,7 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
       const updated = await uploadProfileImage(file);
       const updatedUrl = updated.profileImageUrl
         ? updated.profileImageUrl + '?t=' + Date.now()
-        : '/icons/profile_default.svg';
+        : '/imgs/profile_default.png';
       setUserProfileImage(updatedUrl);
       updateUserProfile({ profileImageUrl: updatedUrl });
       alert('프로필 이미지가 변경되었습니다!');
@@ -65,7 +65,7 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
       <div className='relative mb-8'>
         <div className='mt-30 mb-20 flex h-[120px] w-[120px] items-center justify-center overflow-hidden rounded-full bg-blue-100'>
           <Image
-            src={user?.profileImageUrl || '/icons/profile_default.svg'}
+            src={user?.profileImageUrl || '/imgs/profile_default.png'}
             alt='프로필'
             width={120}
             height={120}
