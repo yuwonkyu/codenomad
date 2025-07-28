@@ -184,7 +184,7 @@ const SignupPage = () => {
         {/* 카카오 회원가입 */}
         <button
           onClick={handleKakaoSignup}
-          className='text-16-m flex w-full cursor-pointer items-center justify-center rounded-[12px] border border-gray-300 py-12 text-gray-600 transition-colors duration-200 hover:bg-gray-100'
+          className='text-16-m flex w-full cursor-pointer items-center justify-center rounded-[12px] border border-gray-300 py-12 text-gray-600 transition-colors duration-200 hover:bg-[#FEE500]'
         >
           <img
             src='/icons/icon_kakao.svg'
