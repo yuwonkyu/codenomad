@@ -13,7 +13,7 @@ const TIME_OPTIONS_END = [
     const hour = i.toString().padStart(2, '0');
     return { value: `${hour}:00`, label: `${hour}:00` };
   }),
-  { value: '24:00', label: '24:00' },
+  { value: '23:59', label: '다음날 00:00' },
 ];
 
 interface ReserveTime {
@@ -30,19 +30,10 @@ interface ReserveTimesInputProps {
 
 // 시간 문자열을 분(minute) 단위로 변환
 const timeToMinutes = (time: string) => {
+  if (time === '24:00') return 0; // 다음날 00:00으로 처리
   const [h, m] = time.split(':').map(Number);
   return h * 60 + m;
 };
-
-// 유효성 검사 함수
-// const isValidTime = (start: string, end: string) => {
-//   if (!start || !end) return true;
-//   const startMin = timeToMinutes(start);
-//   const endMin = timeToMinutes(end);
-//   // 시작과 종료가 같으면 false
-//   if (startMin === endMin) return false;
-//   return true;
-// };
 
 // 시작=종료 여부
 const isSameTime = (start: string, end: string) => {

@@ -34,6 +34,7 @@ const compressImage = (
     const ctx = canvas.getContext('2d')!;
     const img = new Image();
     img.onload = () => {
+      const objectUrl = img.src;
       const { width, height } = img;
       let maxWidth = 1920;
       let maxHeight = 1080;
@@ -82,12 +83,16 @@ const compressImage = (
           } else {
             resolve(file);
           }
+          URL.revokeObjectURL(objectUrl); // 메모리 해제
         },
         outputMimeType,
         quality,
       );
     };
-    img.onerror = () => resolve(file);
+    img.onerror = () => {
+      URL.revokeObjectURL(img.src); // 메모리 해제
+      resolve(file);
+    };
     img.src = URL.createObjectURL(file);
   });
 };
@@ -109,6 +114,7 @@ export const uploadImage = async (file: File): Promise<{ activityImageUrl: strin
   if (compressedSizeMB > 1.5) uploadFile = await compressImage(uploadFile, 1, 0.6);
   const finalSizeMB = uploadFile.size / 1024 / 1024;
   if (finalSizeMB > 1) uploadFile = await compressImage(uploadFile, 0.8, 0.5);
+  // API 서버의 다양한 필드명 요구사항을 처리하기 위해 여러 필드명 시도
   const fieldNames = ['imageFile', 'image', 'file', 'activityImage', 'upload'];
   for (const fieldName of fieldNames) {
     const formData = new FormData();
