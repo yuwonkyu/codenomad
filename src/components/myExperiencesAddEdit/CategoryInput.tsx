@@ -5,9 +5,10 @@ interface CategoryInputProps {
   value: string;
   onChange: (value: string) => void;
   options: { value: string; label: string }[];
+  error?: string;
 }
 
-const CategoryInput = ({ value, onChange, options }: CategoryInputProps) => {
+const CategoryInput = ({ value, onChange, options, error }: CategoryInputProps) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -51,13 +52,14 @@ const CategoryInput = ({ value, onChange, options }: CategoryInputProps) => {
               className={`flex h-48 w-303 items-center justify-between self-stretch rounded-[12px] px-20 py-16 md:w-660 lg:w-676 ${value === opt.value ? 'bg-sky-100' : ''} hover:bg-gray-50`}
               onClick={() => handleCategorySelect(opt.value)}
             >
-              <span className='font-pretendard justify-center text-base font-medium text-gray-900'>
+              <span className='justify-center text-base font-medium text-gray-900'>
                 {opt.label}
               </span>
             </button>
           ))}
         </div>
       )}
+      {error && <div className='text-12-m mt-2 text-red-500'>{error}</div>}
     </div>
   );
 };
