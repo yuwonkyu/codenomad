@@ -1,10 +1,10 @@
 import { FieldValues, UseFormRegister } from 'react-hook-form';
 
 // AddressInput
-export interface AddressInputProps<T extends FieldValues> {
-  register: UseFormRegister<T>;
+export interface AddressInputProps {
   error?: string;
   value: string;
+  onChange: (value: string) => void;
   detailAddress?: string;
   onDetailAddressChange?: (value: string) => void;
   detailError?: string;
