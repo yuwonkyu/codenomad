@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import Input from '@/components/common/Input';
-import { FieldValues, Path } from 'react-hook-form';
+// import { FieldValues, Path } from 'react-hook-form';
 import type { AddressInputProps } from './types';
 
 // 다음 우편번호 서비스 타입 정의
@@ -34,14 +34,14 @@ declare global {
   }
 }
 
-const AddressInput = <T extends FieldValues>({
-  register,
+const AddressInput = ({
   error,
   value,
+  onChange,
   detailAddress = '',
   onDetailAddressChange,
   detailError,
-}: AddressInputProps<T>) => {
+}: AddressInputProps) => {
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const scriptRef = useRef<HTMLScriptElement | null>(null);
@@ -88,10 +88,18 @@ const AddressInput = <T extends FieldValues>({
   };
 
   // 주소 검색 완료 처리
-  const handleAddressComplete = () => {
-    // 주소 선택 시 모달만 닫고, 실제 값 반영은 상위 setValue에서 처리
-    setIsModalOpen(false);
-  };
+  const handleAddressComplete = useCallback(
+    (data: PostcodeData) => {
+      if (typeof onChange !== 'function') {
+        alert('AddressInput에 onChange prop이 전달되지 않았습니다.');
+        setIsModalOpen(false);
+        return;
+      }
+      onChange(data.roadAddress); // 선택된 주소를 상위로 전달
+      setIsModalOpen(false);
+    },
+    [onChange],
+  );
 
   // embed 방식으로 Daum 우편번호 서비스 실행
   useEffect(() => {
@@ -109,7 +117,7 @@ const AddressInput = <T extends FieldValues>({
         postcode.embed(element);
       }
     }
-  }, [isModalOpen, isScriptLoaded]);
+  }, [isModalOpen, isScriptLoaded, handleAddressComplete]);
 
   return (
     <div className='mb-30'>
@@ -122,7 +130,7 @@ const AddressInput = <T extends FieldValues>({
         onClick={isScriptLoaded ? handleAddressSearch : undefined}
         className={`${!isScriptLoaded ? 'cursor-not-allowed opacity-50' : ''}`}
         error={error}
-        {...register('address' as Path<T>)}
+        // register 제거, value/onChange만 사용
       />
 
       {/* 주소 검색 모달 - embed 방식 */}
