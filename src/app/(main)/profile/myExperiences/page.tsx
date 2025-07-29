@@ -4,8 +4,6 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import ExperienceCard from '@/components/profile/ExperienceCard';
 import { getMyActivities, MyActivity, deleteMyActivity } from '@/lib/api/profile/myActivities';
-import { ProfileMobileContext } from '../layout';
-import { useContext } from 'react';
 // 🆕 공통 컴포넌트 import (파일명 변경: index.ts → components.ts)
 import { MobilePageHeader, LoadingSpinner } from '@/components/profile/common/components';
 
@@ -24,8 +22,6 @@ export default function MyExperiencesPage() {
 
   // 🎯 무한 스크롤 트리거 요소를 참조하는 ref
   const loaderRef = useRef<HTMLDivElement | null>(null);
-
-  const mobileContext = useContext(ProfileMobileContext);
 
   // 🚀 무한 스크롤 핵심 함수: 체험 데이터를 가져오는 함수
   const fetchActivities = useCallback(async () => {

@@ -22,21 +22,8 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string>('/imgs/profile_default.png');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { setUserProfileImage, user } = useAuthStore();
-
-  // 최초 렌더링 시 프로필 이미지 불러오기
-  useEffect(() => {
-    (async () => {
-      try {
-        const profile = await getUserProfile();
-        setImageUrl(profile.profileImageUrl || '/imgs/profile_default.png');
-      } catch {
-        setImageUrl('/imgs/profile_default.png');
-      }
-    })();
-  }, []);
 
   // 이미지 업로드 핸들러
   const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {

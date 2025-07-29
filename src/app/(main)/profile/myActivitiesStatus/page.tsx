@@ -50,6 +50,34 @@ interface DashboardData {
   [date: string]: ScheduleData[]; // "2024-01-15": [스케줄1, 스케줄2, ...]
 }
 
+// 🎯 API 응답 타입 정의
+interface DashboardItem {
+  date: string;
+  reservations: {
+    pending: number;
+    confirmed: number;
+    declined: number;
+    completed?: number;
+  };
+}
+
+interface ScheduleFromApi {
+  id: number | string;
+  scheduleId?: number | string;
+  startTime: string;
+  endTime: string;
+  count?: {
+    pending: number;
+    confirmed: number;
+    declined: number;
+    completed?: number;
+  };
+}
+
+interface ReservationCountData {
+  [status: string]: number;
+}
+
 export default function ReservationStatusPage() {
   // 📅 날짜 관련 상태
   const [date, setDate] = useState<Date | null>(new Date()); // 캘린더에서 선택된 월
@@ -58,10 +86,6 @@ export default function ReservationStatusPage() {
   // 🎯 모달 내 필터링 상태
   const [selectedTab, setSelectedTab] = useState<'신청' | '승인' | '거절'>('신청'); // 모달 탭
   const [selectedTime, setSelectedTime] = useState('14:00 - 15:00'); // 선택된 시간대
-  const [, setVisibleCount] = useState(2); // 표시할 예약 개수 (미사용)
-
-  // 🔗 모바일 Context 연결: 뒤로가기 기능
-  const mobileContext = useContext(ProfileMobileContext);
 
   // 🎨 모달 위치 계산을 위한 상태
   const [calendarCellRect, setCalendarCellRect] = useState<{
@@ -111,7 +135,7 @@ export default function ReservationStatusPage() {
       const dashboardData: DashboardData = {};
 
       if (Array.isArray(responseData)) {
-        responseData.forEach((item: any) => {
+        (responseData as DashboardItem[]).forEach((item: DashboardItem) => {
           if (item.date && item.reservations) {
             // 📊 이미 집계된 데이터를 그대로 사용 (pending, confirmed, declined 개수)
             dashboardData[item.date] = [
@@ -120,7 +144,7 @@ export default function ReservationStatusPage() {
                 timeSlot: '시간 미정', // 대시보드에서는 구체적 시간 정보 없음
                 startTime: '시간',
                 endTime: '미정',
-                reservations: [item], // 📈 집계 데이터 보존
+                reservations: [item] as any, // 📈 집계 데이터 보존 (타입이 다르므로 any 유지)
                 headCount: 0,
               },
             ];
@@ -155,7 +179,7 @@ export default function ReservationStatusPage() {
   ) => {
     try {
       // 📊 날짜별 상태 집계를 저장할 객체
-      const statusBadgeData: { [date: string]: { [status: string]: number } } = {};
+      const statusBadgeData: { [date: string]: ReservationCountData } = {};
 
       // 🔄 각 날짜별로 상태 정보 처리
       for (const date of dates) {
@@ -191,7 +215,7 @@ export default function ReservationStatusPage() {
             }
           } else {
             // ✅ 정상 응답인 경우: API 응답에서 상태 집계
-            schedules.forEach((schedule: any) => {
+            (schedules as ScheduleFromApi[]).forEach((schedule: ScheduleFromApi) => {
               if (schedule.count) {
                 dateCounts.pending += schedule.count.pending || 0;
                 dateCounts.confirmed += schedule.count.confirmed || 0;
@@ -205,14 +229,18 @@ export default function ReservationStatusPage() {
           const now = new Date();
 
           // 🔄 시간 체크를 위한 데이터 소스 선택 (API 응답 우선, 없으면 fallback)
-          const schedulesToCheck = schedules.length > 0 ? schedules : dashboardData[date] || [];
+          const schedulesToCheck =
+            schedules.length > 0 ? (schedules as ScheduleFromApi[]) : dashboardData[date] || [];
 
-          schedulesToCheck.forEach((schedule: any) => {
+          schedulesToCheck.forEach((schedule: ScheduleFromApi | ScheduleData) => {
+            // 타입 가드: API 응답인지 fallback 데이터인지 확인
+            const isApiSchedule = 'count' in schedule;
+
             // 📊 confirmed 예약이 있는지 확인 (API 응답과 fallback 구조가 다를 수 있음)
-            const hasConfirmed =
-              schedules.length > 0
-                ? schedule.count && schedule.count.confirmed > 0 // API 응답 구조
-                : dateCounts.confirmed > 0; // fallback 구조
+            const hasConfirmed = isApiSchedule
+              ? (schedule as ScheduleFromApi).count &&
+                (schedule as ScheduleFromApi).count!.confirmed > 0 // API 응답 구조
+              : dateCounts.confirmed > 0; // fallback 구조
 
             if (hasConfirmed) {
               // ⏰ 예약 종료 시간 계산
@@ -221,8 +249,9 @@ export default function ReservationStatusPage() {
 
               // 🔄 현재 시간이 예약 종료 시간을 지났으면 완료 처리
               if (now > scheduleEndDateTime) {
-                const confirmedCount =
-                  schedules.length > 0 ? schedule.count.confirmed || 0 : dateCounts.confirmed;
+                const confirmedCount = isApiSchedule
+                  ? (schedule as ScheduleFromApi).count?.confirmed || 0
+                  : dateCounts.confirmed;
 
                 // 📈 confirmed에서 completed로 상태 이동
                 dateCounts.confirmed -= confirmedCount;
@@ -262,10 +291,17 @@ export default function ReservationStatusPage() {
       const schedulesFromApi = await getReservedSchedule(activityId, date);
 
       // 🔄 API 응답을 UI에서 사용할 형태로 변환 (timeSlot 필드 생성)
-      const transformedSchedules = schedulesFromApi.map((s: any) => ({
-        ...s,
-        timeSlot: `${s.startTime} - ${s.endTime}`, // "14:00 - 15:00" 형태로 변환
-      }));
+      const transformedSchedules: ScheduleData[] = (schedulesFromApi as ScheduleFromApi[]).map(
+        (s: ScheduleFromApi) => ({
+          id: s.id,
+          scheduleId: s.scheduleId,
+          timeSlot: `${s.startTime} - ${s.endTime}`, // "14:00 - 15:00" 형태로 변환
+          startTime: s.startTime,
+          endTime: s.endTime,
+          reservations: [], // API 응답에서는 빈 배열로 초기화
+          headCount: 0,
+        }),
+      );
 
       // 🔄 FALLBACK 로직 2: API 응답이 비어있거나 timeSlot이 제대로 생성되지 않은 경우
       if (
