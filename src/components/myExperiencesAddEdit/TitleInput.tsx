@@ -14,7 +14,7 @@ const TitleInput = <T extends FieldValues>({ register, error, value }: TitleInpu
       labelClassName='text-16-b'
       placeholder='제목을 입력해 주세요'
       maxLength={30}
-      {...register('title as Path<T>)}')}
+      {...register('title' as Path<T>)}
       error={error}
       value={value}
     />
