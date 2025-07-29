@@ -32,8 +32,8 @@ const Header = () => {
         {/* 로고 */}
         <Link href='/' className='flex items-center gap-2'>
           <Image
-            src='/icons/logoVertical.svg'
-            alt='GlobalNomad 로고'
+            src='/icons/wazyLogoVertical.svg'
+            alt='wazy 로고'
             width={174}
             height={28}
             priority
@@ -53,7 +53,7 @@ const Header = () => {
               <Dropdown.Trigger>
                 <div className='mt-8 flex cursor-pointer items-center gap-2'>
                   <Image
-                    src={user.profileImageUrl || '/icons/default_profile30.svg'}
+                    src={user.profileImageUrl || '/icons/default_profilewazy.svg'}
                     alt='프로필'
                     width={30}
                     height={30}

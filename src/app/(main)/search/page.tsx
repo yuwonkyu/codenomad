@@ -45,7 +45,7 @@ const SearchContent = () => {
   const totalPages = Math.ceil(totalCount / size);
 
   return (
-    <main className='min-h-screen w-full px-20'>
+    <main className='bg-gradient-main min-h-screen w-full px-20'>
       <div className='mx-auto max-w-screen-xl'>
         {/* 배너 & 검색바 */}
         <Banner />
@@ -53,7 +53,9 @@ const SearchContent = () => {
 
         {/* 검색 결과 안내 텍스트 */}
         <div className='text-20-b mt-40 mb-10'>‘{keyword}’에 대한 검색 결과입니다.</div>
-        {totalCount > 0 && <div className='text-14-m text-gray-400'>총 {totalCount}개의 결과</div>}
+        {totalCount > 0 && (
+          <div className='text-14-m mb-10 text-gray-400'>총 {totalCount}개 입니다</div>
+        )}
         {/* 결과 리스트 */}
         {activities.length === 0 ? (
           <NoResult />
