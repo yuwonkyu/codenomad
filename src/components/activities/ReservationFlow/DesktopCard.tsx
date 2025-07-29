@@ -63,12 +63,7 @@ const DesktopCard = ({
       </div>
 
       <div className='mb-24'>
-        <PersonStep
-          variant='desktop'
-          headCount={headCount}
-          onChangeHeadCount={onChangeHeadCount}
-          showConfirmButton={false}
-        />
+        <PersonStep variant='desktop' headCount={headCount} onChangeHeadCount={onChangeHeadCount} />
       </div>
 
       {/* 시간 선택 섹션 */}
