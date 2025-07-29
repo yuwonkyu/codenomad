@@ -10,7 +10,9 @@ const SearchBar = () => {
 
   const handleSearch = () => {
     if (!keyword.trim()) return;
-    router.push(`/search?keyword=${encodeURIComponent(keyword)}`);
+
+    const params = new URLSearchParams({ keyword });
+    router.push(`/search?${params.toString()}`);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
