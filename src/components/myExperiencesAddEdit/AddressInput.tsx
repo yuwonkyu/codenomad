@@ -3,12 +3,15 @@
 import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import Input from '@/components/common/Input';
+import { UseFormRegister, FieldValues, Path } from 'react-hook-form';
 
-interface AddressInputProps {
+interface AddressInputProps<T extends FieldValues> {
+  register: UseFormRegister<T>;
+  error?: string;
   value: string;
-  onChange: (value: string) => void;
   detailAddress?: string;
   onDetailAddressChange?: (value: string) => void;
+  detailError?: string;
 }
 
 // 다음 우편번호 서비스 타입 정의
@@ -39,12 +42,14 @@ declare global {
   }
 }
 
-const AddressInput = ({
+const AddressInput = <T extends FieldValues>({
+  register,
+  error,
   value,
-  onChange,
   detailAddress = '',
   onDetailAddressChange,
-}: AddressInputProps) => {
+  detailError,
+}: AddressInputProps<T>) => {
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const scriptRef = useRef<HTMLScriptElement | null>(null);
@@ -91,16 +96,9 @@ const AddressInput = ({
   };
 
   // 주소 검색 완료 처리
-  const handleAddressComplete = (data: PostcodeData) => {
-    let fullAddress = data.roadAddress || data.jibunAddress;
-
-    // 건물명이 있으면 추가
-    if (data.buildingName) {
-      fullAddress += ` (${data.buildingName})`;
-    }
-
-    onChange(fullAddress);
-    setIsModalOpen(false); // 우리가 만든 모달 닫기
+  const handleAddressComplete = () => {
+    // 주소 선택 시 모달만 닫고, 실제 값 반영은 상위 setValue에서 처리
+    setIsModalOpen(false);
   };
 
   // embed 방식으로 Daum 우편번호 서비스 실행
@@ -131,6 +129,8 @@ const AddressInput = ({
         readOnly
         onClick={isScriptLoaded ? handleAddressSearch : undefined}
         className={`${!isScriptLoaded ? 'cursor-not-allowed opacity-50' : ''}`}
+        error={error}
+        {...register('address' as Path<T>)}
       />
 
       {/* 주소 검색 모달 - embed 방식 */}
@@ -162,6 +162,7 @@ const AddressInput = ({
             onChange={(e) => onDetailAddressChange?.(e.target.value)}
             className='shadow-custom-5 text-16-m focus:outline-primary-500 w-full rounded-[16px] border-none bg-white px-20 py-16 text-gray-950 outline-1 outline-offset-[-1px] outline-gray-200 transition-all duration-150 placeholder:text-gray-400 focus:outline-[1.5px]'
           />
+          {detailError && <div className='text-12-m mt-2 text-red-500'>{detailError}</div>}
         </div>
       )}
     </div>
