@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import TitleInput from '@/components/myExperiencesAddEdit/TitleInput';
 import CategoryInput from '@/components/myExperiencesAddEdit/CategoryInput';
 import DescriptionInput from '@/components/myExperiencesAddEdit/DescriptionInput';
@@ -14,6 +16,7 @@ import ReserveTimesInput from '@/components/myExperiencesAddEdit/ReserveTimesInp
 import ConfirmModal from '@/components/common/ConfirmModal';
 import CommonModal from '@/components/common/CancelModal';
 import { createExperience, uploadImage } from '@/lib/api/experiences';
+import { formSchema, FormValues } from '@/components/myExperiencesAddEdit/formSchema';
 
 const categoryOptions = [
   { value: '문화 · 예술', label: '문화 · 예술' },
@@ -24,23 +27,13 @@ const categoryOptions = [
   { value: '웰빙', label: '웰빙' },
 ];
 
-interface ReserveTime {
-  date: string;
-  start: string;
-  end: string;
-}
-
 const ExperienceAddPage = () => {
-  // 입력값 상태
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('');
-  const [desc, setDesc] = useState('');
-  const [price, setPrice] = useState('');
-  const [address, setAddress] = useState('');
-  const [detailAddress, setDetailAddress] = useState('');
-  const [reserveTimes, setReserveTimes] = useState<ReserveTime[]>([
+  // 예약 시간 state 선언 (최상단에!)
+  const [reserveTimes, setReserveTimes] = useState<{ date: string; start: string; end: string }[]>([
     { date: '', start: '', end: '' },
   ]);
+
+  // 입력값 상태
   const [banner, setBanner] = useState<File | null>(null);
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const [introImages, setIntroImages] = useState<File[]>([]);
@@ -53,6 +46,17 @@ const ExperienceAddPage = () => {
   // const [submitError, setSubmitError] = useState<string | null>(null); // 미사용 변수 제거
   const [lastSubmitTime, setLastSubmitTime] = useState<number>(0);
   const router = useRouter();
+
+  const {
+    register,
+
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    mode: 'onBlur',
+  });
 
   // 컴포넌트 마운트 시 토큰 확인
   useEffect(() => {
@@ -84,6 +88,14 @@ const ExperienceAddPage = () => {
     reserveTimes: JSON.stringify([{ date: '', start: '', end: '' }]),
   });
 
+  // watch로 읽는 값들은 useCallback 등에서 사용하므로 먼저 선언
+  const title = watch('title') || '';
+  const category = watch('category') || '';
+  const desc = watch('description') || '';
+  const price = watch('price') || '';
+  const address = watch('address') || '';
+  const detailAddress = watch('detailAddress') || '';
+
   // 변경사항 비교
   const hasChanged = useCallback(() => {
     if (isSubmitting) return false;
@@ -112,7 +124,7 @@ const ExperienceAddPage = () => {
   ]);
 
   // 등록하기
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const currentTime = Date.now();
@@ -130,7 +142,9 @@ const ExperienceAddPage = () => {
     setLastSubmitTime(currentTime);
 
     // 입력된 예약 시간만 필터링 (빈 값은 제외)
-    const validReserveTimes = reserveTimes.filter((rt) => rt.date && rt.start && rt.end);
+    const validReserveTimes = reserveTimes.filter(
+      (rt: { date: string; start: string; end: string }) => rt.date && rt.start && rt.end,
+    );
 
     if (
       !title ||
@@ -251,7 +265,7 @@ const ExperienceAddPage = () => {
     <div className='flex items-center justify-center'>
       <form
         className='flex w-375 flex-col px-24 py-30 md:w-744 md:px-30 md:pt-40 md:pb-53 lg:w-700 lg:px-0 lg:pb-102'
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmitForm}
         autoComplete='off'
       >
         {/* 뒤로가기 */}
@@ -266,21 +280,34 @@ const ExperienceAddPage = () => {
           </button>
           <h2 className='text-18-b'>내 체험 등록</h2>
         </div>
-        <TitleInput value={title} onChange={setTitle} />
-        <CategoryInput
-          value={category}
-          onChange={(newCategory) => {
-            setCategory(newCategory);
-          }}
-          options={categoryOptions}
+        <TitleInput<FormValues>
+          register={register}
+          error={errors.title?.message}
+          value={watch('title') || ''}
         />
-        <DescriptionInput value={desc} onChange={setDesc} />
-        <PriceInput value={price} onChange={setPrice} />
-        <AddressInput
-          value={address}
-          onChange={setAddress}
-          detailAddress={detailAddress}
-          onDetailAddressChange={setDetailAddress}
+        <CategoryInput
+          value={watch('category') || ''}
+          onChange={(v) => setValue('category', v)}
+          options={categoryOptions}
+          error={errors.category?.message}
+        />
+        <DescriptionInput<FormValues>
+          register={register}
+          error={errors.description?.message}
+          value={watch('description') || ''}
+        />
+        <PriceInput<FormValues>
+          register={register}
+          error={errors.price?.message}
+          value={watch('price') || ''}
+        />
+        <AddressInput<FormValues>
+          register={register}
+          error={errors.address?.message}
+          value={watch('address') || ''}
+          detailAddress={watch('detailAddress') || ''}
+          onDetailAddressChange={(v) => setValue('detailAddress', v)}
+          detailError={errors.detailAddress?.message}
         />
         <ReserveTimesInput value={reserveTimes} onChange={setReserveTimes} />
         <BannerImageInput

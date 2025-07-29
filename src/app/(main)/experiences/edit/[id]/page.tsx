@@ -16,6 +16,10 @@ import ConfirmModal from '@/components/common/ConfirmModal';
 import CommonModal from '@/components/common/CancelModal';
 import { uploadImage, updateExperience, getExperienceDetail } from '@/lib/api/experiences';
 import { notFound } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { formSchema, FormValues } from '@/components/myExperiencesAddEdit/formSchema';
+import type { SubmitHandler } from 'react-hook-form';
 
 const categoryOptions = [
   { value: '문화 · 예술', label: '문화 · 예술' },
@@ -94,6 +98,26 @@ const ExperienceEditPage = () => {
     bannerPreview: '',
     introPreviews: [] as string[],
     reserveTimes: [] as ReserveTime[],
+  });
+
+  // 폼 관련 설정
+  const {
+    register,
+    handleSubmit: rhfHandleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      title,
+      category,
+      price,
+      address,
+      description: desc,
+      detailAddress: '', // 필요시
+    },
   });
 
   // 체험 데이터 불러오기
@@ -199,19 +223,17 @@ const ExperienceEditPage = () => {
     return isModified && !isSubmitting && !loading;
   }, [isModified, isSubmitting, loading]);
 
-  // 수정하기
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  // 수정하기 (react-hook-form용)
+  const handleSubmit: SubmitHandler<FormValues> = async (data) => {
     // 유효한 예약 시간들만 필터링 (첫 번째 항목은 제외 - 새로운 시간 추가용)
     const validReserveTimes = reserveTimes.slice(1).filter((rt) => rt.date && rt.start && rt.end);
 
     if (
-      !title ||
-      !category ||
-      !desc ||
-      !price ||
-      !address ||
+      !data.title ||
+      !data.category ||
+      !data.description ||
+      !data.price ||
+      !data.address ||
       !bannerPreview ||
       validReserveTimes.length === 0 || // 최소 하나의 예약 시간 필요 (첫 번째 제외)
       isDuplicateTime()
@@ -226,7 +248,7 @@ const ExperienceEditPage = () => {
       setIsSubmitting(true);
 
       // 가격에서 숫자만 추출
-      const numericPrice = parseInt(price.replace(/[^0-9]/g, ''));
+      const numericPrice = parseInt(data.price.replace(/[^0-9]/g, ''));
 
       // 배너 이미지 처리
       let finalBannerUrl = bannerPreview;
@@ -296,11 +318,11 @@ const ExperienceEditPage = () => {
 
       // API 스펙에 맞는 데이터 구조
       const updateData = {
-        title,
-        category,
-        description: desc,
+        title: data.title,
+        category: data.category,
+        description: data.description,
         price: numericPrice,
-        address,
+        address: data.address,
         bannerImageUrl: finalBannerUrl,
         subImageIdsToRemove: [], // 현재는 제거 기능이 없으므로 빈 배열
         subImageUrlsToAdd,
@@ -440,7 +462,7 @@ const ExperienceEditPage = () => {
     <div className='flex items-center justify-center'>
       <form
         className='flex w-375 flex-col px-24 py-30 md:w-744 md:px-30 md:pt-40 md:pb-53 lg:w-700 lg:px-0 lg:pb-102'
-        onSubmit={handleSubmit}
+        onSubmit={rhfHandleSubmit(handleSubmit)}
         autoComplete='off'
       >
         {/* 뒤로가기 */}
@@ -456,11 +478,35 @@ const ExperienceEditPage = () => {
           <h2 className='text-18-b'>내 체험 수정</h2>
         </div>
 
-        <TitleInput value={title} onChange={setTitle} />
-        <CategoryInput value={category} onChange={setCategory} options={categoryOptions} />
-        <DescriptionInput value={desc} onChange={setDesc} />
-        <PriceInput value={price} onChange={setPrice} />
-        <AddressInput value={address} onChange={setAddress} />
+        <TitleInput<FormValues>
+          register={register}
+          error={errors.title?.message}
+          value={watch('title') || ''}
+        />
+        <CategoryInput
+          value={watch('category') || ''}
+          onChange={(v) => setValue('category', v)}
+          options={categoryOptions}
+          error={errors.category?.message}
+        />
+        <DescriptionInput<FormValues>
+          register={register}
+          error={errors.description?.message}
+          value={watch('description') || ''}
+        />
+        <PriceInput<FormValues>
+          register={register}
+          error={errors.price?.message}
+          value={watch('price') || ''}
+        />
+        <AddressInput<FormValues>
+          register={register}
+          error={errors.address?.message}
+          value={watch('address') || ''}
+          detailAddress={watch('detailAddress') || ''}
+          onDetailAddressChange={(v) => setValue('detailAddress', v)}
+          detailError={errors.detailAddress?.message}
+        />
         <ReserveTimesInput value={reserveTimes} onChange={setReserveTimes} isEdit={true} />
         <BannerImageInput
           bannerPreview={bannerPreview}
