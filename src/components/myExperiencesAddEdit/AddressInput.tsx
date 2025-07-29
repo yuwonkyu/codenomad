@@ -3,16 +3,8 @@
 import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import Input from '@/components/common/Input';
-import { UseFormRegister, FieldValues, Path } from 'react-hook-form';
-
-interface AddressInputProps<T extends FieldValues> {
-  register: UseFormRegister<T>;
-  error?: string;
-  value: string;
-  detailAddress?: string;
-  onDetailAddressChange?: (value: string) => void;
-  detailError?: string;
-}
+import { FieldValues, Path } from 'react-hook-form';
+import type { AddressInputProps } from './types';
 
 // 다음 우편번호 서비스 타입 정의
 interface DaumPostcode {

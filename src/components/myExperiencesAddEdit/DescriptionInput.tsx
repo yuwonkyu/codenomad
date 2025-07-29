@@ -1,13 +1,9 @@
 import Input from '@/components/common/Input';
-import { UseFormRegister, FieldValues, Path } from 'react-hook-form';
+import { Path } from 'react-hook-form';
+import type { DescriptionInputProps } from './types';
+import type { FieldValues } from 'react-hook-form';
 
-interface DescriptionInputProps<T extends FieldValues> {
-  register: UseFormRegister<T>;
-  error?: string;
-  value: string;
-}
-
-const DescriptionInput = <T extends FieldValues>({
+const DescriptionInput = <T extends FieldValues = FieldValues>({
   register,
   error,
   value,

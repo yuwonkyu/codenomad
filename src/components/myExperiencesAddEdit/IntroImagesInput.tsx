@@ -1,10 +1,5 @@
 import Image from 'next/image';
-
-interface IntroImagesInputProps {
-  introPreviews: string[];
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onRemove: (idx: number) => void;
-}
+import type { IntroImagesInputProps } from './types';
 
 const IntroImagesInput = ({ introPreviews = [], onChange, onRemove }: IntroImagesInputProps) => {
   return (

@@ -1,13 +1,13 @@
-import { UseFormRegister, FieldValues, Path } from 'react-hook-form';
+import { Path } from 'react-hook-form';
 import Input from '@/components/common/Input';
+import type { TitleInputProps } from './types';
+import type { FieldValues } from 'react-hook-form';
 
-interface TitleInputProps<T extends FieldValues> {
-  register: UseFormRegister<T>;
-  error?: string;
-  value: string;
-}
-
-const TitleInput = <T extends FieldValues>({ register, error, value }: TitleInputProps<T>) => (
+const TitleInput = <T extends FieldValues = FieldValues>({
+  register,
+  error,
+  value,
+}: TitleInputProps<T>) => (
   <div className='mb-24'>
     <Input
       label='제목'

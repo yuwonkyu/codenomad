@@ -1,11 +1,7 @@
 import Input from '@/components/common/Input';
-import { UseFormRegister, FieldValues, Path } from 'react-hook-form';
-
-interface PriceInputProps<T extends FieldValues> {
-  register: UseFormRegister<T>;
-  error?: string;
-  value: string;
-}
+import { Path } from 'react-hook-form';
+import type { PriceInputProps } from './types';
+import type { FieldValues } from 'react-hook-form';
 
 const extractNumbers = (str: string) => str.replace(/[^0-9]/g, '');
 
