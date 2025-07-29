@@ -70,7 +70,7 @@ const ReservationContent = ({ activity }: ReservationContentProps) => {
   };
 
   const handleChangeHeadCount = (count: number) => {
-    const validCount = Math.max(1, count);
+    const validCount = Math.max(1, Math.min(100, count));
     setReservation((prev) => ({ ...prev, headCount: validCount }));
   };
 
