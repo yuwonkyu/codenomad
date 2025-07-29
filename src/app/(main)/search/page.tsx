@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
-import axios from '@/lib/api/axios';
+import instance from '@/lib/api/axios';
 import type { Activity } from '@/components/landing/LandingCard';
 import LandingCard from '@/components/landing/LandingCard';
 import Pagination from '@/components/common/Pagination';
@@ -22,7 +22,7 @@ const SearchContent = () => {
 
   const fetchActivities = async () => {
     try {
-      const res = await axios.get(`/activities`, {
+      const res = await instance.get(`/activities`, {
         params: {
           method: 'offset',
           keyword,
