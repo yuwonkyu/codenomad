@@ -3,18 +3,10 @@ import Image from 'next/image';
 interface PersonStepProps {
   headCount: number;
   onChangeHeadCount: (count: number) => void;
-  onConfirm?: () => void;
-  showConfirmButton?: boolean;
   variant?: 'tablet' | 'desktop';
 }
 
-const PersonStep = ({
-  headCount,
-  onChangeHeadCount,
-  onConfirm,
-  showConfirmButton = true,
-  variant,
-}: PersonStepProps) => {
+const PersonStep = ({ headCount, onChangeHeadCount, variant }: PersonStepProps) => {
   const handleDecrease = () => {
     onChangeHeadCount(headCount - 1); // 보정 없음
   };
@@ -22,6 +14,7 @@ const PersonStep = ({
   const handleIncrease = () => {
     onChangeHeadCount(headCount + 1); // 보정 없음
   };
+
   // 통합 스타일 객체
   const styles = {
     mobile: {
@@ -50,25 +43,30 @@ const PersonStep = ({
   return (
     <>
       <div className={currentStyles.wrapper}>
-        <span className={currentStyles.title}>참여 인원 수</span>
+        <label htmlFor='headCount' className={currentStyles.title}>
+          참여 인원 수
+        </label>
         <div className={currentStyles.counterContainer}>
           <button onClick={handleDecrease} className='relative size-20'>
             <Image src='/icons/icon_minus.svg' alt='인원 감소' fill />
           </button>
-          <span className='text-16-b text-[#4b4b4b]'>{headCount}</span>
+          <input
+            id='headCount'
+            type='number'
+            value={headCount}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              onChangeHeadCount(Math.min(value, 100));
+            }}
+            className='text-16-b w-32 appearance-none bg-transparent text-center text-[#4b4b4b] outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none'
+            min={1}
+            max={100}
+          />
           <button onClick={handleIncrease} className='relative size-20'>
             <Image src='/icons/icon_plus.svg' alt='인원 추가' fill />
           </button>
         </div>
       </div>
-      {showConfirmButton && onConfirm && (
-        <button
-          className='bg-primary-500 text-16-b hover:bg-primary-600 mt-30 h-50 w-full rounded-[0.875rem] py-15 text-white'
-          onClick={onConfirm}
-        >
-          확인
-        </button>
-      )}
     </>
   );
 };
