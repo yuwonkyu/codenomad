@@ -2,13 +2,33 @@ import { useState } from 'react';
 import { getReservationDashboard, getReservedSchedule } from '@/lib/api/profile/myActivitiesStatus';
 
 // 📊 대시보드 데이터 타입 정의 (기존과 동일)
+interface ReservationCountData {
+  pending: number;
+  confirmed: number;
+  declined: number;
+  completed?: number;
+}
+
+interface DashboardItem {
+  date: string;
+  reservations: ReservationCountData;
+}
+
+interface ScheduleFromApi {
+  id: number | string;
+  scheduleId?: number | string;
+  startTime: string;
+  endTime: string;
+  count?: ReservationCountData;
+}
+
 interface ScheduleData {
   id: number | string;
   scheduleId?: number | string;
   timeSlot: string;
   startTime: string;
   endTime: string;
-  reservations: any[];
+  reservations: (DashboardItem | ReservationCountData)[];
   headCount?: number;
 }
 
@@ -39,7 +59,7 @@ export const useReservationDashboard = () => {
       const dashboardData: DashboardData = {};
 
       if (Array.isArray(responseData)) {
-        responseData.forEach((item: any) => {
+        (responseData as DashboardItem[]).forEach((item: DashboardItem) => {
           if (item.date && item.reservations) {
             // 📊 이미 집계된 데이터를 그대로 사용 (pending, confirmed, declined 개수)
             dashboardData[item.date] = [
@@ -92,7 +112,7 @@ export const useReservationDashboard = () => {
       console.log('📊 dashboardData 키들:', Object.keys(dashboardData));
 
       // 📊 날짜별 상태 집계를 저장할 객체
-      const statusBadgeData: { [date: string]: { [status: string]: number } } = {};
+      const statusBadgeData: { [date: string]: ReservationCountData } = {};
 
       // 🔄 각 날짜별로 상태 정보 처리
       for (const date of dates) {
@@ -121,12 +141,12 @@ export const useReservationDashboard = () => {
               // 🔍 fallback 데이터에서 상태 정보 추출 (중첩된 구조 처리)
               fallbackData.forEach((schedule) => {
                 if (schedule.reservations && Array.isArray(schedule.reservations)) {
-                  (schedule.reservations as any[]).forEach((reservationGroup) => {
+                  schedule.reservations.forEach((reservationGroup) => {
                     if (
-                      reservationGroup.reservations &&
-                      typeof reservationGroup.reservations === 'object'
+                      (reservationGroup as DashboardItem).reservations &&
+                      typeof (reservationGroup as DashboardItem).reservations === 'object'
                     ) {
-                      const counts = reservationGroup.reservations;
+                      const counts = (reservationGroup as DashboardItem).reservations;
                       dateCounts.pending += counts.pending || 0;
                       dateCounts.confirmed += counts.confirmed || 0;
                       dateCounts.declined += counts.declined || 0;
@@ -140,7 +160,7 @@ export const useReservationDashboard = () => {
             }
           } else {
             // ✅ 정상 응답인 경우: API 응답에서 상태 집계
-            schedules.forEach((schedule: any) => {
+            (schedules as ScheduleFromApi[]).forEach((schedule: ScheduleFromApi) => {
               if (schedule.count) {
                 dateCounts.pending += schedule.count.pending || 0;
                 dateCounts.confirmed += schedule.count.confirmed || 0;
@@ -156,14 +176,18 @@ export const useReservationDashboard = () => {
           const now = new Date();
 
           // 🔄 시간 체크를 위한 데이터 소스 선택 (API 응답 우선, 없으면 fallback)
-          const schedulesToCheck = schedules.length > 0 ? schedules : dashboardData[date] || [];
+          const schedulesToCheck: (ScheduleFromApi | ScheduleData)[] =
+            schedules.length > 0 ? (schedules as ScheduleFromApi[]) : dashboardData[date] || [];
 
-          schedulesToCheck.forEach((schedule: any) => {
+          schedulesToCheck.forEach((schedule: ScheduleFromApi | ScheduleData) => {
+            // 타입 가드: API 응답인지 fallback 데이터인지 확인
+            const isApiSchedule = 'count' in schedule;
+
             // 📊 confirmed 예약이 있는지 확인 (API 응답과 fallback 구조가 다를 수 있음)
-            const hasConfirmed =
-              schedules.length > 0
-                ? schedule.count && schedule.count.confirmed > 0 // API 응답 구조
-                : dateCounts.confirmed > 0; // fallback 구조
+            const hasConfirmed = isApiSchedule
+              ? (schedule as ScheduleFromApi).count &&
+                (schedule as ScheduleFromApi).count!.confirmed > 0 // API 응답 구조
+              : dateCounts.confirmed > 0; // fallback 구조
 
             if (hasConfirmed) {
               // ⏰ 예약 종료 시간 계산
@@ -176,8 +200,9 @@ export const useReservationDashboard = () => {
 
               // 🔄 현재 시간이 예약 종료 시간을 지났으면 완료 처리
               if (now > scheduleEndDateTime) {
-                const confirmedCount =
-                  schedules.length > 0 ? schedule.count.confirmed || 0 : dateCounts.confirmed;
+                const confirmedCount = isApiSchedule
+                  ? (schedule as ScheduleFromApi).count?.confirmed || 0
+                  : dateCounts.confirmed;
 
                 console.log(
                   `⏰ ${date} ${schedule.startTime || '시간미정'}-${endTime}: 시간 경과로 승인 ${confirmedCount}개 → 완료로 변환`,

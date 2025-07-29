@@ -28,9 +28,30 @@ interface ScheduleData {
   headCount?: number;
 }
 
+// 📊 타입 정의 추가
+interface DashboardData {
+  [date: string]: ScheduleData[];
+}
+
+interface ScheduleFromApi {
+  id: number | string;
+  scheduleId?: number | string;
+  startTime: string;
+  endTime: string;
+  count?: {
+    pending: number;
+    confirmed: number;
+    declined: number;
+    completed?: number;
+  };
+}
+
 // 🎣 예약 모달 관리 커스텀 훅
 // 역할: 모달 상태 + 스케줄/예약 데이터 로드 + 예약 상태 변경
-export const useReservationModal = (apiReservationData: any) => {
+export const useReservationModal = (
+  apiReservationData: DashboardData,
+  activityId: number | null,
+) => {
   // 📅 모달 관련 상태
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTab, setSelectedTab] = useState<'신청' | '승인' | '거절'>('신청');
@@ -66,10 +87,17 @@ export const useReservationModal = (apiReservationData: any) => {
       console.log('getReservedSchedule raw response:', schedulesFromApi);
 
       // 🔄 API 응답을 UI에서 사용할 형태로 변환 (timeSlot 필드 생성)
-      const transformedSchedules = schedulesFromApi.map((s: any) => ({
-        ...s,
-        timeSlot: `${s.startTime} - ${s.endTime}`, // "14:00 - 15:00" 형태로 변환
-      }));
+      const transformedSchedules: ScheduleData[] = (schedulesFromApi as ScheduleFromApi[]).map(
+        (s: ScheduleFromApi) => ({
+          id: s.id,
+          scheduleId: s.scheduleId,
+          timeSlot: `${s.startTime} - ${s.endTime}`, // "14:00 - 15:00" 형태로 변환
+          startTime: s.startTime,
+          endTime: s.endTime,
+          reservations: [], // API 응답에서는 빈 배열로 초기화
+          headCount: 0,
+        }),
+      );
 
       console.log('Transformed schedules:', transformedSchedules);
 
@@ -84,13 +112,14 @@ export const useReservationModal = (apiReservationData: any) => {
         const calendarData = apiReservationData[date];
         if (calendarData && calendarData.length > 0) {
           // 🛠️ fallback 스케줄 생성: 캘린더 데이터를 모달용 형태로 변환
-          const fallbackSchedules = calendarData.map((schedule: any) => ({
+          const fallbackSchedules: ScheduleData[] = calendarData.map((schedule: ScheduleData) => ({
             id: schedule.id,
             scheduleId: schedule.id,
             timeSlot: schedule.timeSlot || '시간 미정', // 안전한 기본값 제공
             startTime: schedule.startTime || '시간',
             endTime: schedule.endTime || '미정',
             reservations: schedule.reservations || [], // 🔗 기존 예약 정보 유지
+            headCount: schedule.headCount || 0,
           }));
           console.log('Using fallback schedules from calendar data:', fallbackSchedules);
           setScheduleDetails(fallbackSchedules);
@@ -215,7 +244,7 @@ export const useReservationModal = (apiReservationData: any) => {
 
   // 🔄 Effect: 선택된 시간이 바뀌면 해당 예약 목록 로드
   useEffect(() => {
-    if (selectedDate && selectedTime) {
+    if (selectedDate && selectedTime && activityId) {
       console.log('selectedTime:', selectedTime);
       console.log('scheduleDetails:', scheduleDetails);
 
@@ -227,8 +256,13 @@ export const useReservationModal = (apiReservationData: any) => {
 
       if (schedule && (schedule.scheduleId !== undefined || schedule.id !== undefined)) {
         const scheduleId = schedule.scheduleId || schedule.id;
-        console.log('Calling loadReservations with scheduleId:', scheduleId);
-        // activityId는 외부에서 전달받아야 함 - 이 부분은 나중에 수정
+        console.log(
+          'Calling loadReservations with activityId:',
+          activityId,
+          'scheduleId:',
+          scheduleId,
+        );
+        loadReservations(activityId, scheduleId);
       } else {
         console.warn('No matching schedule found for selectedTime:', selectedTime);
         console.warn(
@@ -239,9 +273,14 @@ export const useReservationModal = (apiReservationData: any) => {
             timeSlot: s.timeSlot,
           })),
         );
+        // 유효한 스케줄이 없으면 예약 목록을 비움
+        setReservationDetails([]);
       }
+    } else if (!activityId) {
+      console.warn('activityId가 없어서 예약 목록을 로드할 수 없습니다.');
+      setReservationDetails([]);
     }
-  }, [selectedDate, selectedTime, scheduleDetails]);
+  }, [selectedDate, selectedTime, scheduleDetails, activityId]);
 
   // 🔄 Effect: 탭이 바뀌면 예약 목록 필터링
   useEffect(() => {
