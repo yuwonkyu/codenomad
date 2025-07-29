@@ -161,3 +161,17 @@ body {
 .bg-gradient-main {
   background: #f4f4e9;
 }
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.placeholder-blink::placeholder {
+  animation: blink 1s infinite;
+}
