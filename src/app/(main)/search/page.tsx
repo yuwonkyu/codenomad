@@ -46,10 +46,9 @@ const SearchContent = () => {
 
   return (
     <main className='bg-gradient-main min-h-screen w-full px-20'>
-      <div className='mx-auto max-w-screen-xl'>
+      <div className='mx-auto max-w-screen-xl pt-100'>
         {/* 배너 & 검색바 */}
         <Banner />
-        <SearchBar />
 
         {/* 검색 결과 안내 텍스트 */}
         <div className='text-20-b mt-40 mb-10'>‘{keyword}’에 대한 검색 결과입니다.</div>
