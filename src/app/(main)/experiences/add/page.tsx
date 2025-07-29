@@ -56,6 +56,7 @@ const ExperienceAddPage = () => {
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     mode: 'onBlur',
+    shouldUnregister: false, // 이 옵션 추가
   });
 
   // 컴포넌트 마운트 시 토큰 확인
@@ -123,94 +124,94 @@ const ExperienceAddPage = () => {
     reserveTimes,
   ]);
 
-  // 등록하기
-  const handleSubmitForm = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // 예약시간 중복 체크 (빈 값 제외)
+  const isDuplicateTime = useCallback(() => {
+    const validTimes = reserveTimes
+      .filter((rt) => rt.date && rt.start && rt.end)
+      .map((rt) => `${rt.date}-${rt.start}-${rt.end}`);
+    return new Set(validTimes).size !== validTimes.length;
+  }, [reserveTimes]);
 
-    const currentTime = Date.now();
-
-    // 이미 제출 중이거나 제출 완료된 경우 중복 제출 방지
-    if (isSubmitting || isSubmitted) {
-      return;
-    }
-
-    // 디바운싱: 1초 이내 연속 클릭 방지
-    if (currentTime - lastSubmitTime < 1000) {
-      return;
-    }
-
-    setLastSubmitTime(currentTime);
-
-    // 입력된 예약 시간만 필터링 (빈 값은 제외)
-    const validReserveTimes = reserveTimes.filter(
-      (rt: { date: string; start: string; end: string }) => rt.date && rt.start && rt.end,
-    );
-
-    if (
-      !title ||
-      !category ||
-      !desc ||
-      !price ||
-      !address ||
-      !banner ||
-      validReserveTimes.length === 0 || // 최소 하나의 유효한 예약 시간 필요
-      isDuplicateTime()
-    ) {
-      alert('필수 항목을 모두 입력해 주세요.\n또는 예약 시간이 중복되었습니다.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    // setSubmitError(null); // 미사용 변수 제거
-
-    try {
-      // 1. 배너 이미지 업로드
-      const bannerUpload = await uploadImage(banner);
-
-      // 2. 소개 이미지들 업로드
-      const subImageUploads = await Promise.all(introImages.map((image) => uploadImage(image)));
-
-      // 3. 체험 등록 데이터 준비
-      const experienceData = {
-        title,
-        category,
-        description: desc,
-        price: parseInt(price),
-        address, // 기본 주소만 전송, 상세주소는 제외
-        schedules: validReserveTimes.map((rt) => ({
-          date: rt.date,
-          startTime: rt.start,
-          endTime: rt.end,
-        })),
-        bannerImageUrl: bannerUpload.activityImageUrl,
-        subImageUrls: subImageUploads.map((upload) => upload.activityImageUrl),
-      };
-
-      // 4. 체험 등록 API 호출
-      await createExperience(experienceData);
-
-      setIsSubmitted(true);
-      setModalOpen(true);
-    } catch (error) {
-      console.error('체험 등록 실패:', error);
-      // setSubmitError(error instanceof Error ? error.message : '체험 등록에 실패했습니다.'); // 미사용 변수 제거
-      alert('체험 등록에 실패했습니다. 다시 시도해주세요.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  // 폼 제출 핸들러 (중복 제출/디바운싱/유효성 검사 포함)
+  const handleSubmitForm = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      const currentTime = Date.now();
+      if (isSubmitting || isSubmitted) return;
+      if (currentTime - lastSubmitTime < 1000) return;
+      setLastSubmitTime(currentTime);
+      const validReserveTimes = reserveTimes.filter((rt) => rt.date && rt.start && rt.end);
+      if (
+        !title ||
+        !category ||
+        !desc ||
+        !price ||
+        !address ||
+        !banner ||
+        validReserveTimes.length === 0 ||
+        isDuplicateTime()
+      ) {
+        alert('필수 항목을 모두 입력해 주세요.\n또는 예약 시간이 중복되었습니다.');
+        return;
+      }
+      setIsSubmitting(true);
+      try {
+        // 이미지 업로드 및 데이터 준비
+        const bannerUpload = await uploadImage(banner);
+        const subImageUploads = await Promise.all(introImages.map(uploadImage));
+        const experienceData = {
+          title,
+          category,
+          description: desc,
+          price: parseInt(price),
+          address,
+          schedules: validReserveTimes.map((rt) => ({
+            date: rt.date,
+            startTime: rt.start,
+            endTime: rt.end,
+          })),
+          bannerImageUrl: bannerUpload.activityImageUrl,
+          subImageUrls: subImageUploads.map((u) => u.activityImageUrl),
+        };
+        await createExperience(experienceData);
+        setIsSubmitted(true);
+        setModalOpen(true);
+      } catch (error) {
+        console.error('체험 등록 실패:', error);
+        alert('체험 등록에 실패했습니다. 다시 시도해주세요.');
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [
+      isSubmitting,
+      isSubmitted,
+      lastSubmitTime,
+      reserveTimes,
+      title,
+      category,
+      desc,
+      price,
+      address,
+      banner,
+      introImages,
+      isDuplicateTime,
+    ],
+  );
 
   // 뒤로가기
-  const handleBackClick = () => {
+  // 뒤로가기 핸들러
+  const handleBackClick = useCallback(() => {
     if (hasChanged()) {
       setPendingAction(() => () => router.back());
       setLeaveModalOpen(true);
     } else {
       router.back();
     }
-  };
+  }, [hasChanged, router]);
 
   // 새로고침/닫기/뒤로가기 경고
+  // 새로고침/닫기/뒤로가기 경고 핸들러
   const handleBeforeUnload = useCallback(
     (e: BeforeUnloadEvent) => {
       if (hasChanged()) {
@@ -237,29 +238,22 @@ const ExperienceAddPage = () => {
   ]);
 
   // 모달 "네" 클릭
-  const handleLeave = () => {
+  // 나가기 모달 "네" 클릭 핸들러
+  const handleLeave = useCallback(() => {
     if (pendingAction) {
       pendingAction();
       setPendingAction(null);
     }
     setLeaveModalOpen(false);
-  };
+  }, [pendingAction]);
 
   // 등록 완료 모달 "확인" 클릭 시
-  const handleConfirm = () => {
+  // 등록 완료 모달 "확인" 클릭 핸들러
+  const handleConfirm = useCallback(() => {
     setModalOpen(false);
-    // beforeunload 이벤트 제거하여 경고창 방지
     window.removeEventListener('beforeunload', handleBeforeUnload);
     router.push('/profile/myExperiences');
-  };
-
-  // 예약시간 중복 체크 (빈 값은 제외)
-  const isDuplicateTime = () => {
-    const validTimes = reserveTimes
-      .filter((rt) => rt.date && rt.start && rt.end) // 빈 값 제외
-      .map((rt) => `${rt.date}-${rt.start}-${rt.end}`);
-    return new Set(validTimes).size !== validTimes.length;
-  };
+  }, [handleBeforeUnload, router]);
 
   return (
     <div className='flex items-center justify-center'>
@@ -296,15 +290,15 @@ const ExperienceAddPage = () => {
           error={errors.description?.message}
           value={watch('description') || ''}
         />
-        <PriceInput<FormValues>
-          register={register}
-          error={errors.price?.message}
+        <PriceInput
           value={watch('price') || ''}
+          onChange={(v) => setValue('price', v)}
+          error={errors.price?.message}
         />
-        <AddressInput<FormValues>
-          register={register}
+        <AddressInput
           error={errors.address?.message}
           value={watch('address') || ''}
+          onChange={(v) => setValue('address', v)}
           detailAddress={watch('detailAddress') || ''}
           onDetailAddressChange={(v) => setValue('detailAddress', v)}
           detailError={errors.detailAddress?.message}
