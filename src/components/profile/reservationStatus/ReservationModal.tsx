@@ -122,7 +122,7 @@ const ReservationModal = ({
         <div className='mb-6 w-full'>
           <label className='mb-2 block text-sm font-semibold'>예약 시간</label>
           <select
-            className='h-[54px] w-full rounded-xl border bg-white px-10 text-base'
+            className='h-54 w-full rounded-xl border bg-white px-10 text-base'
             value={selectedTime}
             onChange={(e) => onTimeChange(e.target.value)}
           >
@@ -137,12 +137,12 @@ const ReservationModal = ({
         {/* 📋 예약 내역 리스트 */}
         <div className='mb-6 w-full'>
           <label className='mb-2 block text-sm font-semibold'>예약 내역</label>
-          <div className='flex max-h-[260px] flex-col gap-4 overflow-y-auto'>
+          <div className='flex max-h-260 flex-col gap-4 overflow-y-auto'>
             {filteredReservations.length > 0 ? (
               filteredReservations.map((reservation, i) => (
                 <div
                   key={i}
-                  className='flex h-[94px] max-h-[94px] min-h-[94px] flex-row items-center justify-between overflow-hidden rounded-xl border border-gray-200 bg-white p-4 px-20 shadow-sm'
+                  className='flex h-94 max-h-94 min-h-94 flex-row items-center justify-between overflow-hidden rounded-xl border border-gray-200 bg-white p-4 px-20 shadow-sm'
                 >
                   {/* 📊 예약자 정보 */}
                   <div className='flex flex-col gap-2'>
@@ -161,7 +161,7 @@ const ReservationModal = ({
                     {selectedTab === '신청' ? (
                       <>
                         <button
-                          className='flex-1 rounded-lg border border-blue-500 bg-blue-100 px-[20px] py-[8px] text-sm font-semibold text-blue-600 transition-colors hover:border-blue-600'
+                          className='border-primary-500 bg-primary-100 text-primary-500 hover:border-primary-500 flex-1 rounded-lg border px-20 py-8 text-sm font-semibold transition-colors'
                           onClick={() =>
                             onApprove(reservation.id, parseInt(String(reservation.scheduleId), 10))
                           }
@@ -169,7 +169,7 @@ const ReservationModal = ({
                           승인하기
                         </button>
                         <button
-                          className='mt-2 flex-1 rounded-lg border border-red-500 bg-red-100 px-[20px] py-[8px] text-sm font-semibold text-red-600 transition-colors hover:border-red-600'
+                          className='mt-2 flex-1 rounded-lg border border-red-500 bg-red-100 px-20 py-8 text-sm font-semibold text-red-600 transition-colors hover:border-red-600'
                           onClick={() =>
                             onDecline(reservation.id, parseInt(String(reservation.scheduleId), 10))
                           }
@@ -178,11 +178,11 @@ const ReservationModal = ({
                         </button>
                       </>
                     ) : selectedTab === '승인' ? (
-                      <span className='rounded-lg bg-blue-50 px-[20px] py-[8px] text-sm font-semibold text-blue-500'>
+                      <span className='bg-primary-100 text-primary-500 rounded-lg px-20 py-8 text-sm font-semibold'>
                         예약 승인
                       </span>
                     ) : selectedTab === '거절' ? (
-                      <span className='rounded-lg bg-red-50 px-[20px] py-[8px] text-sm font-semibold text-red-500'>
+                      <span className='rounded-lg bg-red-50 px-20 py-8 text-sm font-semibold text-red-500'>
                         예약 거절
                       </span>
                     ) : null}

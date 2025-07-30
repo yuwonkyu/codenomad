@@ -154,7 +154,7 @@ export default function MyExperiencesPage() {
               {/* 📱 모바일에서만 보이는 등록 버튼 */}
               <Link
                 href='/experiences/add'
-                className='bg-primary-500 block flex h-48 w-138 items-center justify-center rounded-lg text-center text-base whitespace-nowrap text-white transition-colors hover:bg-blue-600 md:hidden'
+                className='bg-primary-500 block flex h-48 w-138 items-center justify-center rounded-lg text-center text-base whitespace-nowrap text-white transition-colors'
               >
                 <span className='flex h-full w-full items-center justify-center'>
                   체험 등록하기
