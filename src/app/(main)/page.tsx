@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <main className='bg-gradient-main w-full pt-40 md:pt-100'>
+    <main className='bg-gradient-main w-full pt-88 md:pt-180'>
       <div className='mx-auto w-full max-w-[1120px] px-24 md:px-30 lg:px-40'>
         <Banner />
         <MostCommentedActivities />

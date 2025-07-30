@@ -26,7 +26,7 @@ const Header = () => {
   const hasNewNotification = false;
 
   return (
-    <header className='h-48 w-full md:h-80'>
+    <header className='fixed top-0 left-0 z-50 h-48 w-full bg-white md:h-80'>
       <div className='mx-auto flex h-full max-w-screen-xl items-center justify-between px-6'>
         {/* 로고 */}
         <Link href='/' className='flex items-center gap-2 p-6'>
