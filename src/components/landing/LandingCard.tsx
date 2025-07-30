@@ -17,24 +17,25 @@ const LandingCard = ({ activity }: { activity: Activity }) => {
   return (
     <div
       onClick={() => router.push(`/activities/${id}`)}
-      className='shadow-custom-5 relative h-[242px] w-[132px] shrink-0 cursor-pointer overflow-hidden rounded-[32px] transition-transform duration-200 hover:scale-105 sm:h-[423px] sm:w-[332px] lg:h-[366px] lg:w-[262px]'
+      className='relative aspect-[262/366] w-full cursor-pointer overflow-hidden rounded-xl transition-transform duration-200 hover:scale-105'
     >
       {/* 이미지 영역 */}
-      <div className='relative h-[132px] overflow-hidden rounded-t-4xl sm:h-[290px] lg:h-[240px]'>
+      <div className='relative aspect-[262/240] w-full overflow-hidden rounded-t-4xl'>
         <Image
           src={bannerImageUrl || '/imgs/thumbnail.jpg'}
           alt={bannerImageUrl ? `${title} 썸네일있음` : '썸네일 이미지 없음'}
           fill
-          sizes='(min-width: 1024) 262, (min-width: 640) 332, 132'
+          sizes='(min-width: 1024px) 262px, (min-width: 640px) 332px, 152px'
           className='object-cover'
         />
       </div>
+
       {/* 텍스트 박스 */}
-      <div className='absolute bottom-20 z-10 flex h-[110px] w-full flex-col items-start justify-center rounded-[32px] bg-white px-12 sm:bottom-20 sm:h-[133px] sm:px-30 lg:bottom-20 lg:h-[126px]'>
-        <h2 className='text-14-b sm:text-18-b mb-4 line-clamp-1'>{title}</h2>
+      <div className='absolute bottom-20 z-10 flex h-[35%] w-full flex-col items-start justify-center rounded-2xl bg-white px-12 md:rounded-4xl lg:px-30'>
+        <h2 className='text-13-b sm:text-18-b mb-4 line-clamp-1'>{title}</h2>
         <div className='flex items-center gap-1'>
           <div className='relative mr-2 h-16 w-16'>
-            <Image src='/icons/icon_star_on.svg' fill sizes='16' alt='별 아이콘' />
+            <Image src='/icons/icon_star_on.svg' fill sizes='16px' alt='별 아이콘' />
           </div>
           <span className='text-12-m sm:text-14-m'>{rating}</span>
           <span className='text-12-m sm:text-14-m text-gray-400'>({reviewCount})</span>
