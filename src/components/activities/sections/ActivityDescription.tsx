@@ -49,7 +49,7 @@ const ActivityDescription = ({ text }: ActivityDescriptionProps) => {
           <div className='absolute right-0 bottom-0 left-0 h-120 w-full bg-gradient-to-t from-white to-transparent' />
         )}
       </div>
-      {isOverflowing && !isExpanded && (
+      {isOverflowing && (
         <button
           onClick={() => setIsExpanded((prev) => !prev)}
           className='border-primary-500 text-14-m h-50 w-250 self-center rounded-2xl border-1 md:w-300'
