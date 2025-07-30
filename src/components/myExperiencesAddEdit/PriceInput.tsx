@@ -1,40 +1,30 @@
 import Input from '@/components/common/Input';
+import { formatPrice } from '@/utils/formatPrice';
+import { FieldValues, Path } from 'react-hook-form';
+import { PriceInputProps } from './types';
 
-interface PriceInputProps {
-  value: string;
-  onChange: (value: string) => void;
-}
-
-const PriceInput = ({ value, onChange }: PriceInputProps) => {
-  // 숫자만 추출하는 함수
-  const extractNumbers = (str: string) => {
-    return str.replace(/[^0-9]/g, '');
-  };
-
-  // 천 단위 콤마 추가 함수
-  const formatPrice = (str: string) => {
-    const numbers = extractNumbers(str);
-    if (!numbers) return '';
-    return `￦${parseInt(numbers).toLocaleString()}`;
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
-  ) => {
-    const inputValue = e.target.value;
-    const numbersOnly = extractNumbers(inputValue);
-    onChange(numbersOnly);
-  };
-
+const PriceInput = <T extends FieldValues>({
+  value,
+  error,
+  register,
+  path,
+}: PriceInputProps<T>) => {
   return (
-    <div className='mb-24'>
+    <div className="mb-24">
       <Input
-        label='가격'
-        labelClassName='text-16-b'
-        placeholder='체험 금액을 입력해 주세요'
-        value={formatPrice(value)}
-        onChange={handleChange}
+        label="가격"
+        labelClassName="text-16-b"
+        placeholder="체험 금액을 입력해 주세요"
+        error={error}
+        value={value}
+        inputMode="numeric"
+        {...register(path as Path<T>)}
       />
+      {value && (
+        <div className="text-14-r mt-2 text-gray-500">
+          {formatPrice(Number(value))}
+        </div>
+      )}
     </div>
   );
 };

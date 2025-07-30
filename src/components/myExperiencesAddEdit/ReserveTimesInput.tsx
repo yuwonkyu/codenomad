@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Input from '@/components/common/Input';
 import Image from 'next/image';
 import CalendarComponent from '@/components/common/Calendar';
+import type { ReserveTime, ReserveTimesInputProps } from './types';
 
 const TIME_OPTIONS = Array.from({ length: 25 }, (_, i) => {
   const hour = i.toString().padStart(2, '0');
@@ -15,18 +16,6 @@ const TIME_OPTIONS_END = [
   }),
   { value: '23:59', label: '다음날 00:00' },
 ];
-
-interface ReserveTime {
-  date: string;
-  start: string;
-  end: string;
-}
-
-interface ReserveTimesInputProps {
-  value: ReserveTime[];
-  onChange: (value: ReserveTime[]) => void;
-  isEdit?: boolean; // edit 페이지인지 구분하는 prop
-}
 
 // 시간 문자열을 분(minute) 단위로 변환
 const timeToMinutes = (time: string) => {
