@@ -41,10 +41,10 @@ const AllActivities = () => {
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   return (
-    <section className='mt-80 mb-160'>
+    <section>
       {/* 타이틀 + 드롭다운 */}
       <div className='mb-12 flex items-center justify-between'>
-        <h2 className='text-20-b md:text-24-b'>🛼 모든 체험</h2>
+        <h2 className='text-20-b md:text-24-b'> 모든 체험</h2>
         <PriceSortDropdown
           selectedSort={selectedSort}
           onSelectSort={(sort) => {
@@ -53,6 +53,7 @@ const AllActivities = () => {
           }}
         />
       </div>
+
       {/* 카테고리 필터 */}
       <div className='mb-20'>
         <CategoryFilter
@@ -63,12 +64,14 @@ const AllActivities = () => {
           }}
         />
       </div>
+
       {/* 카드 목록 */}
-      <div className='grid grid-cols-2 gap-x-16 gap-y-40 sm:grid-cols-2 lg:grid-cols-4'>
+      <div className='grid grid-cols-2 gap-x-10 gap-y-20 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4'>
         {activities.map((item) => (
           <LandingCard key={item.id} activity={item} />
         ))}
       </div>
+
       {/* 페이지네이션 */}
       {totalPages > 1 && (
         <Pagination
