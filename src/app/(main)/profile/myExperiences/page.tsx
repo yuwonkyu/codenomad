@@ -67,6 +67,7 @@ export default function MyExperiencesPage() {
   // 🎬 컴포넌트 마운트 시 첫 번째 데이터 로드
   useEffect(() => {
     fetchActivities(); // 페이지 진입하자마자 첫 2개 체험 로드
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // 빈 배열 = 컴포넌트 마운트 시 한 번만 실행
 
   // 👀 무한 스크롤 핵심: IntersectionObserver 설정
@@ -125,7 +126,7 @@ export default function MyExperiencesPage() {
   const addExperienceButton = (
     <Link
       href='/experiences/add'
-      className='flex h-[48px] w-[138px] items-center justify-center rounded-lg bg-blue-500 text-center text-base whitespace-nowrap text-white transition-colors hover:bg-blue-600'
+      className='flex h-48 w-138 items-center justify-center rounded-lg bg-blue-500 text-center text-base whitespace-nowrap text-white transition-colors hover:bg-blue-600'
     >
       <span className='flex h-full w-full items-center justify-center'>체험 등록하기</span>
     </Link>
@@ -153,7 +154,7 @@ export default function MyExperiencesPage() {
               {/* 📱 모바일에서만 보이는 등록 버튼 */}
               <Link
                 href='/experiences/add'
-                className='bg-primary-500 block flex h-[48px] w-[138px] items-center justify-center rounded-lg text-center text-base whitespace-nowrap text-white transition-colors hover:bg-blue-600 md:hidden'
+                className='bg-primary-500 block flex h-48 w-138 items-center justify-center rounded-lg text-center text-base whitespace-nowrap text-white transition-colors hover:bg-blue-600 md:hidden'
               >
                 <span className='flex h-full w-full items-center justify-center'>
                   체험 등록하기

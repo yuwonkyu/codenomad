@@ -1,7 +1,5 @@
 'use client';
-import { useState, useContext, useEffect, MouseEvent } from 'react';
-// 🔗 모바일 Context: 메뉴로 돌아가기 기능
-import { ProfileMobileContext } from '@/app/(main)/profile/layout';
+import { useState, useEffect, MouseEvent } from 'react';
 import ReservationCalendar from '@/components/common/ReservationCalendar';
 import {
   getReservationDashboard,
@@ -41,7 +39,7 @@ interface ScheduleData {
   timeSlot: string; // 시간대 표시용
   startTime: string;
   endTime: string;
-  reservations: ReservationData[]; // 해당 시간대의 모든 예약들
+  reservations: (DashboardItem | ReservationData)[]; // 대시보드 아이템 또는 예약 데이터
   headCount?: number;
 }
 
@@ -75,7 +73,10 @@ interface ScheduleFromApi {
 }
 
 interface ReservationCountData {
-  [status: string]: number;
+  pending: number;
+  confirmed: number;
+  declined: number;
+  completed: number;
 }
 
 export default function ReservationStatusPage() {
@@ -144,7 +145,7 @@ export default function ReservationStatusPage() {
                 timeSlot: '시간 미정', // 대시보드에서는 구체적 시간 정보 없음
                 startTime: '시간',
                 endTime: '미정',
-                reservations: [item] as any, // 📈 집계 데이터 보존 (타입이 다르므로 any 유지)
+                reservations: [item] as (DashboardItem | ReservationData)[], // 📈 집계 데이터 보존 (DashboardItem 타입)
                 headCount: 0,
               },
             ];
@@ -175,9 +176,15 @@ export default function ReservationStatusPage() {
 
     fallbackData.forEach((schedule) => {
       if (schedule.reservations && Array.isArray(schedule.reservations)) {
-        (schedule.reservations as any[]).forEach((reservationGroup) => {
-          if (reservationGroup.reservations && typeof reservationGroup.reservations === 'object') {
-            const groupCounts = reservationGroup.reservations;
+        schedule.reservations.forEach((reservationGroup) => {
+          // 타입 가드를 사용하여 DashboardItem인지 확인
+          if (
+            reservationGroup &&
+            'reservations' in reservationGroup &&
+            typeof reservationGroup.reservations === 'object'
+          ) {
+            const dashboardItem = reservationGroup as DashboardItem;
+            const groupCounts = dashboardItem.reservations;
             counts.pending += groupCounts.pending || 0;
             counts.confirmed += groupCounts.confirmed || 0;
             counts.declined += groupCounts.declined || 0;
@@ -211,7 +218,6 @@ export default function ReservationStatusPage() {
     dateCounts: ReservationCountData,
     schedulesToCheck: (ScheduleFromApi | ScheduleData)[],
     date: string,
-    hasApiData: boolean,
   ): ReservationCountData => {
     const now = new Date();
     const updatedCounts = { ...dateCounts };
@@ -258,7 +264,6 @@ export default function ReservationStatusPage() {
 
       let dateCounts: ReservationCountData;
       let schedulesToCheck: (ScheduleFromApi | ScheduleData)[];
-      let hasApiData: boolean;
 
       if (schedules.length === 0) {
         // fallback 데이터 사용
@@ -268,16 +273,14 @@ export default function ReservationStatusPage() {
             ? extractCountsFromFallbackData(fallbackData)
             : { pending: 0, confirmed: 0, declined: 0, completed: 0 };
         schedulesToCheck = fallbackData || [];
-        hasApiData = false;
       } else {
         // API 응답 사용
         dateCounts = extractCountsFromApiSchedules(schedules as ScheduleFromApi[]);
         schedulesToCheck = schedules as ScheduleFromApi[];
-        hasApiData = true;
       }
 
       // 시간 기반 상태 변환 적용
-      return applyTimeBasedStatusConversion(dateCounts, schedulesToCheck, date, hasApiData);
+      return applyTimeBasedStatusConversion(dateCounts, schedulesToCheck, date);
     } catch (err) {
       console.warn(`Failed to process status for ${date}:`, err);
       return { pending: 0, confirmed: 0, declined: 0, completed: 0 };
@@ -287,7 +290,7 @@ export default function ReservationStatusPage() {
   // 🔧 유틸리티: 전역 상태 업데이트 및 리렌더링 트리거
   const updateStatusBadgeData = (statusBadgeData: { [date: string]: ReservationCountData }) => {
     // 전역 변수에 저장 (기존 방식과 호환성 유지)
-    (window as any).statusBadgeData = statusBadgeData;
+    window.statusBadgeData = statusBadgeData;
 
     // 캘린더 리렌더링 트리거
     if (Object.keys(statusBadgeData).length > 0) {
@@ -445,7 +448,6 @@ export default function ReservationStatusPage() {
 
       // 상태 업데이트 후 모든 예약을 다시 불러오기
       if (selectedDate && selectedActivity) {
-        const dateStr = formatDate(selectedDate);
         const schedule = scheduleDetails.find((s) => s.timeSlot === selectedTime);
         if (schedule && (schedule.scheduleId !== undefined || schedule.id !== undefined)) {
           const scheduleIdToUse = schedule.scheduleId || schedule.id;
@@ -485,6 +487,7 @@ export default function ReservationStatusPage() {
     if (selectedActivity && date) {
       loadReservationDashboard(selectedActivity.id, date.getFullYear(), date.getMonth() + 1);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedActivity, date]);
 
   useEffect(() => {
@@ -492,6 +495,7 @@ export default function ReservationStatusPage() {
       const dateStr = formatDate(selectedDate);
       loadReservedSchedule(selectedActivity.id, dateStr);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDate, selectedActivity]);
 
   useEffect(() => {
@@ -505,8 +509,6 @@ export default function ReservationStatusPage() {
 
   useEffect(() => {
     if (selectedDate && selectedActivity && selectedTime) {
-      const dateStr = formatDate(selectedDate);
-
       // selectedTime과 일치하는 스케줄 찾기
       const schedule = scheduleDetails.find((s) => s.timeSlot === selectedTime);
 
@@ -520,6 +522,7 @@ export default function ReservationStatusPage() {
   useEffect(() => {
     const newFiltered = reservationDetails.filter((r) => r.status === tabMap[selectedTab]);
     setFilteredReservations(newFiltered);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reservationDetails, selectedTab]);
 
   const handleDayClick = (clickedDate: Date, event?: MouseEvent) => {
@@ -616,11 +619,6 @@ export default function ReservationStatusPage() {
 
   const timeOptions = scheduleDetails.map((s) => s.timeSlot);
   const tabMap = { 신청: 'pending', 승인: 'confirmed', 거절: 'declined' };
-  const API_STATUS_TO_KOREAN: Record<string, string> = {
-    pending: '예약',
-    confirmed: '승인',
-    declined: '거절',
-  };
 
   if (loading && !selectedActivity) {
     return <LoadingSpinner message='체험 목록을 불러오는 중...' useLogo={true} />;

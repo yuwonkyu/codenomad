@@ -32,7 +32,7 @@ const InformationPage = () => {
         const profile = await getUserProfile();
         setEmail(profile.email);
         setNickname(profile.nickname);
-      } catch (err) {
+      } catch {
         setError('사용자 정보를 불러오는데 실패했습니다.');
       } finally {
         setIsLoadingProfile(false);
@@ -199,10 +199,10 @@ const InformationPage = () => {
       />
 
       {/* 저장/취소 버튼 (모바일에서만 보임) */}
-      <div className='block flex justify-center gap-3 md:hidden'>
+      <div className='flex justify-center gap-3 md:hidden'>
         <button
           type='button'
-          className='text-16-m h-[41px] flex-1 rounded-[12px] border border-gray-300 bg-white px-[10px] py-3 text-gray-700'
+          className='text-16-m h-41 flex-1 rounded-[12px] border border-gray-300 bg-white px-10 py-3 text-gray-700'
           onClick={mobileContext?.onCancel}
           disabled={isLoading}
         >
@@ -210,7 +210,7 @@ const InformationPage = () => {
         </button>
         <button
           type='submit'
-          className='text-16-m hover:shadow-brand-blue/60 bg-primary-500 h-[41px] flex-1 cursor-pointer rounded-[12px] px-[10px] py-3 text-white transition-all duration-200 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50'
+          className='text-16-m hover:shadow-brand-blue/60 bg-primary-500 h-41 flex-1 cursor-pointer rounded-[12px] px-10 py-3 text-white transition-all duration-200 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50'
           disabled={isLoading || !isFormValid}
         >
           {isLoading ? '저장 중...' : '저장하기'}
@@ -218,10 +218,10 @@ const InformationPage = () => {
       </div>
 
       {/* 저장 버튼 (PC에서만 보임) */}
-      <div className='flex hidden justify-center md:flex'>
+      <div className='hidden justify-center md:flex'>
         <button
           type='submit'
-          className='text-16-m hover:shadow-brand-blue/60 h-[41px] w-[120px] cursor-pointer rounded-[12px] bg-blue-500 py-3 text-white transition-all duration-200 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50'
+          className='text-16-m hover:shadow-brand-blue/60 h-41 w-120 cursor-pointer rounded-[12px] bg-blue-500 py-3 text-white transition-all duration-200 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50'
           disabled={isLoading || !isFormValid}
         >
           {isLoading ? '저장 중...' : '저장하기'}

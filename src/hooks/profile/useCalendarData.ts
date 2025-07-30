@@ -15,19 +15,50 @@ interface ReservationCounts {
   completed: number;
 }
 
-// 📊 대시보드 데이터 타입 (기존과 동일)
+// 🎯 API 응답 타입 정의
+interface DashboardItem {
+  date: string;
+  reservations: {
+    pending: number;
+    confirmed: number;
+    declined: number;
+    completed?: number;
+  };
+}
+
+// 📋 예약 데이터 타입 정의
+interface ReservationData {
+  id: number;
+  status: 'pending' | 'confirmed' | 'declined';
+  headCount: number;
+  nickname: string;
+  scheduleId: number | string;
+  timeSlot: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+}
+
+// 📊 대시보드 데이터 타입 (reservations를 명확한 타입으로 정의)
 interface ScheduleData {
   id: number | string;
   scheduleId?: number | string;
   timeSlot: string;
   startTime: string;
   endTime: string;
-  reservations: any[];
+  reservations: (DashboardItem | ReservationData)[]; // 명확한 타입 정의
   headCount?: number;
 }
 
 interface DashboardData {
   [date: string]: ScheduleData[];
+}
+
+// 🌐 Window 객체 확장 (statusBadgeData 타입 정의)
+declare global {
+  interface Window {
+    statusBadgeData?: Record<string, ReservationCounts>;
+  }
 }
 
 // 🔧 공통 함수: 예약 카운트를 캘린더 뱃지로 변환
@@ -61,15 +92,13 @@ export const useCalendarData = (apiReservationData: DashboardData) => {
 
     // ✨ 우선순위 1: statusBadgeData 사용 (getReservedSchedule 기반의 정확한 데이터)
     // 이 데이터는 loadStatusBadgesWithReservedSchedule에서 생성됨
-    const statusBadgeData = (window as any).statusBadgeData;
+    const statusBadgeData = window.statusBadgeData;
 
     if (statusBadgeData) {
       // 🎯 정확한 상태 데이터를 기반으로 캘린더 뱃지 생성
-      Object.entries(statusBadgeData as Record<string, ReservationCounts>).forEach(
-        ([date, counts]) => {
-          convertedData[date] = createReservationBadges(counts);
-        },
-      );
+      Object.entries(statusBadgeData).forEach(([date, counts]) => {
+        convertedData[date] = createReservationBadges(counts);
+      });
     } else {
       // 🔄 FALLBACK: 기존 방식 (statusBadgeData가 아직 로드되지 않은 경우)
       // apiReservationData (대시보드 API 응답)를 사용하여 뱃지 생성
@@ -84,12 +113,15 @@ export const useCalendarData = (apiReservationData: DashboardData) => {
         // 📋 스케줄별로 예약 정보 추출 및 집계 (중첩된 구조 처리)
         schedules.forEach((schedule) => {
           if (schedule.reservations && Array.isArray(schedule.reservations)) {
-            (schedule.reservations as any[]).forEach((reservationGroup) => {
+            schedule.reservations.forEach((reservationGroup) => {
+              // 타입 가드를 사용하여 DashboardItem인지 확인
               if (
-                reservationGroup.reservations &&
+                reservationGroup &&
+                'reservations' in reservationGroup &&
                 typeof reservationGroup.reservations === 'object'
               ) {
-                const counts = reservationGroup.reservations;
+                const dashboardItem = reservationGroup as DashboardItem;
+                const counts = dashboardItem.reservations;
 
                 // 📊 카운트 집계
                 aggregatedCounts.pending += counts.pending || 0;

@@ -47,10 +47,10 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
   };
 
   return (
-    <div className='shadow-custom-5 mx-auto mt-20 flex h-453 w-327 flex-col items-center rounded-2xl bg-white px-6 py-8 md:w-[178px] md:px-4 md:py-6 lg:w-[290px] lg:px-8 lg:py-10'>
+    <div className='shadow-custom-5 mx-auto mt-20 flex h-453 w-327 flex-col items-center rounded-2xl bg-white px-6 py-8 md:w-178 md:px-4 md:py-6 lg:w-290 lg:px-8 lg:py-10'>
       {/* 프로필 이미지 */}
       <div className='relative mb-8'>
-        <div className='mt-40 mb-40 flex h-[120px] w-[120px] items-center justify-center overflow-hidden rounded-full bg-blue-100'>
+        <div className='mt-40 mb-40 flex h-120 w-120 items-center justify-center overflow-hidden rounded-full bg-blue-100'>
           <Image
             src={user?.profileImageUrl || '/imgs/profile_default.png'}
             alt='프로필'
@@ -110,7 +110,7 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
                     onMenuClick(); // 🎯 layout.tsx의 setShowContent(true) 실행
                     router.push(item.href); // 🚀 해당 서브페이지로 라우팅
                   }}
-                  className={`flex h-[54px] w-full cursor-pointer items-center gap-3 rounded-xl px-3 transition-colors md:px-30 ${isActive ? 'bg-blue-100 text-blue-500' : 'text-gray-600'} hover:bg-blue-100 hover:text-blue-500`}
+                  className={`flex h-54 w-full cursor-pointer items-center gap-3 rounded-xl px-3 transition-colors md:px-30 ${isActive ? 'bg-blue-100 text-blue-500' : 'text-gray-600'} hover:bg-blue-100 hover:text-blue-500`}
                   style={{ boxSizing: 'border-box' }}
                 >
                   {/* 내 정보 메뉴에 Vector.png 아이콘 제거 (info/page.tsx에서만 보임) */}
@@ -137,7 +137,7 @@ export default function ProfileMenu({ onMenuClick }: ProfileMenuProps) {
             <li key={item.label} className='w-full'>
               <Link
                 href={item.href}
-                className={`flex h-[54px] w-full cursor-pointer items-center gap-3 rounded-xl px-3 transition-colors md:px-30 ${isActive ? 'bg-blue-100 text-blue-500' : 'text-gray-600'} hover:bg-blue-100 hover:text-blue-500`}
+                className={`flex h-54 w-full cursor-pointer items-center gap-3 rounded-xl px-3 transition-colors md:px-30 ${isActive ? 'bg-blue-100 text-blue-500' : 'text-gray-600'} hover:bg-blue-100 hover:text-blue-500`}
                 style={{ boxSizing: 'border-box' }}
               >
                 <Image

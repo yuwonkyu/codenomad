@@ -161,7 +161,7 @@ const ReservationModal = ({
                     {selectedTab === '신청' ? (
                       <>
                         <button
-                          className='flex-1 rounded-lg border border-blue-500 bg-blue-100 px-[20px] py-[8px] text-sm font-semibold text-blue-600 transition-colors hover:bg-blue-600'
+                          className='flex-1 rounded-lg border border-blue-500 bg-blue-100 px-[20px] py-[8px] text-sm font-semibold text-blue-600 transition-colors hover:border-blue-600'
                           onClick={() =>
                             onApprove(reservation.id, parseInt(String(reservation.scheduleId), 10))
                           }
@@ -169,7 +169,7 @@ const ReservationModal = ({
                           승인하기
                         </button>
                         <button
-                          className='mt-2 flex-1 rounded-lg border border-red-500 bg-red-100 px-[20px] py-[8px] text-sm font-semibold text-red-600 transition-colors hover:bg-red-600'
+                          className='mt-2 flex-1 rounded-lg border border-red-500 bg-red-100 px-[20px] py-[8px] text-sm font-semibold text-red-600 transition-colors hover:border-red-600'
                           onClick={() =>
                             onDecline(reservation.id, parseInt(String(reservation.scheduleId), 10))
                           }
