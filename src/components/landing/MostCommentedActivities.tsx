@@ -63,7 +63,9 @@ const MostCommentedActivities = () => {
         className='no-scrollbar flex gap-16 overflow-hidden overflow-x-auto px-24 sm:gap-24 md:px-30 lg:px-40'
       >
         {activities.map((item) => (
-          <LandingCard key={item.id} activity={item} />
+          <div key={item.id} className='min-w-[152px] sm:min-w-[332px] lg:min-w-[262px]'>
+            <LandingCard activity={item} />
+          </div>
         ))}
       </div>
     </section>

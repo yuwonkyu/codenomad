@@ -53,6 +53,7 @@ const AllActivities = () => {
           }}
         />
       </div>
+
       {/* 카테고리 필터 */}
       <div className='mb-20'>
         <CategoryFilter
@@ -63,12 +64,14 @@ const AllActivities = () => {
           }}
         />
       </div>
+
       {/* 카드 목록 */}
-      <div className='grid grid-cols-2 gap-x-10 gap-y-40 md:grid-cols-2 lg:grid-cols-4'>
+      <div className='grid grid-cols-2 gap-x-10 gap-y-20 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4'>
         {activities.map((item) => (
           <LandingCard key={item.id} activity={item} />
         ))}
       </div>
+
       {/* 페이지네이션 */}
       {totalPages > 1 && (
         <Pagination
