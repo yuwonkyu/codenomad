@@ -22,6 +22,7 @@ export interface PriceInputProps<T extends FieldValues> {
   register: UseFormRegister<T>;
   error?: string;
   value: string;
+  path: string;
 }
 
 // DescriptionInput
