@@ -56,12 +56,9 @@ const MostCommentedActivities = () => {
   }, [activities]);
 
   return (
-    <section className='-mx-24 mt-80 mb-60 md:-mx-30 lg:-mx-40'>
-      <h2 className='text-20-b md:text-24-b mb-30 px-24 md:px-30 lg:px-40'> 인기 체험</h2>
-      <div
-        ref={scrollRef}
-        className='no-scrollbar flex gap-16 overflow-hidden overflow-x-auto px-24 sm:gap-24 md:px-30 lg:px-40'
-      >
+    <section className='mt-80 mb-60'>
+      <h2 className='text-20-b md:text-24-b mb-30'>인기 체험</h2>
+      <div ref={scrollRef} className='no-scrollbar flex gap-16 overflow-x-auto sm:gap-24'>
         {activities.map((item) => (
           <div key={item.id} className='min-w-[152px] sm:min-w-[332px] lg:min-w-[262px]'>
             <LandingCard activity={item} />
