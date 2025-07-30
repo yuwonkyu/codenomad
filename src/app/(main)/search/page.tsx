@@ -2,13 +2,13 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
-import axios from '@/lib/api/axios';
+import instance from '@/lib/api/axios';
 import type { Activity } from '@/components/landing/LandingCard';
 import LandingCard from '@/components/landing/LandingCard';
 import Pagination from '@/components/common/Pagination';
 import NoResult from '@/components/search/NoResult';
 import Banner from '@/components/landing/Banner';
-import SearchBar from '@/components/landing/SearchBar';
+import LoadingPage from '@/components/common/LoadingPage';
 
 const SearchContent = () => {
   const searchParams = useSearchParams();
@@ -20,25 +20,32 @@ const SearchContent = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [totalCount, setTotalCount] = useState(0);
 
+  const fetchActivities = async () => {
+    try {
+      const res = await instance.get(`/activities`, {
+        params: {
+          method: 'offset',
+          keyword,
+          page,
+          size,
+        },
+      });
+
+      setActivities(res.data.activities);
+      setTotalCount(res.data.totalCount);
+    } catch (err) {
+      console.error('검색 결과 요청 실패', err);
+    }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('page', String(newPage));
+    router.push(`?${newParams}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   useEffect(() => {
-    const fetchActivities = async () => {
-      try {
-        const res = await axios.get(`/activities`, {
-          params: {
-            method: 'offset',
-            keyword,
-            page,
-            size,
-          },
-        });
-
-        setActivities(res.data.activities);
-        setTotalCount(res.data.totalCount);
-      } catch (err) {
-        console.error('검색 결과 요청 실패', err);
-      }
-    };
-
     fetchActivities();
   }, [keyword, page]);
 
@@ -46,15 +53,14 @@ const SearchContent = () => {
 
   return (
     <main className='bg-gradient-main min-h-screen w-full px-20'>
-      <div className='mx-auto max-w-screen-xl'>
+      <div className='mx-auto max-w-screen-xl pt-40 md:pt-100'>
         {/* 배너 & 검색바 */}
         <Banner />
-        <SearchBar />
 
         {/* 검색 결과 안내 텍스트 */}
-        <div className='text-20-b mt-40 mb-10'>‘{keyword}’에 대한 검색 결과입니다.</div>
+        <div className='text-20-b mt-40 mb-10'>‘{keyword}’에 대한 검색 결과</div>
         {totalCount > 0 && (
-          <div className='text-14-m mb-10 text-gray-400'>총 {totalCount}개 입니다</div>
+          <div className='text-14-m mb-10 px-8 text-gray-400'>총 {totalCount}개 </div>
         )}
         {/* 결과 리스트 */}
         {activities.length === 0 ? (
@@ -72,12 +78,7 @@ const SearchContent = () => {
               <Pagination
                 currentPage={page}
                 totalPages={totalPages}
-                onPageChange={(newPage) => {
-                  const newParams = new URLSearchParams(searchParams.toString());
-                  newParams.set('page', newPage.toString());
-                  router.push(`?${newParams.toString()}`);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
+                onPageChange={handlePageChange}
               />
             )}
           </>
@@ -89,7 +90,7 @@ const SearchContent = () => {
 
 const SearchPage = () => {
   return (
-    <Suspense fallback={<div>로딩 중...</div>}>
+    <Suspense fallback={<LoadingPage />}>
       <SearchContent />
     </Suspense>
   );

@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import Dropdown from './Dropdown/Dropdown';
 import NotiBell from './Notification/NotiBell';
-import clsx from 'clsx';
 import { useAuthStore } from '@/store/useAuthStore';
 
 const Header = () => {
@@ -24,19 +23,18 @@ const Header = () => {
     router.push('/');
   };
 
-  const hasNewNotification = false; // 추후 API 연동
-
   return (
-    <header className={clsx('h-[48px] w-full md:h-[80px]', (isHome || isSearch) && 'bg-[#bbddff]')}>
+    <header className='fixed top-0 left-0 z-20 h-48 w-full bg-white md:h-80'>
       <div className='mx-auto flex h-full max-w-screen-xl items-center justify-between px-6'>
         {/* 로고 */}
-        <Link href='/' className='flex items-center gap-2'>
+        <Link href='/' className='flex items-center gap-2 p-6'>
           <Image
             src='/icons/wazyLogoVertical.svg'
             alt='wazy 로고'
-            width={174}
-            height={28}
-            priority
+            width={0}
+            height={0}
+            sizes='100vw'
+            className='h-36 w-auto md:h-40 lg:h-48'
           />
         </Link>
 
@@ -57,7 +55,7 @@ const Header = () => {
                     alt='프로필'
                     width={30}
                     height={30}
-                    className='h-auto w-auto rounded-full object-cover'
+                    className='aspect-square rounded-full object-cover'
                   />
                   <span className='text-14-m max-w-[100px] truncate leading-none whitespace-nowrap text-gray-950'>
                     {user.nickname}
