@@ -6,10 +6,15 @@ import Dropdown from '@/components/common/Dropdown/Dropdown';
 import CommonModal from '@/components/common/CancelModal';
 import { useRouter } from 'next/navigation';
 import { deleteMyActivity } from '@/lib/api/profile/myActivities';
+import { toast } from 'sonner';
+import axios from 'axios';
 
 interface DropdownMenuProps {
   activityId: number;
 }
+
+const FALLBACK_MESSAGE = '체험 삭제 중 문제가 발생했습니다.';
+
 export default function DropdownMenu({ activityId }: DropdownMenuProps) {
   const route = useRouter();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -26,10 +31,18 @@ export default function DropdownMenu({ activityId }: DropdownMenuProps) {
     setIsDeleteModalOpen(false);
     try {
       await deleteMyActivity(activityId);
-      console.log('체험 삭제 확정'); // 임시 처리
+      toast.success('체험이 삭제되었습니다.');
       route.push('/');
     } catch (err) {
-      console.error('삭제 실패', err); // 임시 처리
+      if (axios.isAxiosError(err)) {
+        // 서버에서 보내는 에러일 경우
+        const serverMessage = err.response?.data?.message;
+        toast.error(serverMessage ?? FALLBACK_MESSAGE);
+      } else if (err instanceof Error) {
+        toast.error(err.message ?? FALLBACK_MESSAGE);
+      } else {
+        toast.error(FALLBACK_MESSAGE);
+      }
     }
   };
 
