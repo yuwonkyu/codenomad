@@ -1,8 +1,7 @@
 'use client';
 
 import clsx from 'clsx';
-import { toast } from 'sonner';
-import axios from 'axios';
+import showToastError from '@/lib/showToastError';
 import { useState, useEffect } from 'react';
 import { useResponsive } from '@/hooks/useResponsive';
 import { fetchActivitiesDetails } from '@/lib/api/activities';
@@ -40,15 +39,7 @@ const ClientActivitiesPage = ({ id }: ClientActivitiesPageProps) => {
         const res = await fetchActivitiesDetails(id);
         setActivity(res);
       } catch (err) {
-        if (axios.isAxiosError(err)) {
-          // 서버에서 보내는 에러일 경우
-          const serverMessage = err.response?.data?.message;
-          toast.error(serverMessage ?? FALLBACK_MESSAGE);
-        } else if (err instanceof Error) {
-          toast.error(err.message ?? FALLBACK_MESSAGE);
-        } else {
-          toast.error(FALLBACK_MESSAGE);
-        }
+        showToastError(err, { fallback: FALLBACK_MESSAGE });
       } finally {
         setLoading(false);
       }

@@ -7,7 +7,7 @@ import CommonModal from '@/components/common/CancelModal';
 import { useRouter } from 'next/navigation';
 import { deleteMyActivity } from '@/lib/api/profile/myActivities';
 import { toast } from 'sonner';
-import axios from 'axios';
+import showToastError from '@/lib/showToastError';
 
 interface DropdownMenuProps {
   activityId: number;
@@ -34,15 +34,7 @@ export default function DropdownMenu({ activityId }: DropdownMenuProps) {
       toast.success('체험이 삭제되었습니다.');
       route.push('/');
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        // 서버에서 보내는 에러일 경우
-        const serverMessage = err.response?.data?.message;
-        toast.error(serverMessage ?? FALLBACK_MESSAGE);
-      } else if (err instanceof Error) {
-        toast.error(err.message ?? FALLBACK_MESSAGE);
-      } else {
-        toast.error(FALLBACK_MESSAGE);
-      }
+      showToastError(err, { fallback: FALLBACK_MESSAGE });
     }
   };
 
