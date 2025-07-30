@@ -17,7 +17,7 @@ const LandingCard = ({ activity }: { activity: Activity }) => {
   return (
     <div
       onClick={() => router.push(`/activities/${id}`)}
-      className='shadow-custom-5 relative h-[242px] w-[132px] shrink-0 cursor-pointer overflow-hidden rounded-[32px] transition-transform duration-200 hover:scale-105 sm:h-[423px] sm:w-[332px] lg:h-[366px] lg:w-[262px]'
+      className='relative h-[242px] w-[132px] shrink-0 cursor-pointer overflow-hidden rounded-[32px] transition-transform duration-200 hover:scale-105 sm:h-[423px] sm:w-[332px] lg:h-[366px] lg:w-[262px]'
     >
       {/* 이미지 영역 */}
       <div className='relative h-[132px] overflow-hidden rounded-t-4xl sm:h-[290px] lg:h-[240px]'>
