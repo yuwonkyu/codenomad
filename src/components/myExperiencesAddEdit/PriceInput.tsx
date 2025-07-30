@@ -1,12 +1,7 @@
+
 import Input from '@/components/common/Input';
-
+import { formatPrice } from '@/utils/formatPrice';
 const extractNumbers = (str: string) => str.replace(/[^0-9]/g, '');
-
-const formatPrice = (str: string) => {
-  const numbers = extractNumbers(str);
-  if (!numbers || numbers === '0') return '';
-  return `￦${parseInt(numbers).toLocaleString()}`;
-};
 
 interface PriceInputProps {
   value: string;
@@ -31,7 +26,7 @@ const PriceInput = ({ value, onChange, error }: PriceInputProps) => {
       />
       {/* 입력값이 있을 때만 포맷된 금액 표시 */}
       {value && extractNumbers(value) && (
-        <div className='text-14-r mt-2 text-gray-500'>{formatPrice(value)}</div>
+        <div className='text-14-r mt-2 text-gray-500'>{formatPrice(Number(value))}</div>
       )}
     </div>
   );
