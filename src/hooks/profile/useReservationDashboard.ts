@@ -6,7 +6,7 @@ interface ReservationCountData {
   pending: number;
   confirmed: number;
   declined: number;
-  completed?: number;
+  completed: number;
 }
 
 interface DashboardItem {
@@ -228,7 +228,7 @@ export const useReservationDashboard = () => {
 
       // 🌐 전역 변수에 저장 (기존 방식과 호환성 유지)
       // 캘린더 컴포넌트에서 이 데이터를 참조하여 뱃지 표시
-      (window as any).statusBadgeData = statusBadgeData;
+      window.statusBadgeData = statusBadgeData;
 
       // 🔄 캘린더 리렌더링 트리거
       if (Object.keys(statusBadgeData).length > 0) {
