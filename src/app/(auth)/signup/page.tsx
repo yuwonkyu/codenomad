@@ -25,8 +25,6 @@ const SignupPage = () => {
     mode: 'onChange',
   });
 
-  const password = watch('password');
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
