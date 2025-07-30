@@ -23,8 +23,6 @@ const Header = () => {
     router.push('/');
   };
 
-  const hasNewNotification = false;
-
   return (
     <header className='fixed top-0 left-0 z-20 h-48 w-full bg-white md:h-80'>
       <div className='mx-auto flex h-full max-w-screen-xl items-center justify-between px-6'>
