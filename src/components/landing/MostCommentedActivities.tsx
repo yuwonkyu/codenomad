@@ -35,7 +35,15 @@ const MostCommentedActivities = () => {
     if (!scrollContainer) return;
 
     let scrollAmount = 0;
-    const cardWidth = 200;
+
+    const getCardWidth = () => {
+      const width = window.innerWidth;
+      if (width >= 1024) return 262;
+      if (width >= 640) return 332;
+      return 152;
+    };
+
+    const cardWidth = getCardWidth();
     const scrollStep = cardWidth + 16;
 
     const interval = setInterval(() => {
@@ -54,7 +62,6 @@ const MostCommentedActivities = () => {
 
     return () => clearInterval(interval);
   }, [activities]);
-
   return (
     <section className='mt-80 mb-60'>
       <h2 className='text-20-b md:text-24-b mb-30'>인기 체험</h2>
