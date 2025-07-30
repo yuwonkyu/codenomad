@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import TitleInput from '@/components/myExperiencesAddEdit/TitleInput';
 import CategoryInput from '@/components/myExperiencesAddEdit/CategoryInput';
@@ -16,7 +16,7 @@ import ReserveTimesInput from '@/components/myExperiencesAddEdit/ReserveTimesInp
 import ConfirmModal from '@/components/common/ConfirmModal';
 import CommonModal from '@/components/common/CancelModal';
 import { createExperience, uploadImage } from '@/lib/api/experiences';
-import { formSchema, FormValues } from '@/components/myExperiencesAddEdit/formSchema';
+import { experiencesSchema, FormValues } from '@/lib/schema/experiencesSchema';
 
 const categoryOptions = [
   { value: '문화 · 예술', label: '문화 · 예술' },
@@ -49,12 +49,12 @@ const ExperienceAddPage = () => {
 
   const {
     register,
-
+    handleSubmit,
     formState: { errors },
     watch,
     setValue,
   } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(experiencesSchema),
     mode: 'onBlur',
     shouldUnregister: false, // 이 옵션 추가
   });
@@ -133,20 +133,14 @@ const ExperienceAddPage = () => {
   }, [reserveTimes]);
 
   // 폼 제출 핸들러 (중복 제출/디바운싱/유효성 검사 포함)
-  const handleSubmitForm = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
+  const handleSubmitForm: SubmitHandler<FormValues> = useCallback(
+    async (data) => {
       const currentTime = Date.now();
       if (isSubmitting || isSubmitted) return;
       if (currentTime - lastSubmitTime < 1000) return;
       setLastSubmitTime(currentTime);
       const validReserveTimes = reserveTimes.filter((rt) => rt.date && rt.start && rt.end);
       if (
-        !title ||
-        !category ||
-        !desc ||
-        !price ||
-        !address ||
         !banner ||
         validReserveTimes.length === 0 ||
         isDuplicateTime()
@@ -160,11 +154,11 @@ const ExperienceAddPage = () => {
         const bannerUpload = await uploadImage(banner);
         const subImageUploads = await Promise.all(introImages.map(uploadImage));
         const experienceData = {
-          title,
-          category,
-          description: desc,
-          price: parseInt(price),
-          address,
+          title: data.title,
+          category: data.category,
+          description: data.description,
+          price: parseInt(data.price),
+          address: data.address,
           schedules: validReserveTimes.map((rt) => ({
             date: rt.date,
             startTime: rt.start,
@@ -188,11 +182,6 @@ const ExperienceAddPage = () => {
       isSubmitted,
       lastSubmitTime,
       reserveTimes,
-      title,
-      category,
-      desc,
-      price,
-      address,
       banner,
       introImages,
       isDuplicateTime,
@@ -259,7 +248,7 @@ const ExperienceAddPage = () => {
     <div className='flex items-center justify-center'>
       <form
         className='flex w-375 flex-col px-24 py-30 md:w-744 md:px-30 md:pt-40 md:pb-53 lg:w-700 lg:px-0 lg:pb-102'
-        onSubmit={handleSubmitForm}
+        onSubmit={handleSubmit(handleSubmitForm)}
         autoComplete='off'
       >
         {/* 뒤로가기 */}
@@ -292,8 +281,9 @@ const ExperienceAddPage = () => {
         />
         <PriceInput
           value={watch('price') || ''}
-          onChange={(v) => setValue('price', v)}
           error={errors.price?.message}
+          register={register}
+          path='price'
         />
         <AddressInput
           error={errors.address?.message}

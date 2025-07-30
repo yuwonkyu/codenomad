@@ -18,7 +18,7 @@ import { uploadImage, updateExperience, getExperienceDetail } from '@/lib/api/ex
 import { notFound } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { formSchema, FormValues } from '@/components/myExperiencesAddEdit/formSchema';
+import { experiencesSchema, FormValues } from '@/lib/schema/experiencesSchema';
 import type { SubmitHandler } from 'react-hook-form';
 
 const categoryOptions = [
@@ -108,7 +108,7 @@ const ExperienceEditPage = () => {
     watch,
     setValue,
   } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(experiencesSchema),
     mode: 'onBlur',
     shouldUnregister: false, // 이 옵션 추가
     defaultValues: {
@@ -241,123 +241,106 @@ const ExperienceEditPage = () => {
     return new Set(validTimes).size !== validTimes.length;
   }, [reserveTimes]);
 
-  // 수정하기 (react-hook-form용, useCallback 적용)
-  const handleSubmit: SubmitHandler<FormValues> = useCallback(
-    async (data) => {
-      const validReserveTimes = reserveTimes.slice(1).filter((rt) => rt.date && rt.start && rt.end);
-      if (
-        !data.title ||
-        !data.category ||
-        !data.description ||
-        !data.price ||
-        !data.address ||
-        !bannerPreview ||
-        validReserveTimes.length === 0 ||
-        isDuplicateTime()
-      ) {
-        alert(
-          '필수 항목을 모두 입력해 주세요.\n최소 하나의 예약 시간이 필요하며, 중복된 시간대는 불가능합니다.',
-        );
-        return;
-      }
-      try {
-        setIsSubmitting(true);
-        const numericPrice = parseInt(data.price.replace(/[^0-9]/g, ''));
-        let finalBannerUrl = bannerPreview;
-        if (banner) {
-          try {
-            const bannerUpload = await uploadImage(banner);
-            finalBannerUrl = bannerUpload.activityImageUrl;
-          } catch (uploadError) {
-            console.error('배너 이미지 업로드 실패:', uploadError);
-            throw new Error('배너 이미지 업로드에 실패했습니다. 다시 시도해 주세요.');
-          }
+  // 수정하기 (add 페이지처럼 정리)
+  const handleSubmit: SubmitHandler<FormValues> = async (data) => {
+    const validReserveTimes = reserveTimes.slice(1).filter((rt) => rt.date && rt.start && rt.end);
+    if (
+      !data.title ||
+      !data.category ||
+      !data.description ||
+      !data.price ||
+      !data.address ||
+      !bannerPreview ||
+      validReserveTimes.length === 0 ||
+      isDuplicateTime()
+    ) {
+      alert('필수 항목을 모두 입력해 주세요.\n최소 하나의 예약 시간이 필요하며, 중복된 시간대는 불가능합니다.');
+      return;
+    }
+    try {
+      setIsSubmitting(true);
+      const numericPrice = parseInt(data.price.replace(/[^0-9]/g, ''));
+      let finalBannerUrl = bannerPreview;
+      if (banner) {
+        try {
+          const bannerUpload = await uploadImage(banner);
+          finalBannerUrl = bannerUpload.activityImageUrl;
+        } catch (uploadError) {
+          console.error('배너 이미지 업로드 실패:', uploadError);
+          throw new Error('배너 이미지 업로드에 실패했습니다. 다시 시도해 주세요.');
         }
-        const subImageUrlsToAdd: string[] = [];
-        for (const preview of introPreviews) {
-          if (preview.startsWith('blob:')) {
-            const file = imageUrlMap.get(preview);
-            if (file) {
-              try {
-                const upload = await uploadImage(file);
-                subImageUrlsToAdd.push(upload.activityImageUrl);
-              } catch (uploadError) {
-                console.error('소개 이미지 업로드 실패:', uploadError);
-                throw new Error('이미지 업로드에 실패했습니다. 다시 시도해 주세요.');
-              }
+      }
+      const subImageUrlsToAdd: string[] = [];
+      for (const preview of introPreviews) {
+        if (preview.startsWith('blob:')) {
+          const file = imageUrlMap.get(preview);
+          if (file) {
+            try {
+              const upload = await uploadImage(file);
+              subImageUrlsToAdd.push(upload.activityImageUrl);
+            } catch (uploadError) {
+              console.error('소개 이미지 업로드 실패:', uploadError);
+              throw new Error('이미지 업로드에 실패했습니다. 다시 시도해 주세요.');
             }
           }
         }
-        const currentInitialSchedules = initialData.reserveTimes.filter((rt) => rt.id);
-        const currentInitialSchedulesMap = new Map(
-          currentInitialSchedules.map((rt) => [rt.id, rt]),
-        );
-        const newScheduleIds = reserveTimes.filter((rt) => rt.id).map((rt) => rt.id!);
-        const scheduleIdsToRemove = currentInitialSchedules
-          .map((rt) => rt.id!)
-          .filter((id) => !newScheduleIds.includes(id));
-        const changedSchedules = reserveTimes.filter((rt) => {
-          if (!rt.id) return false;
-          const initial = currentInitialSchedulesMap.get(rt.id);
-          return (
-            initial &&
-            (initial.date !== rt.date || initial.start !== rt.start || initial.end !== rt.end)
-          );
-        });
-        const schedulesToAdd = [
-          ...reserveTimes.filter((rt) => rt.date && rt.start && rt.end && !rt.id),
-          ...changedSchedules,
-        ].map((rt) => ({
-          date: rt.date,
-          startTime: rt.start,
-          endTime: rt.end,
-        }));
-        const changedScheduleIds = changedSchedules.map((rt) => rt.id!);
-        const finalScheduleIdsToRemove = [...scheduleIdsToRemove, ...changedScheduleIds];
-        const updateData = {
-          title: data.title,
-          category: data.category,
-          description: data.description,
-          price: numericPrice,
-          address: data.address,
-          bannerImageUrl: finalBannerUrl,
-          subImageIdsToRemove: [],
-          subImageUrlsToAdd,
-          scheduleIdsToRemove: finalScheduleIdsToRemove,
-          schedulesToAdd,
-        };
-        await updateExperience(experienceId, updateData);
-        setModalOpen(true);
-      } catch (error: unknown) {
-        console.error('체험 수정 실패:', error);
-        if (
-          typeof error === 'object' &&
-          error !== null &&
-          'response' in error &&
-          typeof (error as { response?: { data?: { message?: string } } }).response?.data
-            ?.message === 'string'
-        ) {
-          alert(
-            (error as { response: { data: { message: string } } }).response.data.message ||
-              '수정에 실패했습니다. 다시 시도해 주세요.',
-          );
-        } else {
-          alert('수정에 실패했습니다. 다시 시도해 주세요.');
-        }
-        setIsSubmitting(false);
       }
-    },
-    [
-      reserveTimes,
-      bannerPreview,
-      banner,
-      introPreviews,
-      imageUrlMap,
-      initialData.reserveTimes,
-      experienceId,
-      isDuplicateTime,
-    ],
-  );
+      // 스케줄 변경/추가/삭제 계산
+      const currentInitialSchedules = initialData.reserveTimes.filter((rt) => rt.id);
+      const currentInitialSchedulesMap = new Map(
+        currentInitialSchedules.map((rt) => [rt.id, rt])
+      );
+      const newScheduleIds = reserveTimes.filter((rt) => rt.id).map((rt) => rt.id!);
+      const scheduleIdsToRemove = currentInitialSchedules
+        .map((rt) => rt.id!)
+        .filter((id) => !newScheduleIds.includes(id));
+      const changedSchedules = reserveTimes.filter((rt) => {
+        if (!rt.id) return false;
+        const initial = currentInitialSchedulesMap.get(rt.id);
+        return (
+          initial &&
+          (initial.date !== rt.date || initial.start !== rt.start || initial.end !== rt.end)
+        );
+      });
+      const schedulesToAdd = [
+        ...reserveTimes.filter((rt) => rt.date && rt.start && rt.end && !rt.id),
+        ...changedSchedules,
+      ].map((rt) => ({
+        date: rt.date,
+        startTime: rt.start,
+        endTime: rt.end,
+      }));
+      const changedScheduleIds = changedSchedules.map((rt) => rt.id!);
+      const finalScheduleIdsToRemove = [...scheduleIdsToRemove, ...changedScheduleIds];
+      const updateData = {
+        title: data.title,
+        category: data.category,
+        description: data.description,
+        price: numericPrice,
+        address: data.address,
+        bannerImageUrl: finalBannerUrl,
+        subImageIdsToRemove: [],
+        subImageUrlsToAdd,
+        scheduleIdsToRemove: finalScheduleIdsToRemove,
+        schedulesToAdd,
+      };
+      await updateExperience(experienceId, updateData);
+      setModalOpen(true);
+    } catch (error: unknown) {
+      console.error('체험 수정 실패:', error);
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'response' in error &&
+        typeof (error as { response?: { data?: { message?: string } } }).response?.data?.message === 'string'
+      ) {
+        alert((error as { response: { data: { message: string } } }).response.data.message || '수정에 실패했습니다. 다시 시도해 주세요.');
+      } else {
+        alert('수정에 실패했습니다. 다시 시도해 주세요.');
+      }
+      setIsSubmitting(false);
+    }
+  };
 
   // 뒤로가기 핸들러
   const handleBackClick = useCallback(() => {
@@ -523,10 +506,11 @@ const ExperienceEditPage = () => {
           value={watch('description') || ''}
         />
         <PriceInput
-          value={watch('price') || ''}
-          onChange={(v) => setValue('price', v)}
-          error={errors.price?.message}
-        />
+  value={watch('price') || ''}
+  error={errors.price?.message}
+  register={register}
+  path='price'
+/>
         <AddressInput
           error={errors.address?.message}
           value={watch('address') || ''}
