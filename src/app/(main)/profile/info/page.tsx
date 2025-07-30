@@ -4,6 +4,8 @@ import { useState, useEffect, useContext, useCallback } from 'react';
 import Input from '@/components/common/Input';
 import { ProfileMobileContext } from '../layout';
 import { getUserProfile, updateUserProfile } from '@/lib/api/profile';
+// 🆕 공통 컴포넌트 import (파일명 변경: index.ts → components.ts)
+import { MobilePageHeader, LoadingSpinner } from '@/components/profile/common/components';
 
 const InformationPage = () => {
   const [email, setEmail] = useState('');
@@ -18,7 +20,8 @@ const InformationPage = () => {
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [error, setError] = useState('');
 
-  // Context에서 onCancel 가져오기
+  // 🔗 모바일 Context 연결: 부모 레이아웃의 onCancel 함수 가져오기
+  // 이 함수를 호출하면 모바일에서 메뉴 화면으로 돌아감
   const mobileContext = useContext(ProfileMobileContext);
 
   // 컴포넌트 마운트 시 사용자 정보 가져오기
@@ -29,8 +32,7 @@ const InformationPage = () => {
         const profile = await getUserProfile();
         setEmail(profile.email);
         setNickname(profile.nickname);
-      } catch (err) {
-        console.error('사용자 정보를 가져오는데 실패했습니다:', err);
+      } catch {
         setError('사용자 정보를 불러오는데 실패했습니다.');
       } finally {
         setIsLoadingProfile(false);
@@ -111,8 +113,6 @@ const InformationPage = () => {
       setPassword('');
       setConfirmPassword('');
     } catch (err: unknown) {
-      console.error('회원정보 수정 실패:', err);
-
       if (err && typeof err === 'object' && 'response' in err) {
         const errorResponse = err as {
           response?: { data?: { message?: string }; status?: number };
@@ -132,14 +132,14 @@ const InformationPage = () => {
     }
   };
 
+  // ⏳ 로딩 상태: 공통 LoadingSpinner 컴포넌트 사용
   if (isLoadingProfile) {
-    return (
-      <div className='rounded-16 w-full max-w-376 space-y-24 bg-white p-24 md:max-w-640 md:p-32'>
-        <div className='flex h-32 items-center justify-center'>
-          <div className='text-gray-500'>로딩 중...</div>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner message='사용자 정보를 불러오는 중...' useLogo={true} />;
+  }
+
+  // ⏳ 폼 제출 중 로딩 상태
+  if (isLoading) {
+    return <LoadingSpinner message='정보를 저장하는 중...' useLogo={true} />;
   }
 
   return (
@@ -147,18 +147,8 @@ const InformationPage = () => {
       onSubmit={handleSubmit}
       className='rounded-16 mx-auto w-full max-w-376 space-y-24 bg-white p-24 md:max-w-640 md:p-32'
     >
-      {/* 모바일: 상단에 Vector.png + 내 정보 (클릭 시 onCancel) */}
-      <div
-        className='mb-4 block flex items-center gap-2 md:hidden'
-        onClick={mobileContext?.onCancel}
-        style={{ cursor: 'pointer' }}
-      >
-        <img src='/icons/Vector.png' alt='vector' width={20} height={20} />
-        <span className='text-[20px] font-bold'>내 정보</span>
-      </div>
-      {/* PC/태블릿: 기존 내 정보 타이틀 */}
-      <h2 className='text-18-b my-[5px] hidden md:block'>내 정보</h2>
-      <p>닉네임과 비밀번호를 수정하실 수 있습니다.</p>
+      {/* 🆕 공통 MobilePageHeader 컴포넌트 사용 */}
+      <MobilePageHeader title='내 정보' description='닉네임과 비밀번호를 수정하실 수 있습니다.' />
 
       {/* 에러 메시지 */}
       {error && <div className='rounded-lg bg-red-50 p-3 text-sm text-red-500'>{error}</div>}
@@ -209,10 +199,10 @@ const InformationPage = () => {
       />
 
       {/* 저장/취소 버튼 (모바일에서만 보임) */}
-      <div className='block flex justify-center gap-3 md:hidden'>
+      <div className='flex justify-center gap-3 md:hidden'>
         <button
           type='button'
-          className='text-16-m h-[41px] flex-1 rounded-[12px] border border-gray-300 bg-white px-[10px] py-3 text-gray-700'
+          className='text-16-m h-41 flex-1 rounded-[12px] border border-gray-300 bg-white px-10 py-3 text-gray-700'
           onClick={mobileContext?.onCancel}
           disabled={isLoading}
         >
@@ -220,7 +210,7 @@ const InformationPage = () => {
         </button>
         <button
           type='submit'
-          className='text-16-m hover:shadow-brand-blue/60 h-[41px] flex-1 cursor-pointer rounded-[12px] bg-blue-500 px-[10px] py-3 text-white transition-all duration-200 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50'
+          className='text-16-m hover:shadow-brand-blue/60 bg-primary-500 rounded-12 h-41 flex-1 cursor-pointer px-10 py-3 text-white transition-all duration-200 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50'
           disabled={isLoading || !isFormValid}
         >
           {isLoading ? '저장 중...' : '저장하기'}
@@ -228,10 +218,10 @@ const InformationPage = () => {
       </div>
 
       {/* 저장 버튼 (PC에서만 보임) */}
-      <div className='flex hidden justify-center md:flex'>
+      <div className='hidden justify-center md:flex'>
         <button
           type='submit'
-          className='text-16-m hover:shadow-brand-blue/60 h-[41px] w-[120px] cursor-pointer rounded-[12px] bg-blue-500 py-3 text-white transition-all duration-200 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50'
+          className='text-16-m hover:shadow-brand-blue/60 bg-primary-500 h-41 w-120 cursor-pointer rounded-xl py-3 text-white transition-all duration-200 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50'
           disabled={isLoading || !isFormValid}
         >
           {isLoading ? '저장 중...' : '저장하기'}

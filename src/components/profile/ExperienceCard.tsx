@@ -21,13 +21,13 @@ export default function ExperienceCard({
   onDelete,
 }: ExperienceCardProps) {
   return (
-    <div className='shadow-custom-5 mx-auto flex h-[178px] w-[327px] items-center gap-5 rounded-[20px] bg-white p-5 md:h-[159px] md:w-[476px] lg:h-[202px] lg:w-[640px]'>
+    <div className='shadow-custom-5 rounded-20 mx-auto flex h-178 w-327 items-center gap-5 bg-white p-5 md:h-159 md:w-476 lg:h-202 lg:w-640'>
       {/* 내용 */}
       <div className='mt-40 ml-30 flex h-full flex-1 flex-col justify-between'>
         <div>
           <div className='mb-5 text-xl leading-tight font-bold break-keep'>{title}</div>
           <div className='text-14-m mb-5 flex items-center gap-1 text-gray-500'>
-            <span className='text-[16px] text-yellow-400'>★</span>
+            <span className='text-16 text-yellow-400'>★</span>
             <span>{rating}</span>
             <span className='text-12-m mb-5 text-gray-400'>({reviews})</span>
           </div>
@@ -38,12 +38,12 @@ export default function ExperienceCard({
         </div>
         <div className='mb-40 flex gap-8'>
           <Link href={`/experiences/edit/${id}`}>
-            <button className='text-14-m h-30 w-70 rounded-lg border border-gray-300 bg-white text-black'>
+            <button className='text-14-m h-30 w-70 rounded-lg border border-yellow-600 bg-yellow-100 text-yellow-600'>
               수정하기
             </button>
           </Link>
           <button
-            className='text-14-m h-30 w-70 rounded-lg border border-gray-300 bg-gray-100 text-black'
+            className='text-14-m h-30 w-70 rounded-lg border border-red-600 bg-red-100 text-red-600'
             onClick={() => onDelete && onDelete(id)}
           >
             삭제하기
@@ -51,7 +51,7 @@ export default function ExperienceCard({
         </div>
       </div>
       {/* 썸네일 */}
-      <div className='mr-30 h-[80px] w-[80px] flex-shrink-0 overflow-hidden rounded-xl md:h-[100px] md:w-[100px] lg:h-[120px] lg:w-[120px]'>
+      <div className='mr-30 h-80 w-80 flex-shrink-0 overflow-hidden rounded-xl md:h-100 md:w-100 lg:h-120 lg:w-120'>
         <Image
           src={image}
           alt='썸네일'
