@@ -92,6 +92,7 @@ const ModalTrigger = ({
           onChangeSchedule={onChangeSchedule}
           headCount={headCount}
           onChangeHeadCount={onChangeHeadCount}
+          price={activityData.price}
         />
       ) : (
         <MobileModal
@@ -103,6 +104,7 @@ const ModalTrigger = ({
           onChangeSchedule={onChangeSchedule}
           headCount={headCount}
           onChangeHeadCount={onChangeHeadCount}
+          price={activityData.price}
         />
       )}
     </>,

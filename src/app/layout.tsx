@@ -1,3 +1,4 @@
+import { Toaster } from 'sonner';
 import './globals.css';
 
 export default function RootLayout({
@@ -16,6 +17,10 @@ export default function RootLayout({
         <title>WAZY | 체험 예약 플랫폼</title>
       </head>
       <body className='pt-40 md:pt-80'>{children}</body>
+
+        {children}
+        <Toaster position='top-right' richColors closeButton />
+      </body>
     </html>
   );
 }
