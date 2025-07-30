@@ -49,7 +49,7 @@ const Page = () => {
     if (isLoading || !hasMore) return;
     setIsLoading(true);
     try {
-      const res = await getReservationList(cursorId);
+      const res = await getReservationList(cursorId, filter ?? undefined);
       if (res.cursorId === cursorId) {
         console.warn('Same cursorId returned, potential API issue');
       }
@@ -65,7 +65,7 @@ const Page = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [cursorId, hasMore, isLoading]);
+  }, [cursorId, hasMore, isLoading, filter]);
 
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
@@ -87,14 +87,19 @@ const Page = () => {
   }, []);
 
   useEffect(() => {
-    console.log(filter);
+    if (!filter) return;
+
     const getFilteredData = async (status: StatusType) => {
+      setIsLoading(true);
+      setCursorId(null);
+      setHasMore(true);
       const data = await getReservationList(null, status);
       setReservationList(data.reservations);
+      setCursorId(data.cursorId);
+      setIsLoading(false);
     };
-    if (filter) {
-      getFilteredData(filter);
-    }
+
+    getFilteredData(filter);
   }, [filter]);
 
   useEffect(() => {
