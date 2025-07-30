@@ -87,6 +87,7 @@ const Page = () => {
   }, []);
 
   useEffect(() => {
+    console.log(filter);
     const getFilteredData = async (status: StatusType) => {
       const data = await getReservationList(null, status);
       setReservationList(data.reservations);
@@ -111,7 +112,7 @@ const Page = () => {
   }, [handleObserver]);
 
   return (
-    <div className='mx-auto flex w-full flex-col justify-center p-24'>
+    <div className='mx-auto flex w-full flex-col justify-center p-24 lg:px-126'>
       <h1 className='text-18-b text-gray-950'>예약 내역</h1>
       <h2 className='text-14-m my-10 text-gray-500'>예약 내역을 변경 및 취소 할 수 있습니다.</h2>
 
