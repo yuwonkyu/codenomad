@@ -1,6 +1,8 @@
 'use client';
 
 import clsx from 'clsx';
+import { toast } from 'sonner';
+import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useResponsive } from '@/hooks/useResponsive';
 import { fetchActivitiesDetails } from '@/lib/api/activities';
@@ -14,10 +16,13 @@ import ActivityReviewSection from '@/components/activities/sections/ActivityRevi
 import ReservationContent from '@/components/activities/ReservationFlow/ReservationContent';
 
 import type { ActivityDetail } from '@/components/activities/Activities.types';
+import Image from 'next/image';
 
 interface ClientActivitiesPageProps {
   id: number;
 }
+
+const FALLBACK_MESSAGE = '데이터를 불러오지 못했습니다.';
 
 const ClientActivitiesPage = ({ id }: ClientActivitiesPageProps) => {
   const screenSize = useResponsive();
@@ -26,6 +31,8 @@ const ClientActivitiesPage = ({ id }: ClientActivitiesPageProps) => {
 
   const { user } = useAuthStore();
 
+  const isDesktop = screenSize === 'lg';
+
   useEffect(() => {
     const loadActivity = async () => {
       try {
@@ -33,8 +40,15 @@ const ClientActivitiesPage = ({ id }: ClientActivitiesPageProps) => {
         const res = await fetchActivitiesDetails(id);
         setActivity(res);
       } catch (err) {
-        console.error('데이터 불러오기 실패', err);
-        setActivity(null);
+        if (axios.isAxiosError(err)) {
+          // 서버에서 보내는 에러일 경우
+          const serverMessage = err.response?.data?.message;
+          toast.error(serverMessage ?? FALLBACK_MESSAGE);
+        } else if (err instanceof Error) {
+          toast.error(err.message ?? FALLBACK_MESSAGE);
+        } else {
+          toast.error(FALLBACK_MESSAGE);
+        }
       } finally {
         setLoading(false);
       }
@@ -44,9 +58,25 @@ const ClientActivitiesPage = ({ id }: ClientActivitiesPageProps) => {
   }, [id]);
 
   if (loading) return <p>로딩 중...</p>;
-  if (!activity) return null;
+  if (!activity)
+    return (
+      <div className='flex min-h-[80vh] flex-col items-center justify-center gap-24'>
+        <div className='relative size-300'>
+          <Image alt='에러 이미지' src={'/icons/404_kkot.svg'} fill />
+        </div>
+        <h1 className='text-14-b md:text-18-b text-center text-gray-500'>
+          데이터를 불러오지 못했습니다. <br />
+          잠시 후 다시 시도해주세요.
+        </h1>
+        <button
+          className='bg-primary-500 text-14-m h-50 w-250 self-center rounded-2xl text-white md:w-300'
+          onClick={() => window.location.reload()}
+        >
+          다시 시도
+        </button>
+      </div>
+    );
 
-  const isDesktop = screenSize === 'lg';
   const isOwner = user?.id === activity.userId;
 
   return (
