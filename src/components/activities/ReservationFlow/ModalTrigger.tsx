@@ -5,7 +5,7 @@ import MobileModal from './MobileModal';
 import type { ModalTriggerProps } from '@/components/activities/Activities.types';
 import { createPortal } from 'react-dom';
 import { formatPrice } from '@/utils/formatPrice';
-import { formatScheduleText, findScheduleById } from '@/utils/reservation';
+import { formatScheduleText, findScheduleById } from '@/utils/activities/reservation';
 
 const ModalTrigger = ({
   activityData,

@@ -1,12 +1,12 @@
 import Calendar from '@/components/common/Calendar';
 import { Schedule } from '../Activities.types';
 import { useMemo, useCallback, useEffect } from 'react';
-import { 
-  stringToDate, 
-  checkDateDisabled, 
+import {
+  stringToDate,
+  checkDateDisabled,
   handleDateSelection,
-  getInitialSelectedDate
-} from '@/utils/reservation';
+  getInitialSelectedDate,
+} from '@/utils/activities/reservation';
 
 interface CalendarStepProps {
   schedules: Schedule[];

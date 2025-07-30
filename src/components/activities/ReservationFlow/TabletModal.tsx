@@ -5,7 +5,7 @@ import { BaseModalProps } from '../Activities.types';
 import CalendarStep from './CalendarStep';
 import TimeSelectionStep from './TimeSelectionStep';
 import PersonStep from './PersonStep';
-import { getDateFromScheduleId } from '@/utils/reservation';
+import { getDateFromScheduleId } from '@/utils/activities/reservation';
 import { formatPrice } from '@/utils/formatPrice';
 import clsx from 'clsx';
 import DraggableContainer from '@/components/common/DraggableContainer';

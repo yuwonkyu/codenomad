@@ -6,7 +6,7 @@ import TimeSelectionStep from './TimeSelectionStep';
 import PersonStep from './PersonStep';
 import { DesktopCardProps } from '../Activities.types';
 import { formatPrice } from '@/utils/formatPrice';
-import { getDateFromScheduleId } from '@/utils/reservation';
+import { getDateFromScheduleId } from '@/utils/activities/reservation';
 import clsx from 'clsx';
 
 const DesktopCard = ({
