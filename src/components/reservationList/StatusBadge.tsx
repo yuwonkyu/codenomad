@@ -12,7 +12,7 @@ const StatusBadge = ({ status }: ReservationStatusType) => {
     },
     confirmed: {
       style: 'text-[#2BA90D] bg-[#E9FBE4]',
-      text: '예약 완료',
+      text: '예약 승인',
     },
     declined: {
       style: 'text-[#F96767] bg-[#FCECEA]',
@@ -29,7 +29,7 @@ const StatusBadge = ({ status }: ReservationStatusType) => {
   };
 
   return (
-    <span className={`${statusStyle[status].style} px-8 py-4 text-13-b rounded-full`}>
+    <span className={`${statusStyle[status].style} text-13-b rounded-full px-8 py-4`}>
       {statusStyle[status].text}
     </span>
   );

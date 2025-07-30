@@ -40,9 +40,18 @@ const MapView = ({ address, category }: MapViewProps) => {
         style={{ width: '100%', height: '100%', zIndex: '0' }}
         level={2}
       >
-        <MapMarker position={{ lat: place.lat, lng: place.lng }} />
+        <MapMarker
+          position={{ lat: place.lat, lng: place.lng }}
+          image={{
+            src: '/icons/icon_map_marker.svg', // 마커이미지의 주소입니다
+            size: {
+              width: 40,
+              height: 60,
+            }, // 마커이미지의 크기입니다
+          }}
+        />
         <CustomOverlayMap position={{ lat: place.lat, lng: place.lng }} yAnchor={1}>
-          <div className='border-primary-500 relative bottom-50 flex h-40 w-auto items-center rounded-3xl border-2 bg-white p-10 shadow-md'>
+          <div className='border-primary-500 relative bottom-60 flex h-40 w-auto items-center rounded-3xl border-2 bg-white p-10 shadow-md'>
             <Link href={place.url} target='_blank'>
               <span className='text-14-m text-gray-950'>{place.title}</span>
             </Link>
