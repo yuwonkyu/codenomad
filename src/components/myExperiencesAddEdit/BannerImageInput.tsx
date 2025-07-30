@@ -1,12 +1,5 @@
 import Image from 'next/image';
-
-interface BannerImageInputProps {
-  bannerPreview: string | null;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onRemove: () => void;
-  banner: File | null;
-  isEdit?: boolean; // edit 페이지인지 구분하는 props 추가
-}
+import type { BannerImageInputProps } from './types';
 
 const BannerImageInput = ({
   bannerPreview,

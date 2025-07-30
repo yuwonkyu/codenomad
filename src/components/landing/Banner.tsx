@@ -1,14 +1,29 @@
 'use client';
 
 import Image from 'next/image';
+import SearchBar from './SearchBar';
 
 const Banner = () => {
   return (
-    <section className='relative h-181 w-full overflow-hidden rounded-[12px] md:h-375 md:rounded-[24px] lg:h-500'>
-      <Image src='/imgs/banner.jpg' alt='메인 배너 이미지' fill className='object-cover' priority />
-      <div className='absolute inset-0 flex flex-col items-center justify-center bg-black/30 px-4 text-center whitespace-nowrap text-white'>
-        <h1 className='text-18-b md:text-24-b lg:text-32-b mb-4'>함께 배우면 즐거운 스트릿 댄스</h1>
-        <p className='text-14-m md:text-18-b lg:text-18-b'>1월의 인기체험 BEST 🔥</p>
+    <section className='relative h-320 w-full overflow-hidden rounded-[12px] sm:h-420 sm:rounded-[24px] lg:h-520'>
+      <Image
+        src='/imgs/banner.jpg'
+        alt='메인 배너 이미지'
+        fill
+        sizes='(max-width: 768) 100vw, 50vw'
+        className='object-cover'
+        priority
+      />
+      <div className='absolute inset-0 flex flex-col items-center justify-end px-14 backdrop-blur-sm'>
+        <Image
+          src='/icons/wazylogowhite.svg'
+          alt='wazy logo white'
+          width={0}
+          height={0}
+          sizes='100vw'
+          className='h-124 w-auto sm:h-173 lg:h-212'
+        />
+        <SearchBar />
       </div>
     </section>
   );

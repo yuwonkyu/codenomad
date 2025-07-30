@@ -1,22 +1,35 @@
 import { StatusType } from '@/components/reservationList/StatusBadge';
-import axios from '@/lib/api/axios';
+import instance from '@/lib/api/axios';
 
 export interface ReviewDataType {
   rating: number;
   content: string;
 }
 
-export const getReservationList = async () => {
-  const res = await axios.get('my-reservations');
+export const getReservationList = async (
+  cursorId: number | null = null,
+  status: StatusType | null = null,
+) => {
+  const params = new URLSearchParams({ size: '2' });
+  if (cursorId !== null) params.append('cursorId', cursorId.toString());
+  if (status !== null) params.append('status', status);
+
+  const res = await instance.get(`my-reservations?${params.toString()}`);
   return res.data;
 };
 
-export const getReservationListStatus = async (status: StatusType) => {
-  const res = await axios.get(`my-reservations?status=${status}`);
-  return res.data;
+export const cancelReservation = async (reservationId: number) => {
+  try {
+    const res = await instance.patch(`my-reservations/${reservationId}`, {
+      status: 'canceled',
+    });
+    return res;
+  } catch (err) {
+    throw err;
+  }
 };
 
 export const postReview = async (reservationId: number, data: ReviewDataType) => {
-  const res = await axios.post(`my-reservations/${reservationId}/reviews`, data);
+  const res = await instance.post(`my-reservations/${reservationId}/reviews`, data);
   return res.data;
 };

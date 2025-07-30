@@ -8,6 +8,8 @@ import DesktopCard from './DesktopCard';
 import type { ActivityDetail, ReservationState } from '../Activities.types';
 import { postReservation } from '@/lib/api/activities/index';
 import axios from 'axios';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useRouter } from 'next/navigation';
 
 interface ReservationContentProps {
   activity: ActivityDetail;
@@ -15,9 +17,12 @@ interface ReservationContentProps {
 
 const ReservationContent = ({ activity }: ReservationContentProps) => {
   const breakpoint = useResponsive();
+  const user = useAuthStore((state) => state.user);
+  const router = useRouter();
 
   const [isClient, setIsClient] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [needsLoginRedirect, setNeedsLoginRedirect] = useState(false);
   const [reservation, setReservation] = useState<ReservationState>({
     scheduleId: null,
     headCount: 1,
@@ -41,7 +46,12 @@ const ReservationContent = ({ activity }: ReservationContentProps) => {
       alert('예약 날짜(스케줄)를 선택해주세요.');
       return;
     }
-    // 주스탄드 도입 후 로그인 상태에 따라서 분기 처리 추가 예정 (토큰 없을 때 모달을 띄우고 로그인 페이지를 보내는 형식?)
+
+    if (!user) {
+      setNeedsLoginRedirect(true); // redirect 예약
+      setIsConfirmModalOpen(true); // 모달 먼저 띄우기
+      return;
+    }
     try {
       const payload = {
         scheduleId: data.scheduleId,
@@ -63,6 +73,11 @@ const ReservationContent = ({ activity }: ReservationContentProps) => {
   const handleConfirmModalClose = () => {
     setIsConfirmModalOpen(false);
     resetReservation();
+
+    if (needsLoginRedirect) {
+      setNeedsLoginRedirect(false);
+      router.push('/login');
+    }
   };
 
   const handleChangeSchedule = (id: number | null) => {
@@ -70,7 +85,7 @@ const ReservationContent = ({ activity }: ReservationContentProps) => {
   };
 
   const handleChangeHeadCount = (count: number) => {
-    const validCount = Math.max(1, count);
+    const validCount = Math.max(1, Math.min(100, count));
     setReservation((prev) => ({ ...prev, headCount: validCount }));
   };
 
@@ -106,7 +121,7 @@ const ReservationContent = ({ activity }: ReservationContentProps) => {
       )}
 
       <ConfirmModal
-        message='예약이 완료되었습니다!'
+        message={!user ? '로그인 후에 이용해주세요.' : '예약이 완료되었습니다!'}
         isOpen={isConfirmModalOpen}
         onClose={handleConfirmModalClose}
       />

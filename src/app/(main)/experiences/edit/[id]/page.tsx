@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import isEqual from 'lodash/isEqual';
 import TitleInput from '@/components/myExperiencesAddEdit/TitleInput';
@@ -13,9 +14,12 @@ import IntroImagesInput from '@/components/myExperiencesAddEdit/IntroImagesInput
 import ReserveTimesInput from '@/components/myExperiencesAddEdit/ReserveTimesInput';
 import ConfirmModal from '@/components/common/ConfirmModal';
 import CommonModal from '@/components/common/CancelModal';
-import instance from '@/lib/api/axios';
-import { uploadImage } from '@/lib/api/experiences';
+import { uploadImage, updateExperience, getExperienceDetail } from '@/lib/api/experiences';
 import { notFound } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { experiencesSchema, FormValues } from '@/lib/schema/experiencesSchema';
+import type { SubmitHandler } from 'react-hook-form';
 
 const categoryOptions = [
   { value: '문화 · 예술', label: '문화 · 예술' },
@@ -96,6 +100,27 @@ const ExperienceEditPage = () => {
     reserveTimes: [] as ReserveTime[],
   });
 
+  // 폼 관련 설정
+  const {
+    register,
+    handleSubmit: rhfHandleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm<FormValues>({
+    resolver: zodResolver(experiencesSchema),
+    mode: 'onBlur',
+    shouldUnregister: false, // 이 옵션 추가
+    defaultValues: {
+      title,
+      category,
+      price,
+      address,
+      description: desc,
+      detailAddress: '', // 필요시
+    },
+  });
+
   // 체험 데이터 불러오기
   useEffect(() => {
     const fetchExperienceData = async () => {
@@ -105,8 +130,7 @@ const ExperienceEditPage = () => {
         setLoading(true);
         setError(null);
 
-        const response = await instance.get(`/activities/${experienceId}`);
-        const data: ExperienceData = response.data;
+        const data: ExperienceData = await getExperienceDetail(experienceId);
 
         // subImages에서 imageUrl만 추출
         const subImageUrls = data.subImages?.map((img) => img.imageUrl) || [];
@@ -115,7 +139,7 @@ const ExperienceEditPage = () => {
         setTitle(data.title);
         setCategory(data.category); // API에서 받은 한글 카테고리 직접 사용
         setDesc(data.description);
-        setPrice(data.price.toLocaleString() + '원');
+        setPrice(String(data.price));
         setAddress(data.address);
         setBannerPreview(data.bannerImageUrl);
         setIntroPreviews(subImageUrls);
@@ -136,21 +160,37 @@ const ExperienceEditPage = () => {
 
         setReserveTimes(reserveTimesWithEmptyFirst);
 
+        // 폼 필드 값도 동기화
+        setValue('title', data.title);
+        setValue('category', data.category);
+        setValue('description', data.description);
+        setValue('price', String(data.price));
+        setValue('address', data.address);
+        // 필요시 detailAddress도 추가 가능
+
         // 초기값 저장 (변경사항 감지용)
         setInitialData({
           title: data.title,
           category: data.category,
           desc: data.description,
-          price: data.price.toLocaleString() + '원',
+          price: String(data.price),
           address: data.address,
           bannerPreview: data.bannerImageUrl,
           introPreviews: subImageUrls,
           reserveTimes: reserveTimesWithEmptyFirst,
         });
-      } catch (err: any) {
-        console.error('체험 데이터 불러오기 실패:', err);
-        if (err.response?.status === 404) {
-          notFound();
+      } catch (error: unknown) {
+        console.error('체험 데이터 불러오기 실패:', error);
+        // 타입가드로 error가 AxiosError 타입인지 확인
+        if (
+          typeof error === 'object' &&
+          error !== null &&
+          'response' in error &&
+          typeof (error as { response?: { status?: number } }).response?.status === 'number'
+        ) {
+          if ((error as { response: { status: number } }).response.status === 404) {
+            notFound();
+          }
         }
         setError('데이터를 불러오는데 실패했습니다.');
       } finally {
@@ -159,7 +199,7 @@ const ExperienceEditPage = () => {
     };
 
     fetchExperienceData();
-  }, [experienceId]);
+  }, [experienceId, setValue]);
 
   // 변경사항 확인 (깊은 비교)
   useEffect(() => {
@@ -188,43 +228,40 @@ const ExperienceEditPage = () => {
   ]);
 
   // 변경사항 비교 (단순화)
-  const hasChanged = () => {
+  const hasChanged = useCallback(() => {
     return isModified && !isSubmitting && !loading;
-  };
+  }, [isModified, isSubmitting, loading]);
 
-  // 수정하기
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // 예약시간 중복 체크 (첫 번째 항목 제외 - 새로운 시간 추가용)
+  const isDuplicateTime = useCallback(() => {
+    const validTimes = reserveTimes
+      .slice(1)
+      .filter((rt) => rt.date && rt.start && rt.end)
+      .map((rt) => `${rt.date}-${rt.start}-${rt.end}`);
+    return new Set(validTimes).size !== validTimes.length;
+  }, [reserveTimes]);
 
-    // 유효한 예약 시간들만 필터링 (첫 번째 항목은 제외 - 새로운 시간 추가용)
+  // 수정하기 (add 페이지처럼 정리)
+  const handleSubmit: SubmitHandler<FormValues> = async (data) => {
     const validReserveTimes = reserveTimes.slice(1).filter((rt) => rt.date && rt.start && rt.end);
-
     if (
-      !title ||
-      !category ||
-      !desc ||
-      !price ||
-      !address ||
+      !data.title ||
+      !data.category ||
+      !data.description ||
+      !data.price ||
+      !data.address ||
       !bannerPreview ||
-      validReserveTimes.length === 0 || // 최소 하나의 유효한 예약 시간 필요 (첫 번째 제외)
+      validReserveTimes.length === 0 ||
       isDuplicateTime()
     ) {
-      alert(
-        '필수 항목을 모두 입력해 주세요.\n최소 하나의 예약 시간이 필요하며, 중복된 시간대는 불가능합니다.',
-      );
+      alert('필수 항목을 모두 입력해 주세요.\n최소 하나의 예약 시간이 필요하며, 중복된 시간대는 불가능합니다.');
       return;
     }
-
     try {
       setIsSubmitting(true);
-
-      // 가격에서 숫자만 추출
-      const numericPrice = parseInt(price.replace(/[^0-9]/g, ''));
-
-      // 배너 이미지 처리
+      const numericPrice = parseInt(data.price.replace(/[^0-9]/g, ''));
       let finalBannerUrl = bannerPreview;
       if (banner) {
-        // 새로운 배너 이미지가 업로드된 경우
         try {
           const bannerUpload = await uploadImage(banner);
           finalBannerUrl = bannerUpload.activityImageUrl;
@@ -233,13 +270,9 @@ const ExperienceEditPage = () => {
           throw new Error('배너 이미지 업로드에 실패했습니다. 다시 시도해 주세요.');
         }
       }
-
-      // 새로 추가할 소개 이미지 URL들
       const subImageUrlsToAdd: string[] = [];
-
       for (const preview of introPreviews) {
         if (preview.startsWith('blob:')) {
-          // 새로 업로드된 이미지인 경우 서버에 업로드
           const file = imageUrlMap.get(preview);
           if (file) {
             try {
@@ -252,55 +285,72 @@ const ExperienceEditPage = () => {
           }
         }
       }
-
-      // 제거할 스케줄 ID들과 새로 추가할 스케줄들 계산
-      const currentScheduleIds = initialData.reserveTimes.filter((rt) => rt.id).map((rt) => rt.id!);
-
+      // 스케줄 변경/추가/삭제 계산
+      const currentInitialSchedules = initialData.reserveTimes.filter((rt) => rt.id);
+      const currentInitialSchedulesMap = new Map(
+        currentInitialSchedules.map((rt) => [rt.id, rt])
+      );
       const newScheduleIds = reserveTimes.filter((rt) => rt.id).map((rt) => rt.id!);
-
-      const scheduleIdsToRemove = currentScheduleIds.filter((id) => !newScheduleIds.includes(id));
-
-      const schedulesToAdd = reserveTimes
-        .filter((rt) => rt.date && rt.start && rt.end && !rt.id) // ID가 없는 새로운 스케줄들
-        .map((rt) => ({
-          date: rt.date,
-          startTime: rt.start,
-          endTime: rt.end,
-        }));
-
-      // API 스펙에 맞는 데이터 구조
+      const scheduleIdsToRemove = currentInitialSchedules
+        .map((rt) => rt.id!)
+        .filter((id) => !newScheduleIds.includes(id));
+      const changedSchedules = reserveTimes.filter((rt) => {
+        if (!rt.id) return false;
+        const initial = currentInitialSchedulesMap.get(rt.id);
+        return (
+          initial &&
+          (initial.date !== rt.date || initial.start !== rt.start || initial.end !== rt.end)
+        );
+      });
+      const schedulesToAdd = [
+        ...reserveTimes.filter((rt) => rt.date && rt.start && rt.end && !rt.id),
+        ...changedSchedules,
+      ].map((rt) => ({
+        date: rt.date,
+        startTime: rt.start,
+        endTime: rt.end,
+      }));
+      const changedScheduleIds = changedSchedules.map((rt) => rt.id!);
+      const finalScheduleIdsToRemove = [...scheduleIdsToRemove, ...changedScheduleIds];
       const updateData = {
-        title,
-        category,
-        description: desc,
+        title: data.title,
+        category: data.category,
+        description: data.description,
         price: numericPrice,
-        address,
+        address: data.address,
         bannerImageUrl: finalBannerUrl,
-        subImageIdsToRemove: [], // 현재는 제거 기능이 없으므로 빈 배열
+        subImageIdsToRemove: [],
         subImageUrlsToAdd,
-        scheduleIdsToRemove,
+        scheduleIdsToRemove: finalScheduleIdsToRemove,
         schedulesToAdd,
       };
-
-      // PATCH 메서드로 요청 (baseURL에 이미 팀ID 포함됨)
-      await instance.patch(`/my-activities/${experienceId}`, updateData);
+      await updateExperience(experienceId, updateData);
       setModalOpen(true);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('체험 수정 실패:', error);
-      alert(error.response?.data?.message || '수정에 실패했습니다. 다시 시도해 주세요.');
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'response' in error &&
+        typeof (error as { response?: { data?: { message?: string } } }).response?.data?.message === 'string'
+      ) {
+        alert((error as { response: { data: { message: string } } }).response.data.message || '수정에 실패했습니다. 다시 시도해 주세요.');
+      } else {
+        alert('수정에 실패했습니다. 다시 시도해 주세요.');
+      }
       setIsSubmitting(false);
     }
   };
 
-  // 뒤로가기
-  const handleBackClick = () => {
+  // 뒤로가기 핸들러
+  const handleBackClick = useCallback(() => {
     if (hasChanged()) {
       setPendingAction(() => () => router.back());
       setLeaveModalOpen(true);
     } else {
       router.back();
     }
-  };
+  }, [hasChanged, router]);
 
   // 새로고침/닫기/뒤로가기 경고
   useEffect(() => {
@@ -312,30 +362,35 @@ const ExperienceEditPage = () => {
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [isModified, isSubmitting, loading]);
+  }, [isModified, isSubmitting, loading, hasChanged]);
 
-  // 모달 "네" 클릭
-  const handleLeave = () => {
+  // 나가기 모달 "네" 클릭 핸들러
+  const handleLeave = useCallback(() => {
     if (pendingAction) {
       pendingAction();
       setPendingAction(null);
     }
     setLeaveModalOpen(false);
-  };
-
-  // 예약시간 중복 체크 (첫 번째 항목 제외 - 새로운 시간 추가용)
-  const isDuplicateTime = () => {
-    const validTimes = reserveTimes
-      .slice(1) // 첫 번째 항목 제외
-      .filter((rt) => rt.date && rt.start && rt.end) // 빈 값 제외
-      .map((rt) => `${rt.date}-${rt.start}-${rt.end}`);
-    return new Set(validTimes).size !== validTimes.length;
-  };
+  }, [pendingAction]);
 
   // 이미지 핸들러
   const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    // 이미지 확장자 체크
+    const validTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'image/bmp',
+      'image/svg+xml',
+    ];
+    if (!validTypes.includes(file.type)) {
+      alert('이미지 파일(jpg, png, gif, webp, bmp, svg)만 업로드할 수 있습니다.');
+      e.target.value = '';
+      return;
+    }
     setBanner(file);
     setBannerPreview(URL.createObjectURL(file));
   };
@@ -343,6 +398,23 @@ const ExperienceEditPage = () => {
   const handleIntroChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (introPreviews.length + files.length > 4) return;
+
+    // 이미지 확장자 체크
+    const validTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'image/bmp',
+      'image/svg+xml',
+    ];
+    for (const file of files) {
+      if (!validTypes.includes(file.type)) {
+        alert('이미지 파일(jpg, png, gif, webp, bmp, svg)만 업로드할 수 있습니다.');
+        e.target.value = '';
+        return;
+      }
+    }
 
     // 새 파일들의 미리보기 URL 생성
     const newPreviews = files.map((file) => URL.createObjectURL(file));
@@ -401,7 +473,7 @@ const ExperienceEditPage = () => {
     <div className='flex items-center justify-center'>
       <form
         className='flex w-375 flex-col px-24 py-30 md:w-744 md:px-30 md:pt-40 md:pb-53 lg:w-700 lg:px-0 lg:pb-102'
-        onSubmit={handleSubmit}
+        onSubmit={rhfHandleSubmit(handleSubmit)}
         autoComplete='off'
       >
         {/* 뒤로가기 */}
@@ -412,28 +484,42 @@ const ExperienceEditPage = () => {
             onClick={handleBackClick}
             aria-label='뒤로가기'
           >
-            <img src='/icons/icon_back.svg' alt='뒤로가기' width={24} height={24} />
+            <Image src='/icons/icon_back.svg' alt='뒤로가기' width={24} height={24} />
           </button>
           <h2 className='text-18-b'>내 체험 수정</h2>
         </div>
 
-        <TitleInput value={title} onChange={setTitle} />
-        <CategoryInput value={category} onChange={setCategory} options={categoryOptions} />
-        <DescriptionInput value={desc} onChange={setDesc} />
-        <PriceInput value={price} onChange={setPrice} />
-        <AddressInput value={address} onChange={setAddress} />
-        <ReserveTimesInput
-          reserveTimes={reserveTimes}
-          onChange={(idx, key, value) =>
-            setReserveTimes(
-              reserveTimes.map((item, i) => (i === idx ? { ...item, [key]: value } : item)),
-            )
-          }
-          onAdd={() => setReserveTimes([{ date: '', start: '', end: '' }, ...reserveTimes])}
-          onRemove={(idx) => setReserveTimes(reserveTimes.filter((_, i) => i !== idx))}
-          isDuplicateTime={isDuplicateTime}
-          isEdit={true}
+        <TitleInput<FormValues>
+          register={register}
+          error={errors.title?.message}
+          value={watch('title') || ''}
         />
+        <CategoryInput
+          value={watch('category') || ''}
+          onChange={(v) => setValue('category', v)}
+          options={categoryOptions}
+          error={errors.category?.message}
+        />
+        <DescriptionInput<FormValues>
+          register={register}
+          error={errors.description?.message}
+          value={watch('description') || ''}
+        />
+        <PriceInput
+  value={watch('price') || ''}
+  error={errors.price?.message}
+  register={register}
+  path='price'
+/>
+        <AddressInput
+          error={errors.address?.message}
+          value={watch('address') || ''}
+          onChange={(v) => setValue('address', v)}
+          detailAddress={watch('detailAddress') || ''}
+          onDetailAddressChange={(v) => setValue('detailAddress', v)}
+          detailError={errors.detailAddress?.message}
+        />
+        <ReserveTimesInput value={reserveTimes} onChange={setReserveTimes} isEdit={true} />
         <BannerImageInput
           bannerPreview={bannerPreview}
           onChange={handleBannerChange}
@@ -477,7 +563,15 @@ const ExperienceEditPage = () => {
       {/* 나가기 확인 모달 */}
       <CommonModal
         open={leaveModalOpen}
-        icon={<img src='/icons/icon_alert.svg' alt='경고' className='h-full w-full' />}
+        icon={
+          <Image
+            src='/icons/icon_alert.svg'
+            alt='경고'
+            width={24}
+            height={24}
+            className='size-full'
+          />
+        }
         text={'저장되지 않았습니다.<br />정말 뒤로 가시겠습니까?'}
         cancelText='아니오'
         confirmText='네'

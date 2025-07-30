@@ -1,10 +1,5 @@
 import Image from 'next/image';
-
-interface IntroImagesInputProps {
-  introPreviews: string[];
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onRemove: (idx: number) => void;
-}
+import type { IntroImagesInputProps } from './types';
 
 const IntroImagesInput = ({ introPreviews = [], onChange, onRemove }: IntroImagesInputProps) => {
   return (
@@ -50,7 +45,7 @@ const IntroImagesInput = ({ introPreviews = [], onChange, onRemove }: IntroImage
                 alt='삭제'
                 width={20}
                 height={20}
-                className='h-[20px] w-[20px] md:h-[26px] md:w-[26px]'
+                className='size-20 md:size-26'
               />
             </button>
           </div>

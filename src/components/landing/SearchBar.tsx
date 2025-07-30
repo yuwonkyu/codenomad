@@ -10,7 +10,9 @@ const SearchBar = () => {
 
   const handleSearch = () => {
     if (!keyword.trim()) return;
-    router.push(`/search?keyword=${encodeURIComponent(keyword)}`);
+
+    const params = new URLSearchParams({ keyword });
+    router.push(`/search?${params.toString()}`);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -18,14 +20,10 @@ const SearchBar = () => {
   };
 
   return (
-    <section className='w-full mt-32 md:mt-50 flex flex-col items-center gap-4'>
-      <h2 className='text-16-b mb-12 md:text-32-b text-gray-950 whitespace-nowrap'>
-        무엇을 체험하고 싶으신가요?
-      </h2>
-
-      <div className='relative w-full max-w-[1080px]'>
+    <section className='m-18 flex w-full flex-col items-center gap-4'>
+      <div className='relative w-full max-w-[900px]'>
         {/* 아이콘 */}
-        <span className='absolute left-6 top-1/2 -translate-y-1/2'>
+        <span className='absolute top-1/2 left-12 -translate-y-1/2'>
           <Image src='/icons/icon_search.svg' alt='검색 아이콘' width={24} height={24} />
         </span>
 
@@ -34,10 +32,7 @@ const SearchBar = () => {
           aria-label='체험 검색 버튼'
           type='button'
           onClick={handleSearch}
-          className='absolute right-4 top-1/2 -translate-y-1/2 
-                     w-[85px] h-[41px] md:w-[120px] md:h-[50px] 
-                     bg-primary-500 text-white text-14-b md:text-16-b 
-                     rounded-[14px] hover:bg-blue-400 transition cursor-pointer'
+          className='bg-primary-500 text-12-b md:text-14-b absolute top-1/2 right-10 h-[41px] w-[85px] -translate-y-1/2 cursor-pointer rounded-[14px] text-white transition md:h-[50] md:w-[120]'
         >
           검색하기
         </button>
@@ -50,10 +45,19 @@ const SearchBar = () => {
           onChange={(e) => setKeyword(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder='내가 원하는 체험은?'
-          className='w-full h-53 rounded-[12px] bg-white
-                     pl-[48px] pr-[95px] md:pr-[130px] 
-                     text-gray-500 text-14-m md:h-70 focus:outline-none shadow-custom-5'
+          className='text-14-m shadow-custom-5 md:text-16-m h-53 w-full rounded-[18px] bg-white pr-[95px] pl-[48px] text-gray-600 focus:outline-none md:h-70 md:pr-[130px]'
         />
+      </div>
+      <div className='mt-18 flex w-full items-center justify-center gap-12 px-4'>
+        <div className='h-2 w-full bg-white' />
+        <Image
+          src='/icons/flower.svg'
+          alt='꽃 아이콘'
+          width={20}
+          height={20}
+          className='h-20 w-20'
+        />
+        <div className='h-2 w-full bg-white' />
       </div>
     </section>
   );

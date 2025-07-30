@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { BaseModalProps } from '../Activities.types';
 import CalendarStep from './CalendarStep';
@@ -8,11 +8,16 @@ import TimeSelectionStep from './TimeSelectionStep';
 import PersonStep from './PersonStep';
 import { getDateFromScheduleId } from '@/utils/reservation';
 import clsx from 'clsx';
+import DraggableContainer from '@/components/common/DraggableContainer';
+import { formatPrice } from '@/utils/formatPrice';
+import { useDraggableBottomSheet } from '@/hooks/useDraggableBottomSheet';
 
 type ModalStep = 'calendar' | 'person';
 
+const THRESHOLD = 200;
+
 const MobileModal = ({
-  isOpen,
+  isOpen: isModalOpen,
   onClose,
   onConfirm,
   schedules,
@@ -20,22 +25,38 @@ const MobileModal = ({
   onChangeSchedule,
   headCount,
   onChangeHeadCount,
+  price,
 }: BaseModalProps) => {
   const [step, setStep] = useState<ModalStep>('calendar');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const totalAmount = useMemo(() => formatPrice(price * headCount), [price, headCount]);
 
-  // ✅ scheduleId로부터 날짜 계산
+  // 커스텀 훅으로 드래그 로직 분리
+  const {
+    containerRef,
+    isClosing,
+    closeWithAnimation,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+  } = useDraggableBottomSheet({
+    isOpen: isModalOpen,
+    onClose,
+    threshold: THRESHOLD,
+  });
+
+  // scheduleId로부터 날짜 계산
   useEffect(() => {
     const date = getDateFromScheduleId(schedules, scheduleId);
     setSelectedDate(date);
   }, [scheduleId, schedules]);
 
-  // ✅ 열릴 때 스텝만 초기화
+  // 열릴 때 스텝 초기화
   useEffect(() => {
-    if (isOpen) {
+    if (isModalOpen) {
       setStep('calendar');
     }
-  }, [isOpen]);
+  }, [isModalOpen]);
 
   const handleDateSelect = (date: string) => {
     setSelectedDate(date);
@@ -64,34 +85,41 @@ const MobileModal = ({
 
   const isConfirmEnabled = scheduleId !== null;
 
-  if (!isOpen) return null;
+  // 애니메이션 중엔 유지되도록
+  if (!isModalOpen && !isClosing) return null;
 
   return (
     <>
-      <div className='fixed inset-0 z-40 bg-black/50' onClick={onClose} />
-      {/* 캘린더 부분 추가 시 아래 스타일 수정 예정 */}
-      <div className='fixed bottom-0 left-0 z-50 h-auto w-full rounded-t-3xl bg-white p-24'>
+      <div className='fixed inset-0 z-40 bg-black/50' onClick={closeWithAnimation} />
+
+      <DraggableContainer
+        containerRef={containerRef}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className='h-auto rounded-t-3xl p-24'
+      >
         <div className='mb-30'>
           {step === 'calendar' ? (
             <h3 className='text-18-b'>날짜</h3>
           ) : (
-            <div className='flex items-center gap-8'>
-              <button
-                onClick={handleBackStep}
-                className='relative size-24 cursor-pointer text-gray-500'
-              >
-                <Image src={'/icons/icon_back.svg'} alt='뒤로 가기' fill />
-              </button>
-              <h3 className='text-18-b'>인원</h3>
+            <div className='flex flex-col gap-4'>
+              <div className='flex items-center gap-8'>
+                <button
+                  onClick={handleBackStep}
+                  className='relative size-24 cursor-pointer text-gray-500'
+                >
+                  <Image src={'/icons/icon_back.svg'} alt='뒤로 가기' fill />
+                </button>
+                <h3 className='text-18-b'>인원</h3>
+              </div>
+              <p className='text-16-m mt-8 text-[#4b4b4b]'>예약할 인원을 선택해주세요.</p>
             </div>
-          )}
-          {step !== 'calendar' && (
-            <p className='text-16-m mt-8 text-[#4b4b4b]'>예약할 인원을 선택해주세요.</p>
           )}
         </div>
 
         {step === 'calendar' ? (
-          <div className='flex flex-col gap-24'>
+          <div className='flex flex-col gap-16'>
             <CalendarStep
               schedules={schedules}
               selectedDate={selectedDate}
@@ -119,14 +147,22 @@ const MobileModal = ({
             </button>
           </div>
         ) : (
-          <PersonStep
-            headCount={headCount}
-            onChangeHeadCount={onChangeHeadCount}
-            onConfirm={handleReservationConfirm}
-            showConfirmButton={true}
-          />
+          <div className='flex flex-col gap-24'>
+            <PersonStep headCount={headCount} onChangeHeadCount={onChangeHeadCount} />
+
+            <div className='border-t-1 border-gray-200 pt-20'>
+              <p className='text-16-b text-gray-950'>총 금액 : {totalAmount}</p>
+            </div>
+
+            <button
+              className='bg-primary-500 text-16-b hover:bg-primary-600 mt-10 h-50 w-full rounded-[0.875rem] py-15 text-white'
+              onClick={handleReservationConfirm}
+            >
+              확인
+            </button>
+          </div>
         )}
-      </div>
+      </DraggableContainer>
     </>
   );
 };
