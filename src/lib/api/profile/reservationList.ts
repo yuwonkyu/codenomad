@@ -10,17 +10,23 @@ export const getReservationList = async (
   cursorId: number | null = null,
   status: StatusType | null = null,
 ) => {
-  const cursorQuery = cursorId !== null ? `&cursorId=${cursorId}` : '';
-  const statusQuery = status !== null ? `&status=${status}` : '';
-  const res = await instance.get(`my-reservations?size=2&${cursorQuery + statusQuery}`);
+  const params = new URLSearchParams({ size: '2' });
+  if (cursorId !== null) params.append('cursorId', cursorId.toString());
+  if (status !== null) params.append('status', status);
+
+  const res = await instance.get(`my-reservations?${params.toString()}`);
   return res.data;
 };
 
 export const cancelReservation = async (reservationId: number) => {
-  const res = await instance.patch(`my-reservations/${reservationId}`, {
-    status: 'canceled',
-  });
-  return res;
+  try {
+    const res = await instance.patch(`my-reservations/${reservationId}`, {
+      status: 'canceled',
+    });
+    return res;
+  } catch (err) {
+    throw err;
+  }
 };
 
 export const postReview = async (reservationId: number, data: ReviewDataType) => {

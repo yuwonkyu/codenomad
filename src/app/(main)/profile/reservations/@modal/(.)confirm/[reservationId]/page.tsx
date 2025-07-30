@@ -7,9 +7,15 @@ const ConfirmModalPage = () => {
   const router = useRouter();
   const params = useParams();
   const reservationId = params.reservationId;
+
+  if (!reservationId || isNaN(Number(reservationId))) {
+    throw new Error('올바르지 않은 예약 ID 입니다.');
+  }
   const onDismiss = async () => {
-    const res = await cancelReservation(Number(reservationId));
-    router.back();
+    try {
+      const res = await cancelReservation(Number(reservationId));
+      router.back();
+    } catch (err) {}
   };
   return (
     <>

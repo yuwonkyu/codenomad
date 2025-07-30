@@ -28,12 +28,6 @@ interface reservationsType {
   userId: number;
 }
 
-type ReservationResponse = {
-  reservations: reservationsType[];
-  cursorId: number | null;
-  totalCount: number;
-};
-
 const Page = () => {
   const [filter, setFilter] = useState<StatusType | null>(null);
   const [reservationList, setReservationList] = useState<reservationsType[]>([]);
@@ -52,13 +46,10 @@ const Page = () => {
   ];
 
   const fetchMoreData = useCallback(async () => {
-    // console.log('[fetchMoreData called]', { isLoading, hasMore, cursorId });
     if (isLoading || !hasMore) return;
     setIsLoading(true);
     try {
-      console.log('fetchMoraData를 호출할 시점의 커서', cursorId);
       const res = await getReservationList(cursorId);
-      console.log(res);
       if (res.cursorId === cursorId) {
         console.warn('Same cursorId returned, potential API issue');
       }
@@ -87,18 +78,13 @@ const Page = () => {
   );
 
   useEffect(() => {
-    console.log(cursorId);
     const getData = async () => {
       const res = await getReservationList();
       setReservationList(res.reservations);
-      console.log('[getData 응답]', res.cursorId);
       setCursorId(res.cursorId);
     };
     getData();
   }, []);
-  useEffect(() => {
-    console.log('[cursorId 변경 감지]', cursorId);
-  }, [cursorId]);
 
   useEffect(() => {
     const getFilteredData = async (status: StatusType) => {
@@ -181,7 +167,7 @@ const Page = () => {
         )}
         {reservationList.length > 0 && hasMore && (
           <div ref={observerEl} className='h-10'>
-            데이터 더 가져오기
+            {isLoading && <span className='text-gray-500'>로딩중...</span>}
           </div>
         )}
       </div>
