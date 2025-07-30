@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import type { CategoryInputProps } from './types';
+import type { CategoryInputProps } from './MyExperiences';
 
 const CategoryInput = ({ value, onChange, options, error }: CategoryInputProps) => {
   const [open, setOpen] = useState(false);

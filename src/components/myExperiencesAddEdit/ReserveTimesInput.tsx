@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Input from '@/components/common/Input';
 import Image from 'next/image';
 import CalendarComponent from '@/components/common/Calendar';
-import type { ReserveTime, ReserveTimesInputProps } from './types';
+import type { ReserveTime, ReserveTimesInputProps } from './MyExperiences';
 
 const TIME_OPTIONS = Array.from({ length: 25 }, (_, i) => {
   const hour = i.toString().padStart(2, '0');

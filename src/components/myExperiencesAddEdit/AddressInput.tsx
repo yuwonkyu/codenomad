@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import Input from '@/components/common/Input';
 // import { FieldValues, Path } from 'react-hook-form';
-import type { AddressInputProps } from './types';
+import type { AddressInputProps } from './MyExperiences';
 
 // 다음 우편번호 서비스 타입 정의
 interface DaumPostcode {

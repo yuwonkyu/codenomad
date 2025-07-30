@@ -1,7 +1,7 @@
 import Input from '@/components/common/Input';
 import { formatPrice } from '@/utils/formatPrice';
 import { FieldValues, Path } from 'react-hook-form';
-import { PriceInputProps } from './types';
+import { PriceInputProps } from './MyExperiences';
 
 const PriceInput = <T extends FieldValues>({
   value,

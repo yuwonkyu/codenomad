@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import type { IntroImagesInputProps } from './types';
+import type { IntroImagesInputProps } from './MyExperiences';
 
 const IntroImagesInput = ({ introPreviews = [], onChange, onRemove }: IntroImagesInputProps) => {
   return (

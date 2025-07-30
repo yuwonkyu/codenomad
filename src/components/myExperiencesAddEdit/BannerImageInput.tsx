@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import type { BannerImageInputProps } from './types';
+import type { BannerImageInputProps } from './MyExperiences';
 
 const BannerImageInput = ({
   bannerPreview,
