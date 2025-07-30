@@ -17,7 +17,7 @@ const MobilePageHeader = ({ title, description, actionButton }: MobilePageHeader
   const mobileContext = useContext(ProfileMobileContext);
 
   return (
-    <div className='mb-6 w-full'>
+    <div className='mb-20 w-full'>
       <div className='relative'>
         {/* 📱 모바일 전용 헤더: 뒤로가기 기능 포함 */}
         <button

@@ -6,6 +6,7 @@ import ExperienceCard from '@/components/profile/ExperienceCard';
 import { getMyActivities, MyActivity, deleteMyActivity } from '@/lib/api/profile/myActivities';
 // 🆕 공통 컴포넌트 import (파일명 변경: index.ts → components.ts)
 import { MobilePageHeader, LoadingSpinner } from '@/components/profile/common/components';
+import CommonModal from '@/components/common/CancelModal';
 
 // 🔢 무한 스크롤 설정: 한 번에 몇 개씩 로드할지 결정
 const PAGE_SIZE = 5;
@@ -22,6 +23,10 @@ export default function MyExperiencesPage() {
 
   // 🎯 무한 스크롤 트리거 요소를 참조하는 ref
   const loaderRef = useRef<HTMLDivElement | null>(null);
+
+  // 🗑️ 삭제 모달 관련 상태
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
   // 🚀 무한 스크롤 핵심 함수: 체험 데이터를 가져오는 함수
   const fetchActivities = useCallback(async () => {
@@ -50,7 +55,7 @@ export default function MyExperiencesPage() {
 
       // 🏁 종료 조건 체크: 받은 데이터가 요청한 개수보다 적으면 더 이상 없다고 판단
       setHasMore(data.activities.length >= PAGE_SIZE);
-    } catch (err) {
+    } catch {
       // ❌ 에러는 조용히 처리 (사용자에게는 빈 상태로 표시됨)
     } finally {
       // ✅ 로딩 상태 종료
@@ -91,13 +96,27 @@ export default function MyExperiencesPage() {
     };
   }, [cursorId, hasMore]); // cursorId나 hasMore가 변경될 때마다 observer 재설정
 
-  // 삭제 핸들러
-  const handleDelete = async (id: number) => {
-    if (!window.confirm('정말 삭제하시겠습니까?')) return;
+  // 🗑️ 삭제 모달 열기
+  const handleDelete = (id: number) => {
+    setDeleteTargetId(id);
+    setShowDeleteModal(true);
+  };
+
+  // 🗑️ 삭제 모달 닫기
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setDeleteTargetId(null);
+  };
+
+  // 🗑️ 실제 삭제 실행
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
+
     try {
-      await deleteMyActivity(id);
-      setActivities((prev) => prev.filter((a) => a.id !== id));
-    } catch (err) {
+      await deleteMyActivity(deleteTargetId);
+      setActivities((prev) => prev.filter((a) => a.id !== deleteTargetId));
+      closeDeleteModal();
+    } catch {
       alert('삭제에 실패했습니다.');
     }
   };
@@ -182,6 +201,23 @@ export default function MyExperiencesPage() {
           )}
         </>
       )}
+
+      {/* 🗑️ 삭제 확인 모달 */}
+      <CommonModal
+        open={showDeleteModal}
+        icon={
+          <div className='flex h-full w-full items-center justify-center text-red-500'>
+            <svg width='40' height='40' viewBox='0 0 24 24' fill='currentColor'>
+              <path d='M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z' />
+            </svg>
+          </div>
+        }
+        text='정말 삭제하시겠습니까?<br />삭제된 체험은 복구할 수 없습니다.'
+        cancelText='취소'
+        confirmText='삭제하기'
+        onCancel={closeDeleteModal}
+        onConfirm={confirmDelete}
+      />
     </section>
   );
 }
