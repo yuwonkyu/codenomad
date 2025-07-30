@@ -15,7 +15,7 @@ export default function RootLayout({
         <link rel='icon' href='/favicon.ico' />
         <title>WAZY | 체험 예약 플랫폼</title>
       </head>
-      <body className='flex min-h-screen flex-col'>{children}</body>
+      <body className='pt-40 md:pt-80'>{children}</body>
     </html>
   );
 }
