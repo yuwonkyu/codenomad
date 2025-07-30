@@ -1,32 +1,29 @@
-
 import Input from '@/components/common/Input';
 import { formatPrice } from '@/utils/formatPrice';
-const extractNumbers = (str: string) => str.replace(/[^0-9]/g, '');
+import { FieldValues, Path } from 'react-hook-form';
+import { PriceInputProps } from './types';
 
-interface PriceInputProps {
-  value: string;
-  onChange: (v: string) => void;
-  error?: string;
-}
-
-const PriceInput = ({ value, onChange, error }: PriceInputProps) => {
+const PriceInput = <T extends FieldValues>({
+  value,
+  error,
+  register,
+  path,
+}: PriceInputProps<T>) => {
   return (
-    <div className='mb-24'>
+    <div className="mb-24">
       <Input
-        label='가격'
-        labelClassName='text-16-b'
-        placeholder='체험 금액을 입력해 주세요'
+        label="가격"
+        labelClassName="text-16-b"
+        placeholder="체험 금액을 입력해 주세요"
         error={error}
         value={value}
-        onChange={(e) => {
-          const onlyNum = extractNumbers(e.target.value);
-          onChange(onlyNum);
-        }}
-        inputMode='numeric'
+        inputMode="numeric"
+        {...register(path as Path<T>)}
       />
-      {/* 입력값이 있을 때만 포맷된 금액 표시 */}
-      {value && extractNumbers(value) && (
-        <div className='text-14-r mt-2 text-gray-500'>{formatPrice(Number(value))}</div>
+      {value && (
+        <div className="text-14-r mt-2 text-gray-500">
+          {formatPrice(Number(value))}
+        </div>
       )}
     </div>
   );
