@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Pagination from '@/components/common/Pagination';
 import ReviewCard from '@/components/activities/ReviewCard';
@@ -20,20 +20,21 @@ const ReviewSection = ({ activityId }: ReviewSectionProps) => {
   const [reviewData, setReviewData] = useState<ReviewResponse | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchActivityReviews(activityId, currentPage, PAGE_SIZE);
-        setReviewData(data);
-      } catch {
-        setReviewData(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await fetchActivityReviews(activityId, currentPage, PAGE_SIZE);
+      setReviewData(data);
+    } catch {
+      setReviewData(null);
+    } finally {
+      setLoading(false);
+    }
   }, [activityId, currentPage]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   // 임시 처리
   if (loading) return <p>로딩 중...</p>;
@@ -49,6 +50,12 @@ const ReviewSection = ({ activityId }: ReviewSectionProps) => {
           <p className='text-14-body-m text-gray-700'>0개 후기</p>
         </div>
         <div className='w-full py-10 text-center text-gray-500'>리뷰를 불러오지 못하였습니다.</div>
+        <button
+          className='bg-primary-500 text-14-m h-40 w-300 rounded-2xl text-white'
+          onClick={() => fetchData()}
+        >
+          다시 불러오기
+        </button>
       </section>
     );
 
