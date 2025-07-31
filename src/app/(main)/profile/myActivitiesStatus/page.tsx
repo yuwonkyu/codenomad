@@ -290,7 +290,9 @@ export default function ReservationStatusPage() {
   // 🔧 유틸리티: 전역 상태 업데이트 및 리렌더링 트리거
   const updateStatusBadgeData = (statusBadgeData: { [date: string]: ReservationCountData }) => {
     // 전역 변수에 저장 (기존 방식과 호환성 유지)
-    window.statusBadgeData = statusBadgeData;
+    if (typeof window !== 'undefined') {
+      window.statusBadgeData = statusBadgeData;
+    }
 
     // 캘린더 리렌더링 트리거
     if (Object.keys(statusBadgeData).length > 0) {
@@ -546,15 +548,19 @@ export default function ReservationStatusPage() {
         if (!calendarContainer) return;
 
         const calendarRect = calendarContainer.getBoundingClientRect();
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
+        let viewportWidth = 0;
+        let viewportHeight = 0;
+        if (typeof window !== 'undefined') {
+          viewportWidth = window.innerWidth;
+          viewportHeight = window.innerHeight;
+        }
 
         // 모달 크기
         const modalWidth = 420;
         const modalHeight = 600;
 
         let modalLeft = cellRect.left + cellRect.width + 16; // 기본: 오른쪽
-        let modalTop = cellRect.top + window.scrollY;
+        let modalTop = cellRect.top + (typeof window !== 'undefined' ? window.scrollY : 0);
 
         // 🔄 오른쪽으로 나가는 경우: 왼쪽에 표시
         if (modalLeft + modalWidth > calendarRect.right) {
@@ -567,13 +573,17 @@ export default function ReservationStatusPage() {
         }
 
         // 🔄 아래쪽으로 나가는 경우: 위로 조정
-        if (modalTop + modalHeight > calendarRect.bottom + window.scrollY) {
-          modalTop = calendarRect.bottom + window.scrollY - modalHeight - 16;
+        if (typeof window !== 'undefined') {
+          if (modalTop + modalHeight > calendarRect.bottom + window.scrollY) {
+            modalTop = calendarRect.bottom + window.scrollY - modalHeight - 16;
+          }
         }
 
         // 🔄 위쪽으로 나가는 경우: 아래로 조정
-        if (modalTop < calendarRect.top + window.scrollY) {
-          modalTop = calendarRect.top + window.scrollY + 16;
+        if (typeof window !== 'undefined') {
+          if (modalTop < calendarRect.top + window.scrollY) {
+            modalTop = calendarRect.top + window.scrollY + 16;
+          }
         }
 
         // 🔄 그래도 화면 밖으로 나가는 경우: 최종 보정
@@ -583,11 +593,13 @@ export default function ReservationStatusPage() {
         if (modalLeft < 16) {
           modalLeft = 16;
         }
-        if (modalTop + modalHeight > viewportHeight + window.scrollY) {
-          modalTop = viewportHeight + window.scrollY - modalHeight - 16;
-        }
-        if (modalTop < window.scrollY + 16) {
-          modalTop = window.scrollY + 16;
+        if (typeof window !== 'undefined') {
+          if (modalTop + modalHeight > viewportHeight + window.scrollY) {
+            modalTop = viewportHeight + window.scrollY - modalHeight - 16;
+          }
+          if (modalTop < window.scrollY + 16) {
+            modalTop = window.scrollY + 16;
+          }
         }
 
         setCalendarCellRect({
