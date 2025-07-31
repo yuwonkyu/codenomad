@@ -7,7 +7,7 @@ import { getReservationList } from '@/lib/api/profile/reservationList';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState, useRef, useCallback, useContext } from 'react';
-import { ProfileMobileContext } from '../layout';
+import { ProfileMobileContext } from '@/contexts/ProfileMobileContext';
 
 interface reservationsType {
   activity: {

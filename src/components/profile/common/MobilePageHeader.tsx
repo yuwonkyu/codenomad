@@ -1,7 +1,7 @@
 'use client';
 
 import { useContext } from 'react';
-import { ProfileMobileContext } from '@/app/(main)/profile/layout';
+import { ProfileMobileContext } from '@/contexts/ProfileMobileContext';
 
 // 📱 모바일 전용 페이지 헤더 컴포넌트
 // 역할: 프로필 서브페이지에서 공통으로 사용하는 뒤로가기 기능 + 제목 표시

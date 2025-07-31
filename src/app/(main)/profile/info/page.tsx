@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useContext, useCallback } from 'react';
 import Input from '@/components/common/Input';
-import { ProfileMobileContext } from '../layout';
+import { ProfileMobileContext } from '@/contexts/ProfileMobileContext';
 import { getUserProfile, updateUserProfile } from '@/lib/api/profile';
 // 🆕 공통 컴포넌트 import (파일명 변경: index.ts → components.ts)
 import { MobilePageHeader, LoadingSpinner } from '@/components/profile/common/components';

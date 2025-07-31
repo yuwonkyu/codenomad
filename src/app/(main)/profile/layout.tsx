@@ -1,10 +1,7 @@
 'use client';
-import { useState, createContext } from 'react';
+import { useState } from 'react';
+import { ProfileMobileContext } from '@/contexts/ProfileMobileContext';
 import ProfileMenu from '@/components/profile/ProfileMenu';
-
-// 📱 모바일 전용 Context: 서브페이지에서 메뉴로 돌아가는 기능 제공
-// onCancel 함수를 통해 자식 컴포넌트들이 메뉴 화면으로 돌아갈 수 있음
-export const ProfileMobileContext = createContext<{ onCancel: () => void } | null>(null);
 
 export default function MyLayout({ children }: { children: React.ReactNode }) {
   // 🔄 모바일 화면 전환 상태 관리
