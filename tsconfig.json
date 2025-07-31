@@ -13,6 +13,12 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "noImplicitAny": true, // 암묵적인 any 금지
+    "noImplicitThis": true, // this의 any 금지
+    "alwaysStrict": true, // strict mode 자동 활성화
+    "strictNullChecks": true, // null/undefined 체크 강화
+    "strictFunctionTypes": true, // 함수 타입 호환성 엄격하게
+    "strictBindCallApply": true, // bind/call/apply 타입 체크 강화
     "plugins": [
       {
         "name": "next"
