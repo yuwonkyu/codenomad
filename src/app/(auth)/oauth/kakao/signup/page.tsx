@@ -43,8 +43,20 @@ const KakaoSignupForm = () => {
       setUser(user);
 
       router.push('/');
-    } catch (error: any) {
-      const serverMessage = error?.response?.data?.message ?? '회원가입에 실패했습니다.';
+    } catch (error: unknown) {
+      const serverMessage =
+        error &&
+        typeof error === 'object' &&
+        'response' in error &&
+        error.response &&
+        typeof error.response === 'object' &&
+        'data' in error.response &&
+        error.response.data &&
+        typeof error.response.data === 'object' &&
+        'message' in error.response.data &&
+        typeof (error.response.data as { message?: string }).message === 'string'
+          ? (error.response.data as { message: string }).message
+          : '회원가입에 실패했습니다.';
       setErrorMessage(serverMessage);
       setIsModalOpen(true);
     }
